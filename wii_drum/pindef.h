@@ -24,6 +24,9 @@
 #define adc_port PORTA
 #define adc_ddr DDRA
 
+// for the bit numbers, go to
+// http://wiibrew.org/wiki/Wiimote/Extension_Controllers
+
 #define green_bit 4
 #define green_pin 0
 #define green_in_reg PINA

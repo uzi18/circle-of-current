@@ -2,6 +2,14 @@
 
 #include <avr/pgmspace.h>
 
+/*
+
+I'd like to thank Hector Martin for posting his decryption method!
+His website is http://www.marcansoft.com/
+Decryption method found at http://www.derkeiler.com/pdf/Newsgroups/sci.crypt/2008-11/msg00110.pdf
+
+*/
+
 const unsigned char ans_tbl[7][6] PROGMEM = {
 	{0xA8,0x77,0xA6,0xE0,0xF7,0x43},
 	{0x5A,0x35,0x85,0xE2,0x72,0x97},

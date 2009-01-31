@@ -18,6 +18,9 @@
 // simulated degree of thumb stick movement (something under 32)
 #define thumbstick_speed 16
 
+// most of this data is found on
+// http://wiibrew.org/wiki/Wiimote/Extension_Controllers
+
 // drum id
 const unsigned char drum_id[6] = {0x01, 0x00, 0xA4, 0x20, 0x01, 0x03};
 
