@@ -20,7 +20,7 @@ static volatile wm_cd_s wm_action;
 
 /*
 
-I'd like to thank Hector Martin for posting his decryption method!
+I'd like to thank Hector Martin for posting his encryption method!
 His website is http://www.marcansoft.com/
 Decryption method found at http://www.derkeiler.com/pdf/Newsgroups/sci.crypt/2008-11/msg00110.pdf
 
