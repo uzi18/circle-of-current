@@ -10,6 +10,8 @@ The code inside \wii_drum is firmware source code for an AVR microcontroller.
 
 == Code ==
 
+[http://code.google.com/p/circle-of-current/source/browse/#svn/wii_drum Link to folder]
+
 === main.c ===
 
 This file handles initialization and everything associated with the interaction with the drum pad sensors. Some configuration is done with pre-processor defines and array tables at the top of the file. If you want to modify the behaviour of the controller, modify this file.
