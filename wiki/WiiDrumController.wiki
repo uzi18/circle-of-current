@@ -1,0 +1,31 @@
+#summary DIY Drum Set Controller for the Wii made with AVR
+
+= Introduction =
+
+Rock Band 2 (RB2) and Guitar Hero World Tour (GHWT) both work with the drum set controller that is packaged with GHWT. The GHWT drums, unlike the RB2 drums, is plugged into a Wiimote's expansion port. This expansion port is a I2C bus and the drum is a I2C slave device. An AVR microcontroller can be connected on this bus as a I2C slave with the same slave address to trick the Wii into thinking that it's connected to a drum controller.
+
+The code inside \wii_drum is firmware source code for an AVR microcontroller.
+
+= Details =
+
+== Code ==
+
+=== main.c ===
+
+This file handles initialization and everything associated with the interaction with the drum pad sensors. Some configuration is done with pre-processor defines and array tables at the top of the file. If you want to modify the behaviour of the controller, modify this file.
+
+=== pindef.h ===
+
+This is where connections on the microcontroller are defined. Change this file to suit your own hardware. Make sure the TWI and UART port are properly defined.
+
+=== Other Files ===
+
+These files are not specific to the drum set controller, they can be used to make any Wii extension controller ("classic", guitar, "Nunchuk", etc).
+
+==== wiimote.c , wm_crypto.h ====
+
+These two files handle everything that deals with the Wiimote. The functions inside handle encryption and decides how to respond to various commands sent from the Wiimote. wm_crypto.h contains key tables used for encrypting the data sent to the Wiimote.
+
+==== twi.c ====
+
+The functions contained in this file handles I2C slave operations (slave, functions for master not included). There are some special functions that aid devices with slow code execution speeds on a fast I2C bus. While the AVR microcontroller is not ready for any new I2C read commands, the microcontroller fakes the behaviour of a I2C master, occupying the bus, and thus not allowing the Wiimote to issue commands until the microcontroller is ready.
