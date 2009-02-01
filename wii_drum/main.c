@@ -5,8 +5,11 @@
 
 // trigger on either rising or falling edge (never both please)
 // these only apply to the 5 pads, buttons and bass pedals are always falling edge
+// pull_up_res will enable internal pull-up resistors for the pad pins
+// does not effect buttons and bass pedals
 //#define trig_on_rise
 #define trig_on_fall
+//#define pull_up_res 
 
 // minimum pulse time (x = actual pulse time / 0.003)
 // keep at 5, raise if you see double hits
@@ -194,6 +197,7 @@ int main()
 
 	// initialize ports
 
+	#ifdef pull_up_res
 	#ifdef trig_on_fall
 	// setting port = pull ups on
 	sbi(green_port, green_pin);
@@ -201,6 +205,13 @@ int main()
 	sbi(yellow_port, yellow_pin);
 	sbi(blue_port, blue_pin);
 	sbi(orange_port, orange_pin);
+	#endif
+	#else
+	cbi(green_port, green_pin);
+	cbi(red_port, red_pin);
+	cbi(yellow_port, yellow_pin);
+	cbi(blue_port, blue_pin);
+	cbi(orange_port, orange_pin);
 	#endif
 
 	#ifdef trig_on_rise
