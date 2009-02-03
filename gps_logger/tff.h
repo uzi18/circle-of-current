@@ -47,7 +47,7 @@
 #define	_USE_FORWARD	0
 /* To enable f_forward function, set _USE_FORWARD to 1. */
 
-#define _FAT32	1
+#define _FAT32	0
 /* To enable FAT32 support in addition of FAT12/16, set _FAT32 to 1. */
 
 #define _USE_FSINFO	1
