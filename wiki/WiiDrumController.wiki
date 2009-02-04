@@ -29,7 +29,8 @@ These files are not specific to the drum set controller, they can be used to mak
 These two files handle everything that deals with the Wiimote. The functions inside handle encryption and decides how to respond to various commands sent from the Wiimote. wm_crypto.h contains key tables used for encrypting the data sent to the Wiimote.
 
 Thanks to Hector Martin for the decryption and encryption method. He wrote about it here:
-http://www.derkeiler.com/pdf/Newsgroups/sci.crypt/2008-11/msg00110.pdf
+
+[http://www.derkeiler.com/pdf/Newsgroups/sci.crypt/2008-11/msg00110.pdf PDF Link]
 
 ==== twi.c ====
 
