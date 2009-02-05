@@ -14,7 +14,7 @@ static volatile unsigned char wm_packet[16];
 static volatile unsigned char wm_packet_len;
 
 // read_cnt is a psuedo timer
-static volatile unsigned long wm_read_cnt;
+static volatile unsigned int wm_read_cnt;
 
 static volatile wm_cd_s wm_action;
 

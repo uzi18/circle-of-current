@@ -48,7 +48,7 @@ const unsigned char cal_data[16] = {
 };
 
 static volatile unsigned char hit_f[8]; // hit flag
-static volatile unsigned long hit_t[8]; // time associated with flag
+static volatile unsigned int hit_t[8]; // time associated with flag
 static volatile unsigned char hit_last; // last pad hit
 
 // pin input comparison variables
@@ -365,6 +365,8 @@ int main()
 		if(bit_is_clear(down_stick_in_reg, down_stick_pin)) but_dat.d[1] -= thumbstick_speed;
 		if(bit_is_clear(left_stick_in_reg, left_stick_pin)) but_dat.d[0] -= thumbstick_speed;
 		if(bit_is_clear(right_stick_in_reg, right_stick_pin)) but_dat.d[0] += thumbstick_speed;
+		#else
+		sbi(but_dat.d[5], orange_bit); // disable orange if not GHWT
 		#endif
 
 		wm_newaction(but_dat);
