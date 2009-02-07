@@ -62,6 +62,7 @@ void twi_sendAck(unsigned char ack)
 	}
 }
 
+#ifdef USE_FAKEMASTER
 // these functions keep the bus busy so the AVR has more time to process
 void twi_fakeMaster()
 {
@@ -93,6 +94,7 @@ void twi_fakeMasterOff()
 	// re-enable twi module
 	TWCR = _BV(TWEN) | _BV(TWIE) | _BV(TWEA);
 }
+#endif
 
 ISR(TWI_vect)
 {
@@ -115,6 +117,7 @@ ISR(TWI_vect)
 			twi_sendAck(1);
 			break;
 		case TW_SR_STOP: // stop or repeated start condition
+			#ifdef USE_FAKEMASTER
 			// ack future responses
 			twi_sendAck(1);
 			// keep bus busy until user application finishes
@@ -126,6 +129,13 @@ ISR(TWI_vect)
 			// set flag
 			twi_was_receiver_flag = 1;
 			break;
+			#else
+			// user application
+			twi_onRx(twi_rxBuffer, twi_rxBufferIndex);
+			// ack future responses
+			twi_sendAck(1);
+			twi_was_receiver_flag = 1;
+			#endif
 		case TW_SR_DATA_NACK: // data received, returned nack
 		case TW_SR_GCALL_DATA_NACK: // data received generally, returned nack
 			// nack

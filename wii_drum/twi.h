@@ -1,5 +1,8 @@
 #ifndef twi_h
 
+// enable this to enable the simulated bus master functions
+//#define USE_FAKEMASTER
+
 #include <string.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
