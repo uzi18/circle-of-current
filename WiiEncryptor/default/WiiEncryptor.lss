@@ -1,0 +1,1331 @@
+
+WiiEncryptor.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .data         00000030  00800100  0000100a  0000107e  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  1 .text         0000100a  00000000  00000000  00000074  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  2 .bss          0000035e  00800130  0000103a  000010ae  2**0
+                  ALLOC
+  3 .debug_aranges 00000020  00000000  00000000  000010ae  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  4 .debug_pubnames 0000014f  00000000  00000000  000010ce  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_info   000006df  00000000  00000000  0000121d  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_abbrev 00000235  00000000  00000000  000018fc  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_line   000003d4  00000000  00000000  00001b31  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_frame  000000a0  00000000  00000000  00001f08  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_str    000001bd  00000000  00000000  00001fa8  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_loc    0000030c  00000000  00000000  00002165  2**0
+                  CONTENTS, READONLY, DEBUGGING
+Disassembly of section .text:
+
+00000000 <__vectors>:
+       0:	0c 94 cc 04 	jmp	0x998	; 0x998 <__ctors_end>
+       4:	0c 94 e9 04 	jmp	0x9d2	; 0x9d2 <__bad_interrupt>
+       8:	0c 94 e9 04 	jmp	0x9d2	; 0x9d2 <__bad_interrupt>
+       c:	0c 94 e9 04 	jmp	0x9d2	; 0x9d2 <__bad_interrupt>
+      10:	0c 94 e9 04 	jmp	0x9d2	; 0x9d2 <__bad_interrupt>
+      14:	0c 94 e9 04 	jmp	0x9d2	; 0x9d2 <__bad_interrupt>
+      18:	0c 94 e9 04 	jmp	0x9d2	; 0x9d2 <__bad_interrupt>
+      1c:	0c 94 e9 04 	jmp	0x9d2	; 0x9d2 <__bad_interrupt>
+      20:	0c 94 e9 04 	jmp	0x9d2	; 0x9d2 <__bad_interrupt>
+      24:	0c 94 e9 04 	jmp	0x9d2	; 0x9d2 <__bad_interrupt>
+      28:	0c 94 e9 04 	jmp	0x9d2	; 0x9d2 <__bad_interrupt>
+      2c:	0c 94 e9 04 	jmp	0x9d2	; 0x9d2 <__bad_interrupt>
+      30:	0c 94 e9 04 	jmp	0x9d2	; 0x9d2 <__bad_interrupt>
+      34:	0c 94 e9 04 	jmp	0x9d2	; 0x9d2 <__bad_interrupt>
+      38:	0c 94 e9 04 	jmp	0x9d2	; 0x9d2 <__bad_interrupt>
+      3c:	0c 94 e9 04 	jmp	0x9d2	; 0x9d2 <__bad_interrupt>
+      40:	0c 94 e9 04 	jmp	0x9d2	; 0x9d2 <__bad_interrupt>
+      44:	0c 94 e9 04 	jmp	0x9d2	; 0x9d2 <__bad_interrupt>
+      48:	0c 94 e9 04 	jmp	0x9d2	; 0x9d2 <__bad_interrupt>
+      4c:	0c 94 e9 04 	jmp	0x9d2	; 0x9d2 <__bad_interrupt>
+      50:	0c 94 e9 04 	jmp	0x9d2	; 0x9d2 <__bad_interrupt>
+      54:	0c 94 e9 04 	jmp	0x9d2	; 0x9d2 <__bad_interrupt>
+      58:	0c 94 e9 04 	jmp	0x9d2	; 0x9d2 <__bad_interrupt>
+      5c:	0c 94 e9 04 	jmp	0x9d2	; 0x9d2 <__bad_interrupt>
+      60:	0c 94 c4 06 	jmp	0xd88	; 0xd88 <__vector_24>
+      64:	0c 94 e9 04 	jmp	0x9d2	; 0x9d2 <__bad_interrupt>
+
+00000068 <ans_tbl>:
+      68:	43 f7 e0 a6 77 a8 97 72 e2 85 35 5a 38 87 62 1a     C...w..r..5Z8.b.
+      78:	b7 8f 3e 4f be c7 67 0d b7 68 8f 37 76 20 e3 10     ..>O..g..h.7v ..
+      88:	2b 3f 26 a9 0a 85 0e 90 7e 30 00 00 00 00 00 00     +?&.....~0......
+
+00000098 <tsbox>:
+      98:	70 51 03 86 40 0d 4f eb 3e cc d1 87 35 bd f5 0b     pQ..@.O.>...5...
+      a8:	5e d0 f8 f2 d5 e2 6c 31 0c ad fc 21 c3 78 c1 06     ^.....l1...!.x..
+      b8:	c2 4c 55 e6 4a 34 48 11 1e da e7 1a 84 a0 96 a7     .LU.J4H.........
+      c8:	e3 7f af 63 9c fa 23 5b 79 c8 9e ba b2 c9 22 12     ...c..#[y.....".
+      d8:	4b b3 a1 b6 32 49 a2 e1 89 39 10 66 c5 07 8f 54     K...2I...9.f...T
+      e8:	ea 91 ca 3f f9 19 f0 d7 46 bc 28 1b 61 e8 2f 6a     ...?....F.(.a./j
+      f8:	ae 9d f6 4e 09 14 77 4d db 1f 2e 7b 7c f1 43 a3     ...N..wM...{|.C.
+     108:	00 b8 13 8c 85 b9 29 75 88 fd d2 56 1c 50 97 41     ......)u...V.P.A
+     118:	e5 3b 60 b5 c0 64 ee 98 d6 2d 25 a4 aa cd 7d a8     .;`..d...-%...}.
+     128:	83 c6 ab be 44 99 26 3c ce 9f bf d3 cb 76 7a 7e     ....D.&<.....vz~
+     138:	82 01 8a 9a 80 1d 0e b0 5c d4 38 62 f4 30 e0 8e     ........\.8b.0..
+     148:	53 b7 02 57 ac a6 52 0a 6d 92 65 17 24 33 45 72     S..W..R.m.e.$3Er
+     158:	74 b1 b4 f7 5d ed 2c ff 47 37 5a 90 bb df 2a 16     t...].,.G7Z...*.
+     168:	59 95 d9 c4 27 67 73 c7 68 fe a5 dd 6b 5f 93 d8     Y...'gs.h...k_..
+     178:	ec 05 3a 8d 6e fb 3d a9 69 36 f3 94 de ef 15 6f     ..:.n.=.i6.....o
+     188:	8b 9b 08 0f dc 81 18 20 04 e4 71 cf e9 2b 42 58     ....... ..q..+BX
+
+00000198 <sboxes>:
+     198:	01 a0 a9 62 d6 3f 85 a7 b6 d4 fa 15 66 17 09 bd     ...b.?......f...
+     1a8:	5d 14 34 26 59 72 91 54 06 4f f8 b0 5b 74 93 99     ].4&Yr.T.O..[t..
+     1b8:	8c f2 45 cd ea 4e ad 10 4a e5 ca ee df c6 6f 9f     ..E..N..J.....o.
+     1c8:	88 8e 02 cc 08 a8 77 94 6d 21 b1 28 e4 39 79 96     ......w.m!.(.9y.
+     1d8:	60 71 81 16 2e e6 78 b9 c4 46 9a 42 ae b7 7c 43     `q....x..F.B..|C
+     1e8:	b3 22 1a 86 c2 32 3d 2d 9c d2 29 e9 63 9b d1 31     ."...2=-..).c..1
+     1f8:	38 5e 1e 36 41 bb 03 18 2b 3e bf 68 61 fc 52 c0     8^.6A...+>.ha.R.
+     208:	de e0 0a 58 13 5a 00 be 1c 90 0e 53 12 fd e2 6e     ...X.Z.....S...n
+     218:	ba ce 24 27 44 7f 87 a3 a1 d5 50 40 e3 f9 83 f7     ..$'D.....P@....
+     228:	c7 a2 35 c8 db 19 ab 2f 11 25 ed 33 9e 55 e1 48     ..5..../.%.3.U.H
+     238:	af 73 84 da 2a aa 51 eb 9d 95 b2 cb e7 70 80 fe     .s..*.Q......p..
+     248:	4c 65 04 ef c5 f1 c3 3a b4 f5 5f 23 89 dd 30 a5     Le.....:.._#..0.
+     258:	8b d3 f6 dc 4d 64 d7 f0 8f ec 56 37 5c a4 0d 07     ....Md....V7\...
+     268:	76 8a 2c 0b b5 d8 c1 1f e8 3b f4 4b 1b 47 6c 49     v.,......;.K.GlI
+     278:	67 7b 92 cf 75 7e 20 d9 7d 3c 97 7a d0 05 6b 0f     g{..u~ .}<.z..k.
+     288:	1d fb 82 98 57 8d f3 6a bc ac c9 a6 ff b8 69 0c     ....W..j......i.
+     298:	4c 4d 72 07 5a 49 33 8d a2 ab 46 3d 63 0d a0 97     LMr.ZI3...F=c...
+     2a8:	ff f0 f5 fa c0 e9 db 62 e4 e1 74 43 dc 86 18 29     .......b..tC...)
+     2b8:	37 f4 06 e2 ed 6f 90 48 1e 2d 1d ea 73 94 54 df     7....o.H.-..s.T.
+     2c8:	25 f6 47 27 d9 11 77 c9 84 1c 5b 5c 51 81 a6 22     %.G'..w...[\Q.."
+     2d8:	3e 24 96 c8 8a ec 82 7c 09 b8 45 4a 57 bb 2f 50     >$.....|..EJW./P
+     2e8:	75 8e 61 70 8c 6c af d0 fd b4 1b ae de fe 3b b5     u.ap.l........;.
+     2f8:	36 bd 55 01 0e 9c 41 56 5f b3 26 03 83 ba 13 4b     6.U...AV_.&....K
+     308:	ca c5 0a f8 60 a5 b9 c7 c3 98 32 fb 12 f9 a7 92     ....`.....2.....
+     318:	aa 68 f3 78 7e 05 20 21 02 e8 bf f2 b0 59 8f d2     .h.x~. !.....Y..
+     328:	cb 87 65 15 f1 1a b2 30 ad ee 58 a3 8b 66 1f 2c     ..e....0..X..f.,
+     338:	d7 5d 19 85 a8 e6 d3 6b a1 0c 91 93 6a 5e 0b 79     .].....k....j^.y
+     348:	e3 dd 00 4f 3c 89 6e 71 69 a9 ac 40 e5 99 28 c6     ...O<.nqi..@..(.
+     358:	31 4e 7a cd 08 9e 7d ef 17 fc 88 d8 a4 6d 44 95     1Nz...}......mD.
+     368:	d1 b7 d4 9b be 2a 34 64 2b cf 2e eb 38 ce 23 e0     .....*4d+...8.#.
+     378:	3a 3f f7 7b 9f 10 53 bc 52 67 16 e7 80 76 04 c4     :?.{..S.Rg...v..
+     388:	b6 c1 c2 7f 9a da d5 39 42 14 9d b1 0f 35 d6 cc     .......9B....5..
+     398:	b9 da 38 0c a2 9c 09 1f 06 b1 b6 fd 1a 69 23 30     ..8..........i#0
+     3a8:	c4 de 01 d1 f4 58 29 37 1c 7d d5 bf ff bd c8 c9     .....X)7.}......
+     3b8:	cf 65 be 7b 78 97 98 67 08 b3 26 57 f7 fa 40 ad     .e.{x..g..&W..@.
+     3c8:	8e 75 a6 7c db 91 8b 51 99 d4 17 7a 90 8d ce 63     .u.|...Q...z...c
+     3d8:	cb 4e a0 ab 18 3a 5b 50 7f 21 74 c1 bb b8 b7 ba     .N...:[P.!t.....
+     3e8:	0b 35 95 31 59 9a 4d 04 07 1e 5a 76 13 f3 71 83     .5.1Y.M...Zv..q.
+     3f8:	d0 86 03 a8 39 42 aa 28 e6 e4 d8 5d d3 d0 6e 6f     ....9B.(...]..no
+     408:	96 fb 5e bc 56 c2 5f 85 9b e7 af d2 3b 84 6a a7     ..^.V._.....;.j.
+     418:	53 c5 44 49 a5 f9 36 72 3d 2c d9 1b a1 f5 4f 93     S.DI..6r=,....O.
+     428:	9d 68 47 41 16 ca 2a 4c a3 87 d6 e5 19 2e 77 15     .hGA..*L......w.
+     438:	6d 70 c0 df b2 00 46 ed c6 6c 43 60 92 2d a9 22     mp....F..lC`.-."
+     448:	45 8f 34 55 ae a4 0a 66 32 e0 dc 02 ac e8 20 8c     E.4U...f2..... .
+     458:	89 62 4a fe ee c3 e3 3c f1 79 05 e9 f6 27 33 cc     .bJ....<.y...'3.
+     468:	f2 9e 11 81 7e 80 10 8a 82 9f 48 0d d7 b4 fc 2f     ....~.....H..../
+     478:	b5 c7 dd 88 14 6b 2b 54 ea 1d 94 5c b0 ef 12 24     .....k+T...\...$
+     488:	cd eb e1 e2 64 73 3f 0e 52 61 25 3e f8 0f 4b ec     ....ds?.Ra%>..K.
+     498:	c0 00 30 f6 02 49 3d 10 6e 20 c9 a6 2f fe 2c 2b     ..0..I=.n ../.,+
+     4a8:	75 2e 45 26 ab 48 a9 80 fc 04 cc d3 b5 ba a3 38     u.E&.H.........8
+     4b8:	31 7d 01 d9 a7 7b 96 b6 63 69 4e f7 de e0 78 ca     1}...{..ciN...x.
+     4c8:	50 aa 41 91 65 88 e4 21 85 da 3a 27 be 1c 3e 42     P.A.e..!..:'..>B
+     4d8:	5e 17 52 7f 1f 89 24 6f 8f 5c 67 74 0e 12 87 8d     ^.R...$o.\gt....
+     4e8:	e9 34 ed 73 c4 f8 61 5b 05 df 59 4c 97 79 83 18     .4.s..a[..YL.y..
+     4f8:	a4 55 95 eb bd 53 f5 f1 57 66 46 9f b2 81 09 51     .U...S..WfF....Q
+     508:	86 22 16 dd 23 93 76 29 c2 d7 1d d4 bf 36 3f ea     ."..#.v).....6?.
+     518:	4b 11 32 b9 62 54 60 d6 6d 43 9a 0d 92 9c b0 ef     K.2.bT`.mC......
+     528:	58 6c 9d 77 2d 70 fa f3 b3 0b e2 40 7e f4 8a e5     Xl.w-p.....@~...
+     538:	8c 3c 56 71 d1 64 e1 82 0a cb 13 15 90 ec 03 99     .<Vq.d..........
+     548:	af 14 5d 0f 33 4a 94 a5 a8 35 1b e3 6a c6 28 ff     ..].3J...5..j.(.
+     558:	4d e7 25 84 ac 08 ae c5 a2 2a b8 37 0c 7a a0 c3     M.%......*.7.z..
+     568:	ce ad 06 1a 9e 8b fb d5 d0 c1 1e d0 b4 9b b1 44     ...............D
+     578:	f2 47 c7 68 cf 72 bb 4f 5a f9 dc 6b db d2 e8 7c     .G.h.r.OZ..k...|
+     588:	c8 ee 98 a1 e6 d8 39 07 5f fd 8e 19 b7 3b bc cd     ......9._....;..
+     598:	7c e3 81 73 b2 11 bf 6f 20 98 fe 75 96 ef 6c da     |..s...o ..u..l.
+     5a8:	50 e1 09 72 54 45 ba 34 80 5b ed 3e 53 2c 87 a4     P..rTE.4.[.>S,..
+     5b8:	57 f3 33 3f 3c b7 67 b4 a3 25 60 4f 07 6b 1b 47     W.3?<.g..%`O.k.G
+     5c8:	15 0f e4 0a ea d1 32 78 36 49 8d 4b d2 bc a5 dc     ......2x6I.K....
+     5d8:	1d 0d 4d cd 9a 82 5f fc 94 65 be e2 f4 c9 1e 44     ..M..._..e.....D
+     5e8:	cb 9e 0c 64 71 26 63 b3 14 e8 40 70 8a 0e 19 42     ...dq&c...@p...B
+     5f8:	6d ac 88 10 5c df 41 a9 ad e5 fb 74 cc d5 06 8e     m...\.A....t....
+     608:	59 86 ce 1f 3d 76 e0 8f b9 77 27 7b a6 d8 29 d3     Y...=v...w'{..).
+     618:	ec b8 13 f7 fa c3 51 6a de 4a 5a eb c2 8b 23 48     ......Qj.JZ...#H
+     628:	92 cf 62 a8 99 f8 d0 2e 85 61 43 c8 bd f0 05 93     ..b......aC.....
+     638:	ca 4e f1 7d 30 fd c4 69 66 2f 08 b1 52 f9 21 e6     .N.}0..if/..R.!.
+     648:	7a 2b dd 39 84 ff c0 91 d6 37 d4 7f 2d 9b 5d a1     z+.9.....7..-.].
+     658:	3b 6e b5 c5 46 04 f5 90 ee 7e 83 1c 03 56 b6 aa     ;n..F....~...V..
+     668:	00 17 01 35 55 79 0b 12 bb 1a 31 e7 02 28 16 c1     ...5Uy....1..(..
+     678:	f6 a2 db 18 9c 89 68 38 97 ab c7 2a d7 3a f2 c6     ......h8...*.:..
+     688:	24 4c b0 58 a0 22 5e 9d d9 a7 e9 ae af 8c 95 9f     $L.X."^.........
+     698:	28 b7 20 d7 b0 30 c3 09 19 c0 67 d6 00 3c 7e e7     (. ..0....g..<~.
+     6a8:	e9 f4 08 5a f8 b8 2e 05 a6 25 9e 5c d8 15 0d e1     ...Z.....%.\....
+     6b8:	f6 11 54 6b cd 21 46 66 5e 84 ad 06 38 29 44 c5     ..Tk.!Ff^...8)D.
+     6c8:	a2 ce f1 aa c1 40 71 86 b5 ef fc 36 a8 cb 0a 48     .....@q....6...H
+     6d8:	27 45 64 a3 af 8c b2 c6 9f 07 89 dc 17 d3 49 79     'Ed...........Iy
+     6e8:	fb fe 1d d0 b9 88 43 52 bc 01 78 2b 7d 94 c7 0e     ......CR..x+}...
+     6f8:	de a5 d5 9b cc f7 61 7a c2 74 81 39 03 ab 96 a0     ......az.t.9....
+     708:	37 bd 2d 72 75 3f c9 d4 8e 6f f9 8d ed 62 db 1c     7.-ru?...o...b..
+     718:	df 04 ac 1b 6c 14 4b 63 d0 bf b4 82 ec 7b 1a 59     ....l.Kc.....{.Y
+     728:	92 d2 10 60 b6 3d 5f e6 80 6e 70 c4 f2 35 d9 7c     ...`.=_..np..5.|
+     738:	ee e5 41 a4 5b 50 dd bb 4c f3 1f 9d 5d 57 55 51     ..A.[P..L...]WUQ
+     748:	97 e3 58 42 4d 9c 73 ba c8 77 31 69 26 ae ea 8a     ..XBM.s..w1i&...
+     758:	da 22 b3 87 56 fa 93 0b 34 16 33 e8 e4 53 be a9     ."..V...4.3..S..
+     768:	b1 3a 3e f5 90 6a cf 3b 12 fd 8f 9a a7 47 91 99     .:>..j.;.....G..
+     778:	eb 0f 24 ff 23 18 85 4e 7f 0c e0 a1 d2 d1 2c 2a     ..$.#..N......,*
+     788:	4a 02 4f 1e 95 68 8b 98 83 6d 76 ca 65 32 13 2f     J.O..h...mv.e2./
+     798:	c3 82 9a a4 ba 81 60 37 34 35 fc 80 a8 51 65 67     ......`745...Qeg
+     7a8:	ed 30 5f 10 d3 4a 27 2f 13 b9 2a d2 cc e1 ef ae     .0_..J'/..*.....
+     7b8:	eb be f4 bd cf 43 b3 c5 88 84 b7 dd 39 40 ce 48     .....C......9@.H
+     7c8:	6d 9b 72 61 7e e7 a1 4e 53 2e 77 3b e2 c9 36 22     m.ra~..NS.w;..6"
+     7d8:	1b 6e 73 b1 03 b2 4c 87 a9 d4 4d 0f d8 15 6c aa     .ns...L...M...l.
+     7e8:	18 f6 49 57 5d fb 7a 14 94 63 a0 11 b0 9e de 05     ..IW].z..c......
+     7f8:	46 c8 ee 47 db dc 24 89 9c 91 97 29 e9 7b c1 07     F..G..$....).{..
+     808:	1e b8 fd fe ac c6 62 98 4f f1 79 e0 e8 6b 78 56     ......b.O.y..kxV
+     818:	b6 8d 04 50 86 ca 6f 20 e6 ea e5 76 17 1c 74 7f     ...P..o ...v..t.
+     828:	bc 0d 2c 85 f7 66 96 e4 8b 75 3f 4b d9 38 af 7c     ..,..f...u?K.8.|
+     838:	da 0b 83 2d 31 32 a2 f5 1d 59 41 45 bf 3c 1f f8     ...-12...YAE.<..
+     848:	f9 8a d0 16 25 69 12 99 9d 21 95 ab 01 a6 d7 b5     ....%i...!......
+     858:	c0 7d ff 58 0e 3a 92 d1 55 e3 08 9f d6 3e 52 8e     .}.X.:..U....>R.
+     868:	fa a3 c7 02 cd df 8f 64 19 8c f3 a7 0c 5e 0a 6a     .......d.....^.j
+     878:	09 f0 93 5b 42 c2 06 23 ec 71 ad b4 cb bb 70 28     ...[B..#.q....p(
+     888:	d5 1a 5c 33 68 5a 00 44 90 a5 c4 26 3d 2b f2 54     ..\3hZ.D...&=+.T
+     898:	96 ad da 1f ed 33 e1 81 69 08 0d 0a db 35 77 9a     .....3..i....5w.
+     8a8:	64 d1 fc 78 aa 1b d0 67 a0 dd fa 6c 63 71 05 84     d..x...g...lcq..
+     8b8:	17 6a 89 4f 66 7f c6 50 55 92 6f bd e7 d2 40 72     .j.Of..PU.o...@r
+     8c8:	8d bb ec 06 42 8a e4 88 9d 7e 7a 82 27 13 41 1a     ....B....~z.'.A.
+     8d8:	af c8 a4 76 b4 c2 fe 6d 1c d9 61 30 b3 7c ea f7     ...v...m..a0.|..
+     8e8:	29 0f f2 3b 51 c1 de 5f e5 2a 2f 99 0b 5d a3 2b     )..;Q.._.*/..].+
+     8f8:	4a ab 95 a5 d3 58 56 ee 28 31 00 cc 15 46 ca e6     J....XV.(1...F..
+     908:	86 38 3c 65 f5 e3 9f d6 5b 09 49 83 70 2d 53 a9     .8<e....[.I.p-S.
+     918:	7d e2 c4 ac 8e 5e b8 25 f4 b9 57 f3 f1 68 47 b2     }....^.%..W..hG.
+     928:	a2 59 20 ce 34 79 5c 90 0e 1e be d5 22 23 b1 c9     .Y .4y\....."#..
+     938:	18 62 16 2e 91 3e 07 8f d8 3f 93 3d d4 9b df 85     .b...>...?.=....
+     948:	21 fb 11 74 97 c7 d7 dc 4c 19 45 98 e9 43 02 4b     !..t....L.E..C.K
+     958:	bc c3 04 9c 6b f0 75 52 a7 26 f6 c5 ba cf b0 b7     ....k.uR.&......
+     968:	ae 5a a1 bf 03 8b 80 12 6e 0c eb f9 c0 44 24 ef     .Z......n....D$.
+     978:	10 f8 a8 8c e8 7b ff 9e 2c cd 60 36 87 b5 94 a6     .....{..,.`6....
+     988:	54 73 3a 14 4e 01 1d b6 fd 37 48 4d 39 cb e0 32     Ts:.N....7HM9..2
+
+00000998 <__ctors_end>:
+     998:	11 24       	eor	r1, r1
+     99a:	1f be       	out	0x3f, r1	; 63
+     99c:	cf ef       	ldi	r28, 0xFF	; 255
+     99e:	d4 e0       	ldi	r29, 0x04	; 4
+     9a0:	de bf       	out	0x3e, r29	; 62
+     9a2:	cd bf       	out	0x3d, r28	; 61
+
+000009a4 <__do_copy_data>:
+     9a4:	11 e0       	ldi	r17, 0x01	; 1
+     9a6:	a0 e0       	ldi	r26, 0x00	; 0
+     9a8:	b1 e0       	ldi	r27, 0x01	; 1
+     9aa:	ea e0       	ldi	r30, 0x0A	; 10
+     9ac:	f0 e1       	ldi	r31, 0x10	; 16
+     9ae:	02 c0       	rjmp	.+4      	; 0x9b4 <.do_copy_data_start>
+
+000009b0 <.do_copy_data_loop>:
+     9b0:	05 90       	lpm	r0, Z+
+     9b2:	0d 92       	st	X+, r0
+
+000009b4 <.do_copy_data_start>:
+     9b4:	a0 33       	cpi	r26, 0x30	; 48
+     9b6:	b1 07       	cpc	r27, r17
+     9b8:	d9 f7       	brne	.-10     	; 0x9b0 <.do_copy_data_loop>
+
+000009ba <__do_clear_bss>:
+     9ba:	14 e0       	ldi	r17, 0x04	; 4
+     9bc:	a0 e3       	ldi	r26, 0x30	; 48
+     9be:	b1 e0       	ldi	r27, 0x01	; 1
+     9c0:	01 c0       	rjmp	.+2      	; 0x9c4 <.do_clear_bss_start>
+
+000009c2 <.do_clear_bss_loop>:
+     9c2:	1d 92       	st	X+, r1
+
+000009c4 <.do_clear_bss_start>:
+     9c4:	ae 38       	cpi	r26, 0x8E	; 142
+     9c6:	b1 07       	cpc	r27, r17
+     9c8:	e1 f7       	brne	.-8      	; 0x9c2 <.do_clear_bss_loop>
+     9ca:	0e 94 64 07 	call	0xec8	; 0xec8 <main>
+     9ce:	0c 94 03 08 	jmp	0x1006	; 0x1006 <_exit>
+
+000009d2 <__bad_interrupt>:
+     9d2:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+000009d6 <serTx>:
+
+uint8_t TWIBuffer [800];
+uint16_t bufferIndex,bufferMax = 0;
+
+void serTx(unsigned char data)
+{
+     9d6:	98 2f       	mov	r25, r24
+	loop_until_bit_is_set(UCSR0A, UDRE0); // wait while previous tx is finished
+     9d8:	80 91 c0 00 	lds	r24, 0x00C0
+     9dc:	85 ff       	sbrs	r24, 5
+     9de:	fc cf       	rjmp	.-8      	; 0x9d8 <serTx+0x2>
+	UDR0 = data; // tx
+     9e0:	90 93 c6 00 	sts	0x00C6, r25
+}
+     9e4:	08 95       	ret
+
+000009e6 <genkey>:
+static inline uint8_t ror8(uint8_t a, uint8_t b) {
+	return (a>>b) | ((a<<(8-b))&0xff);
+}
+
+void genkey(uint8_t *rand, uint8_t idx, uint8_t *key)
+{
+     9e6:	2f 92       	push	r2
+     9e8:	3f 92       	push	r3
+     9ea:	4f 92       	push	r4
+     9ec:	5f 92       	push	r5
+     9ee:	7f 92       	push	r7
+     9f0:	8f 92       	push	r8
+     9f2:	9f 92       	push	r9
+     9f4:	af 92       	push	r10
+     9f6:	bf 92       	push	r11
+     9f8:	cf 92       	push	r12
+     9fa:	df 92       	push	r13
+     9fc:	ef 92       	push	r14
+     9fe:	ff 92       	push	r15
+     a00:	0f 93       	push	r16
+     a02:	1f 93       	push	r17
+     a04:	df 93       	push	r29
+     a06:	cf 93       	push	r28
+     a08:	cd b7       	in	r28, 0x3d	; 61
+     a0a:	de b7       	in	r29, 0x3e	; 62
+     a0c:	60 97       	sbiw	r28, 0x10	; 16
+     a0e:	0f b6       	in	r0, 0x3f	; 63
+     a10:	f8 94       	cli
+     a12:	de bf       	out	0x3e, r29	; 62
+     a14:	0f be       	out	0x3f, r0	; 63
+     a16:	cd bf       	out	0x3d, r28	; 61
+     a18:	5c 01       	movw	r10, r24
+     a1a:	2a 01       	movw	r4, r20
+     a1c:	86 e0       	ldi	r24, 0x06	; 6
+     a1e:	68 9f       	mul	r22, r24
+     a20:	f0 01       	movw	r30, r0
+     a22:	11 24       	eor	r1, r1
+     a24:	e8 59       	subi	r30, 0x98	; 152
+     a26:	ff 4f       	sbci	r31, 0xFF	; 255
+     a28:	de 01       	movw	r26, r28
+     a2a:	11 96       	adiw	r26, 0x01	; 1
+	uint8_t ans[6];
+	for (int i=0;i<6;i++){
+     a2c:	9e 01       	movw	r18, r28
+     a2e:	29 5f       	subi	r18, 0xF9	; 249
+     a30:	3f 4f       	sbci	r19, 0xFF	; 255
+		ans[i] = pgm_read_byte(&ans_tbl[idx][i]);
+     a32:	84 91       	lpm	r24, Z+
+     a34:	8d 93       	st	X+, r24
+     a36:	31 96       	adiw	r30, 0x01	; 1
+}
+
+void genkey(uint8_t *rand, uint8_t idx, uint8_t *key)
+{
+	uint8_t ans[6];
+	for (int i=0;i<6;i++){
+     a38:	a2 17       	cp	r26, r18
+     a3a:	b3 07       	cpc	r27, r19
+     a3c:	d1 f7       	brne	.-12     	; 0xa32 <genkey+0x4c>
+     a3e:	20 e0       	ldi	r18, 0x00	; 0
+     a40:	30 e0       	ldi	r19, 0x00	; 0
+	}
+	uint8_t t0[10];
+	int i;
+	
+	for(i=0;i<10;i++)
+		t0[i] = pgm_read_byte(tsbox[rand[i]]);
+     a42:	ae 01       	movw	r20, r28
+     a44:	49 5f       	subi	r20, 0xF9	; 249
+     a46:	5f 4f       	sbci	r21, 0xFF	; 255
+     a48:	f5 01       	movw	r30, r10
+     a4a:	e2 0f       	add	r30, r18
+     a4c:	f3 1f       	adc	r31, r19
+     a4e:	e0 81       	ld	r30, Z
+     a50:	f0 e0       	ldi	r31, 0x00	; 0
+     a52:	e8 56       	subi	r30, 0x68	; 104
+     a54:	ff 4f       	sbci	r31, 0xFF	; 255
+     a56:	e0 81       	ld	r30, Z
+     a58:	f0 e0       	ldi	r31, 0x00	; 0
+     a5a:	e4 91       	lpm	r30, Z+
+     a5c:	da 01       	movw	r26, r20
+     a5e:	a2 0f       	add	r26, r18
+     a60:	b3 1f       	adc	r27, r19
+     a62:	ec 93       	st	X, r30
+		ans[i] = pgm_read_byte(&ans_tbl[idx][i]);
+	}
+	uint8_t t0[10];
+	int i;
+	
+	for(i=0;i<10;i++)
+     a64:	2f 5f       	subi	r18, 0xFF	; 255
+     a66:	3f 4f       	sbci	r19, 0xFF	; 255
+     a68:	2a 30       	cpi	r18, 0x0A	; 10
+     a6a:	31 05       	cpc	r19, r1
+     a6c:	69 f7       	brne	.-38     	; 0xa48 <genkey+0x62>
+		t0[i] = pgm_read_byte(tsbox[rand[i]]);
+
+	key[5] = ((ror8((ans[5]^t0[4]),(t0[7]%8)) - t0[0]) ^ t0[5]);
+     a6e:	ae 84       	ldd	r10, Y+14	; 0x0e
+     a70:	8b 84       	ldd	r8, Y+11	; 0x0b
+static inline uint8_t ror8(uint8_t a, uint8_t b) {
+	return (a>>b) | ((a<<(8-b))&0xff);
+     a72:	2e 81       	ldd	r18, Y+6	; 0x06
+     a74:	28 25       	eor	r18, r8
+     a76:	30 e0       	ldi	r19, 0x00	; 0
+     a78:	4a 2d       	mov	r20, r10
+     a7a:	47 70       	andi	r20, 0x07	; 7
+     a7c:	50 e0       	ldi	r21, 0x00	; 0
+	int i;
+	
+	for(i=0;i<10;i++)
+		t0[i] = pgm_read_byte(tsbox[rand[i]]);
+
+	key[5] = ((ror8((ans[5]^t0[4]),(t0[7]%8)) - t0[0]) ^ t0[5]);
+     a7e:	7f 80       	ldd	r7, Y+7	; 0x07
+     a80:	9c 84       	ldd	r9, Y+12	; 0x0c
+     a82:	68 e0       	ldi	r22, 0x08	; 8
+     a84:	70 e0       	ldi	r23, 0x00	; 0
+     a86:	cb 01       	movw	r24, r22
+     a88:	84 1b       	sub	r24, r20
+     a8a:	95 0b       	sbc	r25, r21
+     a8c:	d9 01       	movw	r26, r18
+     a8e:	02 c0       	rjmp	.+4      	; 0xa94 <genkey+0xae>
+     a90:	aa 0f       	add	r26, r26
+     a92:	bb 1f       	adc	r27, r27
+     a94:	8a 95       	dec	r24
+     a96:	e2 f7       	brpl	.-8      	; 0xa90 <genkey+0xaa>
+     a98:	cd 01       	movw	r24, r26
+     a9a:	02 c0       	rjmp	.+4      	; 0xaa0 <genkey+0xba>
+     a9c:	35 95       	asr	r19
+     a9e:	27 95       	ror	r18
+     aa0:	4a 95       	dec	r20
+     aa2:	e2 f7       	brpl	.-8      	; 0xa9c <genkey+0xb6>
+     aa4:	82 2b       	or	r24, r18
+     aa6:	87 19       	sub	r24, r7
+     aa8:	89 25       	eor	r24, r9
+     aaa:	f2 01       	movw	r30, r4
+     aac:	85 83       	std	Z+5, r24	; 0x05
+	key[4] = ((ror8((ans[4]^t0[8]),(t0[9]%8)) - t0[4]) ^ t0[2]);
+     aae:	b8 88       	ldd	r11, Y+16	; 0x10
+     ab0:	cf 84       	ldd	r12, Y+15	; 0x0f
+static inline uint8_t ror8(uint8_t a, uint8_t b) {
+	return (a>>b) | ((a<<(8-b))&0xff);
+     ab2:	2d 81       	ldd	r18, Y+5	; 0x05
+     ab4:	2c 25       	eor	r18, r12
+     ab6:	30 e0       	ldi	r19, 0x00	; 0
+     ab8:	4b 2d       	mov	r20, r11
+     aba:	47 70       	andi	r20, 0x07	; 7
+     abc:	50 e0       	ldi	r21, 0x00	; 0
+	
+	for(i=0;i<10;i++)
+		t0[i] = pgm_read_byte(tsbox[rand[i]]);
+
+	key[5] = ((ror8((ans[5]^t0[4]),(t0[7]%8)) - t0[0]) ^ t0[5]);
+	key[4] = ((ror8((ans[4]^t0[8]),(t0[9]%8)) - t0[4]) ^ t0[2]);
+     abe:	09 85       	ldd	r16, Y+9	; 0x09
+     ac0:	cb 01       	movw	r24, r22
+     ac2:	84 1b       	sub	r24, r20
+     ac4:	95 0b       	sbc	r25, r21
+     ac6:	d9 01       	movw	r26, r18
+     ac8:	02 c0       	rjmp	.+4      	; 0xace <genkey+0xe8>
+     aca:	aa 0f       	add	r26, r26
+     acc:	bb 1f       	adc	r27, r27
+     ace:	8a 95       	dec	r24
+     ad0:	e2 f7       	brpl	.-8      	; 0xaca <genkey+0xe4>
+     ad2:	cd 01       	movw	r24, r26
+     ad4:	02 c0       	rjmp	.+4      	; 0xada <genkey+0xf4>
+     ad6:	35 95       	asr	r19
+     ad8:	27 95       	ror	r18
+     ada:	4a 95       	dec	r20
+     adc:	e2 f7       	brpl	.-8      	; 0xad6 <genkey+0xf0>
+     ade:	82 2b       	or	r24, r18
+     ae0:	88 19       	sub	r24, r8
+     ae2:	80 27       	eor	r24, r16
+     ae4:	84 83       	std	Z+4, r24	; 0x04
+	key[3] = ((ror8((ans[3]^t0[3]),(t0[1]%8)) - t0[7]) ^ t0[9]);
+     ae6:	aa 85       	ldd	r26, Y+10	; 0x0a
+static inline uint8_t ror8(uint8_t a, uint8_t b) {
+	return (a>>b) | ((a<<(8-b))&0xff);
+     ae8:	2c 81       	ldd	r18, Y+4	; 0x04
+     aea:	2a 27       	eor	r18, r26
+     aec:	30 e0       	ldi	r19, 0x00	; 0
+     aee:	e8 84       	ldd	r14, Y+8	; 0x08
+     af0:	b7 e0       	ldi	r27, 0x07	; 7
+     af2:	eb 22       	and	r14, r27
+     af4:	ff 24       	eor	r15, r15
+     af6:	1b 01       	movw	r2, r22
+     af8:	2e 18       	sub	r2, r14
+     afa:	3f 08       	sbc	r3, r15
+	for(i=0;i<10;i++)
+		t0[i] = pgm_read_byte(tsbox[rand[i]]);
+
+	key[5] = ((ror8((ans[5]^t0[4]),(t0[7]%8)) - t0[0]) ^ t0[5]);
+	key[4] = ((ror8((ans[4]^t0[8]),(t0[9]%8)) - t0[4]) ^ t0[2]);
+	key[3] = ((ror8((ans[3]^t0[3]),(t0[1]%8)) - t0[7]) ^ t0[9]);
+     afc:	c9 01       	movw	r24, r18
+     afe:	02 2c       	mov	r0, r2
+     b00:	02 c0       	rjmp	.+4      	; 0xb06 <genkey+0x120>
+     b02:	88 0f       	add	r24, r24
+     b04:	99 1f       	adc	r25, r25
+     b06:	0a 94       	dec	r0
+     b08:	e2 f7       	brpl	.-8      	; 0xb02 <genkey+0x11c>
+     b0a:	0e 2c       	mov	r0, r14
+     b0c:	02 c0       	rjmp	.+4      	; 0xb12 <genkey+0x12c>
+     b0e:	35 95       	asr	r19
+     b10:	27 95       	ror	r18
+     b12:	0a 94       	dec	r0
+     b14:	e2 f7       	brpl	.-8      	; 0xb0e <genkey+0x128>
+     b16:	82 2b       	or	r24, r18
+     b18:	8a 19       	sub	r24, r10
+     b1a:	8b 25       	eor	r24, r11
+     b1c:	83 83       	std	Z+3, r24	; 0x03
+static inline uint8_t ror8(uint8_t a, uint8_t b) {
+	return (a>>b) | ((a<<(8-b))&0xff);
+     b1e:	2b 81       	ldd	r18, Y+3	; 0x03
+     b20:	29 25       	eor	r18, r9
+     b22:	30 e0       	ldi	r19, 0x00	; 0
+     b24:	40 2f       	mov	r20, r16
+     b26:	47 70       	andi	r20, 0x07	; 7
+     b28:	50 e0       	ldi	r21, 0x00	; 0
+		t0[i] = pgm_read_byte(tsbox[rand[i]]);
+
+	key[5] = ((ror8((ans[5]^t0[4]),(t0[7]%8)) - t0[0]) ^ t0[5]);
+	key[4] = ((ror8((ans[4]^t0[8]),(t0[9]%8)) - t0[4]) ^ t0[2]);
+	key[3] = ((ror8((ans[3]^t0[3]),(t0[1]%8)) - t0[7]) ^ t0[9]);
+	key[2] = ((ror8((ans[2]^t0[5]),(t0[2]%8)) - t0[6]) ^ t0[7]);
+     b2a:	bd 84       	ldd	r11, Y+13	; 0x0d
+     b2c:	cb 01       	movw	r24, r22
+     b2e:	84 1b       	sub	r24, r20
+     b30:	95 0b       	sbc	r25, r21
+     b32:	f9 01       	movw	r30, r18
+     b34:	02 c0       	rjmp	.+4      	; 0xb3a <genkey+0x154>
+     b36:	ee 0f       	add	r30, r30
+     b38:	ff 1f       	adc	r31, r31
+     b3a:	8a 95       	dec	r24
+     b3c:	e2 f7       	brpl	.-8      	; 0xb36 <genkey+0x150>
+     b3e:	cf 01       	movw	r24, r30
+     b40:	02 c0       	rjmp	.+4      	; 0xb46 <genkey+0x160>
+     b42:	35 95       	asr	r19
+     b44:	27 95       	ror	r18
+     b46:	4a 95       	dec	r20
+     b48:	e2 f7       	brpl	.-8      	; 0xb42 <genkey+0x15c>
+     b4a:	82 2b       	or	r24, r18
+     b4c:	8b 19       	sub	r24, r11
+     b4e:	8a 25       	eor	r24, r10
+     b50:	f2 01       	movw	r30, r4
+     b52:	82 83       	std	Z+2, r24	; 0x02
+static inline uint8_t ror8(uint8_t a, uint8_t b) {
+	return (a>>b) | ((a<<(8-b))&0xff);
+     b54:	8a 81       	ldd	r24, Y+2	; 0x02
+     b56:	c8 26       	eor	r12, r24
+     b58:	dd 24       	eor	r13, r13
+     b5a:	a7 70       	andi	r26, 0x07	; 7
+     b5c:	b0 e0       	ldi	r27, 0x00	; 0
+
+	key[5] = ((ror8((ans[5]^t0[4]),(t0[7]%8)) - t0[0]) ^ t0[5]);
+	key[4] = ((ror8((ans[4]^t0[8]),(t0[9]%8)) - t0[4]) ^ t0[2]);
+	key[3] = ((ror8((ans[3]^t0[3]),(t0[1]%8)) - t0[7]) ^ t0[9]);
+	key[2] = ((ror8((ans[2]^t0[5]),(t0[2]%8)) - t0[6]) ^ t0[7]);
+	key[1] = ((ror8((ans[1]^t0[8]),(t0[3]%8)) - t0[6]) ^ t0[5]);
+     b5e:	6a 1b       	sub	r22, r26
+     b60:	7b 0b       	sbc	r23, r27
+     b62:	c6 01       	movw	r24, r12
+     b64:	02 c0       	rjmp	.+4      	; 0xb6a <genkey+0x184>
+     b66:	88 0f       	add	r24, r24
+     b68:	99 1f       	adc	r25, r25
+     b6a:	6a 95       	dec	r22
+     b6c:	e2 f7       	brpl	.-8      	; 0xb66 <genkey+0x180>
+     b6e:	bc 01       	movw	r22, r24
+     b70:	02 c0       	rjmp	.+4      	; 0xb76 <genkey+0x190>
+     b72:	d5 94       	asr	r13
+     b74:	c7 94       	ror	r12
+     b76:	aa 95       	dec	r26
+     b78:	e2 f7       	brpl	.-8      	; 0xb72 <genkey+0x18c>
+     b7a:	6c 29       	or	r22, r12
+     b7c:	6b 19       	sub	r22, r11
+     b7e:	69 25       	eor	r22, r9
+     b80:	61 83       	std	Z+1, r22	; 0x01
+static inline uint8_t ror8(uint8_t a, uint8_t b) {
+	return (a>>b) | ((a<<(8-b))&0xff);
+     b82:	89 81       	ldd	r24, Y+1	; 0x01
+     b84:	08 27       	eor	r16, r24
+     b86:	10 e0       	ldi	r17, 0x00	; 0
+	key[5] = ((ror8((ans[5]^t0[4]),(t0[7]%8)) - t0[0]) ^ t0[5]);
+	key[4] = ((ror8((ans[4]^t0[8]),(t0[9]%8)) - t0[4]) ^ t0[2]);
+	key[3] = ((ror8((ans[3]^t0[3]),(t0[1]%8)) - t0[7]) ^ t0[9]);
+	key[2] = ((ror8((ans[2]^t0[5]),(t0[2]%8)) - t0[6]) ^ t0[7]);
+	key[1] = ((ror8((ans[1]^t0[8]),(t0[3]%8)) - t0[6]) ^ t0[5]);
+	key[0] = ((ror8((ans[0]^t0[2]),(t0[1]%8)) - t0[4]) ^ t0[0]);
+     b88:	f8 01       	movw	r30, r16
+     b8a:	02 c0       	rjmp	.+4      	; 0xb90 <genkey+0x1aa>
+     b8c:	ee 0f       	add	r30, r30
+     b8e:	ff 1f       	adc	r31, r31
+     b90:	2a 94       	dec	r2
+     b92:	e2 f7       	brpl	.-8      	; 0xb8c <genkey+0x1a6>
+     b94:	02 c0       	rjmp	.+4      	; 0xb9a <genkey+0x1b4>
+     b96:	15 95       	asr	r17
+     b98:	07 95       	ror	r16
+     b9a:	ea 94       	dec	r14
+     b9c:	e2 f7       	brpl	.-8      	; 0xb96 <genkey+0x1b0>
+     b9e:	e0 2b       	or	r30, r16
+     ba0:	e8 19       	sub	r30, r8
+     ba2:	e7 25       	eor	r30, r7
+     ba4:	d2 01       	movw	r26, r4
+     ba6:	ec 93       	st	X, r30
+}
+     ba8:	60 96       	adiw	r28, 0x10	; 16
+     baa:	0f b6       	in	r0, 0x3f	; 63
+     bac:	f8 94       	cli
+     bae:	de bf       	out	0x3e, r29	; 62
+     bb0:	0f be       	out	0x3f, r0	; 63
+     bb2:	cd bf       	out	0x3d, r28	; 61
+     bb4:	cf 91       	pop	r28
+     bb6:	df 91       	pop	r29
+     bb8:	1f 91       	pop	r17
+     bba:	0f 91       	pop	r16
+     bbc:	ff 90       	pop	r15
+     bbe:	ef 90       	pop	r14
+     bc0:	df 90       	pop	r13
+     bc2:	cf 90       	pop	r12
+     bc4:	bf 90       	pop	r11
+     bc6:	af 90       	pop	r10
+     bc8:	9f 90       	pop	r9
+     bca:	8f 90       	pop	r8
+     bcc:	7f 90       	pop	r7
+     bce:	5f 90       	pop	r5
+     bd0:	4f 90       	pop	r4
+     bd2:	3f 90       	pop	r3
+     bd4:	2f 90       	pop	r2
+     bd6:	08 95       	ret
+
+00000bd8 <gen_ft_sb>:
+
+uint8_t gen_ft_sb (uint8_t idx,uint8_t a,uint8_t b){
+     bd8:	28 e9       	ldi	r18, 0x98	; 152
+     bda:	31 e0       	ldi	r19, 0x01	; 1
+     bdc:	f8 2f       	mov	r31, r24
+     bde:	e0 e0       	ldi	r30, 0x00	; 0
+     be0:	e6 0f       	add	r30, r22
+     be2:	f1 1d       	adc	r31, r1
+     be4:	e2 0f       	add	r30, r18
+     be6:	f3 1f       	adc	r31, r19
+     be8:	54 91       	lpm	r21, Z+
+     bea:	90 e0       	ldi	r25, 0x00	; 0
+     bec:	01 96       	adiw	r24, 0x01	; 1
+     bee:	87 70       	andi	r24, 0x07	; 7
+     bf0:	90 70       	andi	r25, 0x00	; 0
+     bf2:	98 2f       	mov	r25, r24
+     bf4:	88 27       	eor	r24, r24
+     bf6:	84 0f       	add	r24, r20
+     bf8:	91 1d       	adc	r25, r1
+     bfa:	28 0f       	add	r18, r24
+     bfc:	39 1f       	adc	r19, r25
+     bfe:	f9 01       	movw	r30, r18
+     c00:	84 91       	lpm	r24, Z+
+	return (pgm_read_byte(&sboxes[idx][a])^pgm_read_byte(&sboxes[(idx+1)%8][b]));
+}
+     c02:	85 27       	eor	r24, r21
+     c04:	08 95       	ret
+
+00000c06 <gentabs>:
+
+void gentabs(uint8_t *key, uint8_t idx, uint8_t *ft, uint8_t *sb)
+{
+     c06:	3f 92       	push	r3
+     c08:	4f 92       	push	r4
+     c0a:	5f 92       	push	r5
+     c0c:	6f 92       	push	r6
+     c0e:	7f 92       	push	r7
+     c10:	8f 92       	push	r8
+     c12:	9f 92       	push	r9
+     c14:	af 92       	push	r10
+     c16:	bf 92       	push	r11
+     c18:	cf 92       	push	r12
+     c1a:	df 92       	push	r13
+     c1c:	ef 92       	push	r14
+     c1e:	ff 92       	push	r15
+     c20:	0f 93       	push	r16
+     c22:	1f 93       	push	r17
+     c24:	df 93       	push	r29
+     c26:	cf 93       	push	r28
+     c28:	cd b7       	in	r28, 0x3d	; 61
+     c2a:	de b7       	in	r29, 0x3e	; 62
+     c2c:	a0 97       	sbiw	r28, 0x20	; 32
+     c2e:	0f b6       	in	r0, 0x3f	; 63
+     c30:	f8 94       	cli
+     c32:	de bf       	out	0x3e, r29	; 62
+     c34:	0f be       	out	0x3f, r0	; 63
+     c36:	cd bf       	out	0x3d, r28	; 61
+     c38:	36 2e       	mov	r3, r22
+     c3a:	2a 01       	movw	r4, r20
+     c3c:	39 01       	movw	r6, r18
+	//This reduces code by about 300 bytes since I can now use 1 for loop with 4 8 byte arrays.
+
+	//Potential bug: I may not have the correct order, I think I do, but I may not. Will find out when ready for testing.
+
+
+	uint8_t a[8] = {11,13,10,15,14,12,9,8};
+     c3e:	de 01       	movw	r26, r28
+     c40:	11 96       	adiw	r26, 0x01	; 1
+     c42:	e8 e2       	ldi	r30, 0x28	; 40
+     c44:	f1 e0       	ldi	r31, 0x01	; 1
+     c46:	88 e0       	ldi	r24, 0x08	; 8
+     c48:	01 90       	ld	r0, Z+
+     c4a:	0d 92       	st	X+, r0
+     c4c:	81 50       	subi	r24, 0x01	; 1
+     c4e:	e1 f7       	brne	.-8      	; 0xc48 <gentabs+0x42>
+	uint8_t b[8] = {6,4,2,7,5,0,3,1};
+     c50:	de 01       	movw	r26, r28
+     c52:	19 96       	adiw	r26, 0x09	; 9
+     c54:	e0 e2       	ldi	r30, 0x20	; 32
+     c56:	f1 e0       	ldi	r31, 0x01	; 1
+     c58:	88 e0       	ldi	r24, 0x08	; 8
+     c5a:	01 90       	ld	r0, Z+
+     c5c:	0d 92       	st	X+, r0
+     c5e:	81 50       	subi	r24, 0x01	; 1
+     c60:	e1 f7       	brne	.-8      	; 0xc5a <gentabs+0x54>
+	uint8_t c[8] = {15,10,12,13,11,14,6,7};
+     c62:	de 01       	movw	r26, r28
+     c64:	51 96       	adiw	r26, 0x11	; 17
+     c66:	e8 e1       	ldi	r30, 0x18	; 24
+     c68:	f1 e0       	ldi	r31, 0x01	; 1
+     c6a:	88 e0       	ldi	r24, 0x08	; 8
+     c6c:	01 90       	ld	r0, Z+
+     c6e:	0d 92       	st	X+, r0
+     c70:	81 50       	subi	r24, 0x01	; 1
+     c72:	e1 f7       	brne	.-8      	; 0xc6c <gentabs+0x66>
+	uint8_t d[8] = {8,5,9,0,2,1,4,3};
+     c74:	de 01       	movw	r26, r28
+     c76:	59 96       	adiw	r26, 0x19	; 25
+     c78:	e0 e1       	ldi	r30, 0x10	; 16
+     c7a:	f1 e0       	ldi	r31, 0x01	; 1
+     c7c:	88 e0       	ldi	r24, 0x08	; 8
+     c7e:	01 90       	ld	r0, Z+
+     c80:	0d 92       	st	X+, r0
+     c82:	81 50       	subi	r24, 0x01	; 1
+     c84:	e1 f7       	brne	.-8      	; 0xc7e <gentabs+0x78>
+     c86:	00 e0       	ldi	r16, 0x00	; 0
+     c88:	10 e0       	ldi	r17, 0x00	; 0
+	for (int i = 0;i<8;i++){
+		ft[i] = gen_ft_sb(idx,a[i],b[i]);
+     c8a:	f9 e0       	ldi	r31, 0x09	; 9
+     c8c:	8f 2e       	mov	r8, r31
+     c8e:	91 2c       	mov	r9, r1
+     c90:	8c 0e       	add	r8, r28
+     c92:	9d 1e       	adc	r9, r29
+     c94:	5e 01       	movw	r10, r28
+     c96:	08 94       	sec
+     c98:	a1 1c       	adc	r10, r1
+     c9a:	b1 1c       	adc	r11, r1
+		sb[i] = gen_ft_sb(idx,c[i],d[i]);
+     c9c:	e9 e1       	ldi	r30, 0x19	; 25
+     c9e:	ce 2e       	mov	r12, r30
+     ca0:	d1 2c       	mov	r13, r1
+     ca2:	cc 0e       	add	r12, r28
+     ca4:	dd 1e       	adc	r13, r29
+     ca6:	71 e1       	ldi	r23, 0x11	; 17
+     ca8:	e7 2e       	mov	r14, r23
+     caa:	f1 2c       	mov	r15, r1
+     cac:	ec 0e       	add	r14, r28
+     cae:	fd 1e       	adc	r15, r29
+	uint8_t a[8] = {11,13,10,15,14,12,9,8};
+	uint8_t b[8] = {6,4,2,7,5,0,3,1};
+	uint8_t c[8] = {15,10,12,13,11,14,6,7};
+	uint8_t d[8] = {8,5,9,0,2,1,4,3};
+	for (int i = 0;i<8;i++){
+		ft[i] = gen_ft_sb(idx,a[i],b[i]);
+     cb0:	f4 01       	movw	r30, r8
+     cb2:	e0 0f       	add	r30, r16
+     cb4:	f1 1f       	adc	r31, r17
+     cb6:	d5 01       	movw	r26, r10
+     cb8:	a0 0f       	add	r26, r16
+     cba:	b1 1f       	adc	r27, r17
+     cbc:	40 81       	ld	r20, Z
+     cbe:	6c 91       	ld	r22, X
+     cc0:	83 2d       	mov	r24, r3
+     cc2:	0e 94 ec 05 	call	0xbd8	; 0xbd8 <gen_ft_sb>
+     cc6:	f2 01       	movw	r30, r4
+     cc8:	e0 0f       	add	r30, r16
+     cca:	f1 1f       	adc	r31, r17
+     ccc:	80 83       	st	Z, r24
+		sb[i] = gen_ft_sb(idx,c[i],d[i]);
+     cce:	f6 01       	movw	r30, r12
+     cd0:	e0 0f       	add	r30, r16
+     cd2:	f1 1f       	adc	r31, r17
+     cd4:	d7 01       	movw	r26, r14
+     cd6:	a0 0f       	add	r26, r16
+     cd8:	b1 1f       	adc	r27, r17
+     cda:	40 81       	ld	r20, Z
+     cdc:	6c 91       	ld	r22, X
+     cde:	83 2d       	mov	r24, r3
+     ce0:	0e 94 ec 05 	call	0xbd8	; 0xbd8 <gen_ft_sb>
+     ce4:	f3 01       	movw	r30, r6
+     ce6:	e0 0f       	add	r30, r16
+     ce8:	f1 1f       	adc	r31, r17
+     cea:	80 83       	st	Z, r24
+
+	uint8_t a[8] = {11,13,10,15,14,12,9,8};
+	uint8_t b[8] = {6,4,2,7,5,0,3,1};
+	uint8_t c[8] = {15,10,12,13,11,14,6,7};
+	uint8_t d[8] = {8,5,9,0,2,1,4,3};
+	for (int i = 0;i<8;i++){
+     cec:	0f 5f       	subi	r16, 0xFF	; 255
+     cee:	1f 4f       	sbci	r17, 0xFF	; 255
+     cf0:	08 30       	cpi	r16, 0x08	; 8
+     cf2:	11 05       	cpc	r17, r1
+     cf4:	e9 f6       	brne	.-70     	; 0xcb0 <gentabs+0xaa>
+		sb[i] = gen_ft_sb(idx,c[i],d[i]);
+	}    
+
+//*/
+
+}
+     cf6:	a0 96       	adiw	r28, 0x20	; 32
+     cf8:	0f b6       	in	r0, 0x3f	; 63
+     cfa:	f8 94       	cli
+     cfc:	de bf       	out	0x3e, r29	; 62
+     cfe:	0f be       	out	0x3f, r0	; 63
+     d00:	cd bf       	out	0x3d, r28	; 61
+     d02:	cf 91       	pop	r28
+     d04:	df 91       	pop	r29
+     d06:	1f 91       	pop	r17
+     d08:	0f 91       	pop	r16
+     d0a:	ff 90       	pop	r15
+     d0c:	ef 90       	pop	r14
+     d0e:	df 90       	pop	r13
+     d10:	cf 90       	pop	r12
+     d12:	bf 90       	pop	r11
+     d14:	af 90       	pop	r10
+     d16:	9f 90       	pop	r9
+     d18:	8f 90       	pop	r8
+     d1a:	7f 90       	pop	r7
+     d1c:	6f 90       	pop	r6
+     d1e:	5f 90       	pop	r5
+     d20:	4f 90       	pop	r4
+     d22:	3f 90       	pop	r3
+     d24:	08 95       	ret
+
+00000d26 <wiimote_encrypt>:
+	
+	// for homebrew, ft and sb are all 0x97 which is equivalent to 0x17
+}
+
+void wiimote_encrypt(wiimote_key *key, int len, uint8_t *data, uint32_t addr)
+{
+     d26:	cf 92       	push	r12
+     d28:	df 92       	push	r13
+     d2a:	ef 92       	push	r14
+     d2c:	ff 92       	push	r15
+     d2e:	0f 93       	push	r16
+     d30:	1f 93       	push	r17
+     d32:	cf 93       	push	r28
+     d34:	df 93       	push	r29
+     d36:	6c 01       	movw	r12, r24
+     d38:	78 01       	movw	r14, r16
+     d3a:	89 01       	movw	r16, r18
+     d3c:	ea 01       	movw	r28, r20
+     d3e:	a8 01       	movw	r20, r16
+     d40:	97 01       	movw	r18, r14
+     d42:	13 c0       	rjmp	.+38     	; 0xd6a <wiimote_encrypt+0x44>
+	int i;
+	for(i=0; i<len; i++, addr++) {
+		data[i] = (data[i] - key->ft[addr%8]) ^ key->sb[addr%8];
+     d44:	da 01       	movw	r26, r20
+     d46:	c9 01       	movw	r24, r18
+     d48:	87 70       	andi	r24, 0x07	; 7
+     d4a:	90 70       	andi	r25, 0x00	; 0
+     d4c:	a0 70       	andi	r26, 0x00	; 0
+     d4e:	b0 70       	andi	r27, 0x00	; 0
+     d50:	f6 01       	movw	r30, r12
+     d52:	e8 0f       	add	r30, r24
+     d54:	f9 1f       	adc	r31, r25
+     d56:	88 81       	ld	r24, Y
+     d58:	90 81       	ld	r25, Z
+     d5a:	89 1b       	sub	r24, r25
+     d5c:	90 85       	ldd	r25, Z+8	; 0x08
+     d5e:	89 27       	eor	r24, r25
+     d60:	89 93       	st	Y+, r24
+}
+
+void wiimote_encrypt(wiimote_key *key, int len, uint8_t *data, uint32_t addr)
+{
+	int i;
+	for(i=0; i<len; i++, addr++) {
+     d62:	2f 5f       	subi	r18, 0xFF	; 255
+     d64:	3f 4f       	sbci	r19, 0xFF	; 255
+     d66:	4f 4f       	sbci	r20, 0xFF	; 255
+     d68:	5f 4f       	sbci	r21, 0xFF	; 255
+     d6a:	c9 01       	movw	r24, r18
+     d6c:	8e 19       	sub	r24, r14
+     d6e:	9f 09       	sbc	r25, r15
+     d70:	86 17       	cp	r24, r22
+     d72:	97 07       	cpc	r25, r23
+     d74:	3c f3       	brlt	.-50     	; 0xd44 <wiimote_encrypt+0x1e>
+		data[i] = (data[i] - key->ft[addr%8]) ^ key->sb[addr%8];
+	}
+}
+     d76:	df 91       	pop	r29
+     d78:	cf 91       	pop	r28
+     d7a:	1f 91       	pop	r17
+     d7c:	0f 91       	pop	r16
+     d7e:	ff 90       	pop	r15
+     d80:	ef 90       	pop	r14
+     d82:	df 90       	pop	r13
+     d84:	cf 90       	pop	r12
+     d86:	08 95       	ret
+
+00000d88 <__vector_24>:
+ISR (TWI_vect){
+     d88:	1f 92       	push	r1
+     d8a:	0f 92       	push	r0
+     d8c:	0f b6       	in	r0, 0x3f	; 63
+     d8e:	0f 92       	push	r0
+     d90:	11 24       	eor	r1, r1
+     d92:	2f 93       	push	r18
+     d94:	8f 93       	push	r24
+     d96:	9f 93       	push	r25
+     d98:	ef 93       	push	r30
+     d9a:	ff 93       	push	r31
+
+	/*              //Takes too long, screws up TWI
+	serTx (TWSR);
+	serTx (TWDR);
+	//*/
+	TWIBuffer [bufferMax] = TWSR;
+     d9c:	80 91 39 01 	lds	r24, 0x0139
+     da0:	90 91 3a 01 	lds	r25, 0x013A
+     da4:	20 91 b9 00 	lds	r18, 0x00B9
+     da8:	fc 01       	movw	r30, r24
+     daa:	e3 5a       	subi	r30, 0xA3	; 163
+     dac:	fe 4f       	sbci	r31, 0xFE	; 254
+     dae:	20 83       	st	Z, r18
+	bufferMax += 1;
+     db0:	01 96       	adiw	r24, 0x01	; 1
+	TWIBuffer [bufferMax] = TWDR;
+     db2:	20 91 bb 00 	lds	r18, 0x00BB
+     db6:	fc 01       	movw	r30, r24
+     db8:	e3 5a       	subi	r30, 0xA3	; 163
+     dba:	fe 4f       	sbci	r31, 0xFE	; 254
+     dbc:	20 83       	st	Z, r18
+	bufferMax += 1;
+     dbe:	01 96       	adiw	r24, 0x01	; 1
+     dc0:	90 93 3a 01 	sts	0x013A, r25
+     dc4:	80 93 39 01 	sts	0x0139, r24
+	//cli();   	//Turn interrupts off	
+	//Static cast the bit masks to save space
+	switch (TWSR&0xF8){		//Mask the prescaler bits to 0
+     dc8:	80 91 b9 00 	lds	r24, 0x00B9
+     dcc:	90 e0       	ldi	r25, 0x00	; 0
+     dce:	88 7f       	andi	r24, 0xF8	; 248
+     dd0:	90 70       	andi	r25, 0x00	; 0
+     dd2:	80 3a       	cpi	r24, 0xA0	; 160
+     dd4:	91 05       	cpc	r25, r1
+     dd6:	51 f1       	breq	.+84     	; 0xe2c <__vector_24+0xa4>
+     dd8:	81 3a       	cpi	r24, 0xA1	; 161
+     dda:	91 05       	cpc	r25, r1
+     ddc:	3c f4       	brge	.+14     	; 0xdec <__vector_24+0x64>
+     dde:	80 38       	cpi	r24, 0x80	; 128
+     de0:	91 05       	cpc	r25, r1
+     de2:	71 f0       	breq	.+28     	; 0xe00 <__vector_24+0x78>
+     de4:	88 38       	cpi	r24, 0x88	; 136
+     de6:	91 05       	cpc	r25, r1
+     de8:	d9 f5       	brne	.+118    	; 0xe60 <__vector_24+0xd8>
+     dea:	17 c0       	rjmp	.+46     	; 0xe1a <__vector_24+0x92>
+     dec:	80 3b       	cpi	r24, 0xB0	; 176
+     dee:	91 05       	cpc	r25, r1
+     df0:	59 f1       	breq	.+86     	; 0xe48 <__vector_24+0xc0>
+     df2:	88 3b       	cpi	r24, 0xB8	; 184
+     df4:	91 05       	cpc	r25, r1
+     df6:	41 f1       	breq	.+80     	; 0xe48 <__vector_24+0xc0>
+     df8:	88 3a       	cpi	r24, 0xA8	; 168
+     dfa:	91 05       	cpc	r25, r1
+     dfc:	89 f5       	brne	.+98     	; 0xe60 <__vector_24+0xd8>
+     dfe:	1c c0       	rjmp	.+56     	; 0xe38 <__vector_24+0xb0>
+	case 0x70:				//General Call received, ACK returned
+		break;
+	case 0x78:
+		break;
+	case 0x80:				//Byte received, ACK returned
+		inBuffer [newData++] = TWDR;
+     e00:	80 91 38 01 	lds	r24, 0x0138
+     e04:	e8 2f       	mov	r30, r24
+     e06:	f0 e0       	ldi	r31, 0x00	; 0
+     e08:	90 91 bb 00 	lds	r25, 0x00BB
+     e0c:	e2 58       	subi	r30, 0x82	; 130
+     e0e:	fb 4f       	sbci	r31, 0xFB	; 251
+     e10:	90 83       	st	Z, r25
+     e12:	8f 5f       	subi	r24, 0xFF	; 255
+     e14:	80 93 38 01 	sts	0x0138, r24
+     e18:	23 c0       	rjmp	.+70     	; 0xe60 <__vector_24+0xd8>
+		//TWCR &= (0xFF^(1<<TWSTO));
+		//TWCR |= 1<<TWEA | 1 << TWINT;
+		break;
+	case 0x88:				//Byte received, NACK returned
+		inBuffer [newData - 1] = TWDR;
+     e1a:	e0 91 38 01 	lds	r30, 0x0138
+     e1e:	f0 e0       	ldi	r31, 0x00	; 0
+     e20:	80 91 bb 00 	lds	r24, 0x00BB
+     e24:	e3 58       	subi	r30, 0x83	; 131
+     e26:	fb 4f       	sbci	r31, 0xFB	; 251
+     e28:	80 83       	st	Z, r24
+     e2a:	1a c0       	rjmp	.+52     	; 0xe60 <__vector_24+0xd8>
+	case 0x90:
+		break;
+	case 0x98:
+		break;
+	case 0xA0:								//Stop or repeated start condition received
+		TWCR &= (0xFF^(1<<TWSTO|1<<TWSTA));
+     e2c:	80 91 bc 00 	lds	r24, 0x00BC
+     e30:	8f 7c       	andi	r24, 0xCF	; 207
+     e32:	80 93 bc 00 	sts	0x00BC, r24
+     e36:	14 c0       	rjmp	.+40     	; 0xe60 <__vector_24+0xd8>
+		break;
+
+	//SLAVE TRANSMITTER MODES
+
+	case 0xA8:
+		nextOut = 1;
+     e38:	81 e0       	ldi	r24, 0x01	; 1
+     e3a:	80 93 34 01 	sts	0x0134, r24
+		TWDR = outBuffer[0];
+     e3e:	80 91 00 01 	lds	r24, 0x0100
+     e42:	80 93 bb 00 	sts	0x00BB, r24
+     e46:	0c c0       	rjmp	.+24     	; 0xe60 <__vector_24+0xd8>
+	case 0xB0:
+		TWDR = outBuffer [nextOut++];
+		//TWCR |= 1<<TWEA;
+		break;
+	case 0xB8:
+		TWDR = outBuffer [nextOut++];	
+     e48:	80 91 34 01 	lds	r24, 0x0134
+     e4c:	e8 2f       	mov	r30, r24
+     e4e:	f0 e0       	ldi	r31, 0x00	; 0
+     e50:	e0 50       	subi	r30, 0x00	; 0
+     e52:	ff 4f       	sbci	r31, 0xFF	; 255
+     e54:	90 81       	ld	r25, Z
+     e56:	90 93 bb 00 	sts	0x00BB, r25
+     e5a:	8f 5f       	subi	r24, 0xFF	; 255
+     e5c:	80 93 34 01 	sts	0x0134, r24
+	case 0xC8:
+		//TWCR &= (0xFF^(1<<TWSTA|1<<TWSTO));
+		//TWCR |= 1<<TWEA;
+		break;
+	}
+	TWCR = _BV(TWEN) | _BV(TWIE) | _BV(TWINT) | _BV(TWEA);
+     e60:	85 ec       	ldi	r24, 0xC5	; 197
+     e62:	80 93 bc 00 	sts	0x00BC, r24
+	//TWCR |= (1 << TWEA) | (1 << TWINT);
+}
+     e66:	ff 91       	pop	r31
+     e68:	ef 91       	pop	r30
+     e6a:	9f 91       	pop	r25
+     e6c:	8f 91       	pop	r24
+     e6e:	2f 91       	pop	r18
+     e70:	0f 90       	pop	r0
+     e72:	0f be       	out	0x3f, r0	; 63
+     e74:	0f 90       	pop	r0
+     e76:	1f 90       	pop	r1
+     e78:	18 95       	reti
+
+00000e7a <setup>:
+#include "constants.h"
+#include "cryptoFunctions.h"
+#include "handleTWI.h"
+
+void setup ()
+{	
+     e7a:	e1 ec       	ldi	r30, 0xC1	; 193
+     e7c:	f0 e0       	ldi	r31, 0x00	; 0
+     e7e:	80 81       	ld	r24, Z
+     e80:	88 61       	ori	r24, 0x18	; 24
+     e82:	80 83       	st	Z, r24
+	//*
+	UCSR0B |= (1 << RXEN0) | (1 << TXEN0);
+	UCSR0C |= (1 << UCSZ00) | (1 << UCSZ01);
+     e84:	e2 ec       	ldi	r30, 0xC2	; 194
+     e86:	f0 e0       	ldi	r31, 0x00	; 0
+     e88:	80 81       	ld	r24, Z
+     e8a:	86 60       	ori	r24, 0x06	; 6
+     e8c:	80 83       	st	Z, r24
+	UBRR0L = BAUD_PRESCALE; 
+     e8e:	8f e0       	ldi	r24, 0x0F	; 15
+     e90:	80 93 c4 00 	sts	0x00C4, r24
+	UBRR0H = (BAUD_PRESCALE >> 8);
+     e94:	10 92 c5 00 	sts	0x00C5, r1
+	//*/
+
+	//Setup TWI
+	MCUCR &= 0xFF^1<<PUD;
+     e98:	85 b7       	in	r24, 0x35	; 53
+     e9a:	8f 7e       	andi	r24, 0xEF	; 239
+     e9c:	85 bf       	out	0x35, r24	; 53
+	PORTC = 0xFF;	//Enable all pull ups
+     e9e:	9f ef       	ldi	r25, 0xFF	; 255
+     ea0:	98 b9       	out	0x08, r25	; 8
+	PRR &= 0xFF^1<<PRTWI;//Set PRTWI bit in power reduction register to 0
+     ea2:	e4 e6       	ldi	r30, 0x64	; 100
+     ea4:	f0 e0       	ldi	r31, 0x00	; 0
+     ea6:	80 81       	ld	r24, Z
+     ea8:	8f 77       	andi	r24, 0x7F	; 127
+     eaa:	80 83       	st	Z, r24
+	TWAR = (0x52<<1) | (1<<TWGCE); //Set slave address to 0x52 (And skip the TWGCE bit)
+     eac:	85 ea       	ldi	r24, 0xA5	; 165
+     eae:	80 93 ba 00 	sts	0x00BA, r24
+	//TWAMR = 0xFF;
+    TWCR = (1<<TWEA) | (1<<TWIE) | (1<<TWEN);	//Setup control register (page 238 reference)
+     eb2:	85 e4       	ldi	r24, 0x45	; 69
+     eb4:	80 93 bc 00 	sts	0x00BC, r24
+
+	
+	DDRD = 0x00;
+     eb8:	1a b8       	out	0x0a, r1	; 10
+	PORTD = 0x00;	
+     eba:	1b b8       	out	0x0b, r1	; 11
+
+	DDRB = 0x00;
+     ebc:	14 b8       	out	0x04, r1	; 4
+	PORTB = 0xFF; 
+     ebe:	95 b9       	out	0x05, r25	; 5
+	SREG |= 1<<7;   //Enable interrupts
+     ec0:	8f b7       	in	r24, 0x3f	; 63
+     ec2:	80 68       	ori	r24, 0x80	; 128
+     ec4:	8f bf       	out	0x3f, r24	; 63
+}
+     ec6:	08 95       	ret
+
+00000ec8 <main>:
+
+int main()
+{
+     ec8:	0e 94 3d 07 	call	0xe7a	; 0xe7a <setup>
+	//}
+
+	//wiimote_gen_key(&k, d);
+	//wiimote_encrypt(&k, 16, d, 0xa40008);
+	while (1){
+		if (bufferIndex < bufferMax){
+     ecc:	40 91 39 01 	lds	r20, 0x0139
+     ed0:	50 91 3a 01 	lds	r21, 0x013A
+     ed4:	20 91 5b 01 	lds	r18, 0x015B
+     ed8:	30 91 5c 01 	lds	r19, 0x015C
+     edc:	24 17       	cp	r18, r20
+     ede:	35 07       	cpc	r19, r21
+     ee0:	68 f4       	brcc	.+26     	; 0xefc <main+0x34>
+				serTx (TWIBuffer [bufferIndex]);
+     ee2:	f9 01       	movw	r30, r18
+     ee4:	e3 5a       	subi	r30, 0xA3	; 163
+     ee6:	fe 4f       	sbci	r31, 0xFE	; 254
+     ee8:	e0 81       	ld	r30, Z
+uint8_t TWIBuffer [800];
+uint16_t bufferIndex,bufferMax = 0;
+
+void serTx(unsigned char data)
+{
+	loop_until_bit_is_set(UCSR0A, UDRE0); // wait while previous tx is finished
+     eea:	80 91 c0 00 	lds	r24, 0x00C0
+     eee:	85 ff       	sbrs	r24, 5
+     ef0:	fc cf       	rjmp	.-8      	; 0xeea <main+0x22>
+	UDR0 = data; // tx
+     ef2:	e0 93 c6 00 	sts	0x00C6, r30
+     ef6:	2f 5f       	subi	r18, 0xFF	; 255
+     ef8:	3f 4f       	sbci	r19, 0xFF	; 255
+     efa:	f0 cf       	rjmp	.-32     	; 0xedc <main+0x14>
+     efc:	ff cf       	rjmp	.-2      	; 0xefc <main+0x34>
+
+00000efe <wiimote_gen_key>:
+
+}
+
+/* generate a ft and sb, given the deviceside keybuffer (rand+key) */
+void wiimote_gen_key(wiimote_key *key, uint8_t *keydata)
+{
+     efe:	6f 92       	push	r6
+     f00:	7f 92       	push	r7
+     f02:	8f 92       	push	r8
+     f04:	9f 92       	push	r9
+     f06:	af 92       	push	r10
+     f08:	bf 92       	push	r11
+     f0a:	cf 92       	push	r12
+     f0c:	df 92       	push	r13
+     f0e:	ef 92       	push	r14
+     f10:	ff 92       	push	r15
+     f12:	0f 93       	push	r16
+     f14:	1f 93       	push	r17
+     f16:	df 93       	push	r29
+     f18:	cf 93       	push	r28
+     f1a:	cd b7       	in	r28, 0x3d	; 61
+     f1c:	de b7       	in	r29, 0x3e	; 62
+     f1e:	66 97       	sbiw	r28, 0x16	; 22
+     f20:	0f b6       	in	r0, 0x3f	; 63
+     f22:	f8 94       	cli
+     f24:	de bf       	out	0x3e, r29	; 62
+     f26:	0f be       	out	0x3f, r0	; 63
+     f28:	cd bf       	out	0x3d, r28	; 61
+     f2a:	5c 01       	movw	r10, r24
+     f2c:	7b 01       	movw	r14, r22
+     f2e:	20 e0       	ldi	r18, 0x00	; 0
+     f30:	30 e0       	ldi	r19, 0x00	; 0
+	uint8_t testkey[6];
+	int idx = 0;
+	int i;
+
+	for(i=0;i<10;i++)
+		rand[i] = keydata[i];
+     f32:	ae 01       	movw	r20, r28
+     f34:	43 5f       	subi	r20, 0xF3	; 243
+     f36:	5f 4f       	sbci	r21, 0xFF	; 255
+     f38:	fa 01       	movw	r30, r20
+     f3a:	e2 0f       	add	r30, r18
+     f3c:	f3 1f       	adc	r31, r19
+     f3e:	d7 01       	movw	r26, r14
+     f40:	a2 0f       	add	r26, r18
+     f42:	b3 1f       	adc	r27, r19
+     f44:	8c 91       	ld	r24, X
+     f46:	80 83       	st	Z, r24
+	uint8_t skey[6];
+	uint8_t testkey[6];
+	int idx = 0;
+	int i;
+
+	for(i=0;i<10;i++)
+     f48:	2f 5f       	subi	r18, 0xFF	; 255
+     f4a:	3f 4f       	sbci	r19, 0xFF	; 255
+     f4c:	2a 30       	cpi	r18, 0x0A	; 10
+     f4e:	31 05       	cpc	r19, r1
+     f50:	99 f7       	brne	.-26     	; 0xf38 <wiimote_gen_key+0x3a>
+     f52:	d7 01       	movw	r26, r14
+     f54:	fe 01       	movw	r30, r28
+     f56:	31 96       	adiw	r30, 0x01	; 1
+		rand[i] = keydata[i];
+	for(i=0;i<6;i++)
+     f58:	9e 01       	movw	r18, r28
+     f5a:	29 5f       	subi	r18, 0xF9	; 249
+     f5c:	3f 4f       	sbci	r19, 0xFF	; 255
+		skey[i] = keydata[i+10];
+     f5e:	1a 96       	adiw	r26, 0x0a	; 10
+     f60:	8c 91       	ld	r24, X
+     f62:	1a 97       	sbiw	r26, 0x0a	; 10
+     f64:	81 93       	st	Z+, r24
+     f66:	11 96       	adiw	r26, 0x01	; 1
+	int idx = 0;
+	int i;
+
+	for(i=0;i<10;i++)
+		rand[i] = keydata[i];
+	for(i=0;i<6;i++)
+     f68:	e2 17       	cp	r30, r18
+     f6a:	f3 07       	cpc	r31, r19
+     f6c:	c1 f7       	brne	.-16     	; 0xf5e <wiimote_gen_key+0x60>
+     f6e:	00 e0       	ldi	r16, 0x00	; 0
+     f70:	10 e0       	ldi	r17, 0x00	; 0
+		skey[i] = keydata[i+10];
+	
+	//*
+
+	for(idx=0;idx<7;idx++) {
+		genkey(rand, idx, testkey);
+     f72:	b7 e0       	ldi	r27, 0x07	; 7
+     f74:	cb 2e       	mov	r12, r27
+     f76:	d1 2c       	mov	r13, r1
+     f78:	cc 0e       	add	r12, r28
+     f7a:	dd 1e       	adc	r13, r29
+     f7c:	ad e0       	ldi	r26, 0x0D	; 13
+     f7e:	6a 2e       	mov	r6, r26
+     f80:	71 2c       	mov	r7, r1
+     f82:	6c 0e       	add	r6, r28
+     f84:	7d 1e       	adc	r7, r29
+		if(!memcmp(testkey,skey,6))
+     f86:	4e 01       	movw	r8, r28
+     f88:	08 94       	sec
+     f8a:	81 1c       	adc	r8, r1
+     f8c:	91 1c       	adc	r9, r1
+		skey[i] = keydata[i+10];
+	
+	//*
+
+	for(idx=0;idx<7;idx++) {
+		genkey(rand, idx, testkey);
+     f8e:	a6 01       	movw	r20, r12
+     f90:	60 2f       	mov	r22, r16
+     f92:	c3 01       	movw	r24, r6
+     f94:	0e 94 f3 04 	call	0x9e6	; 0x9e6 <genkey>
+		if(!memcmp(testkey,skey,6))
+     f98:	46 e0       	ldi	r20, 0x06	; 6
+     f9a:	50 e0       	ldi	r21, 0x00	; 0
+     f9c:	b4 01       	movw	r22, r8
+     f9e:	c6 01       	movw	r24, r12
+     fa0:	0e 94 f6 07 	call	0xfec	; 0xfec <memcmp>
+     fa4:	00 97       	sbiw	r24, 0x00	; 0
+     fa6:	29 f0       	breq	.+10     	; 0xfb2 <wiimote_gen_key+0xb4>
+	for(i=0;i<6;i++)
+		skey[i] = keydata[i+10];
+	
+	//*
+
+	for(idx=0;idx<7;idx++) {
+     fa8:	0f 5f       	subi	r16, 0xFF	; 255
+     faa:	1f 4f       	sbci	r17, 0xFF	; 255
+     fac:	07 30       	cpi	r16, 0x07	; 7
+     fae:	11 05       	cpc	r17, r1
+     fb0:	71 f7       	brne	.-36     	; 0xf8e <wiimote_gen_key+0x90>
+	//*/
+
+	// default case is idx = 7 which is valid (homebrew uses it for the 0x17 case)
+	//printf("idx:  %d\n", idx);
+	
+	gentabs(keydata, idx, key->ft, key->sb);
+     fb2:	95 01       	movw	r18, r10
+     fb4:	28 5f       	subi	r18, 0xF8	; 248
+     fb6:	3f 4f       	sbci	r19, 0xFF	; 255
+     fb8:	a5 01       	movw	r20, r10
+     fba:	60 2f       	mov	r22, r16
+     fbc:	c7 01       	movw	r24, r14
+     fbe:	0e 94 03 06 	call	0xc06	; 0xc06 <gentabs>
+	
+	// for homebrew, ft and sb are all 0x97 which is equivalent to 0x17
+}
+     fc2:	66 96       	adiw	r28, 0x16	; 22
+     fc4:	0f b6       	in	r0, 0x3f	; 63
+     fc6:	f8 94       	cli
+     fc8:	de bf       	out	0x3e, r29	; 62
+     fca:	0f be       	out	0x3f, r0	; 63
+     fcc:	cd bf       	out	0x3d, r28	; 61
+     fce:	cf 91       	pop	r28
+     fd0:	df 91       	pop	r29
+     fd2:	1f 91       	pop	r17
+     fd4:	0f 91       	pop	r16
+     fd6:	ff 90       	pop	r15
+     fd8:	ef 90       	pop	r14
+     fda:	df 90       	pop	r13
+     fdc:	cf 90       	pop	r12
+     fde:	bf 90       	pop	r11
+     fe0:	af 90       	pop	r10
+     fe2:	9f 90       	pop	r9
+     fe4:	8f 90       	pop	r8
+     fe6:	7f 90       	pop	r7
+     fe8:	6f 90       	pop	r6
+     fea:	08 95       	ret
+
+00000fec <memcmp>:
+     fec:	fb 01       	movw	r30, r22
+     fee:	dc 01       	movw	r26, r24
+     ff0:	04 c0       	rjmp	.+8      	; 0xffa <memcmp+0xe>
+     ff2:	8d 91       	ld	r24, X+
+     ff4:	01 90       	ld	r0, Z+
+     ff6:	80 19       	sub	r24, r0
+     ff8:	21 f4       	brne	.+8      	; 0x1002 <memcmp+0x16>
+     ffa:	41 50       	subi	r20, 0x01	; 1
+     ffc:	50 40       	sbci	r21, 0x00	; 0
+     ffe:	c8 f7       	brcc	.-14     	; 0xff2 <memcmp+0x6>
+    1000:	88 1b       	sub	r24, r24
+    1002:	99 0b       	sbc	r25, r25
+    1004:	08 95       	ret
+
+00001006 <_exit>:
+    1006:	f8 94       	cli
+
+00001008 <__stop_program>:
+    1008:	ff cf       	rjmp	.-2      	; 0x1008 <__stop_program>
