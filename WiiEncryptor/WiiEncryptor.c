@@ -106,6 +106,6 @@ int main()
 				serTx (TWIBuffer [bufferIndex]);
 				bufferIndex += 1;
 		}
-		//Everything else should be taken care of, format and encrypt output data here
+		//Everything else should be taken care of, format and encrypt output data here.
 	}
 }
