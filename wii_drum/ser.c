@@ -1,5 +1,7 @@
 #include "ser.h"
 
+#ifdef USE_SERPORT
+
 volatile unsigned char serRxBuffer[serRxBufferSize];
 volatile unsigned char serRxBufferHead;
 volatile unsigned char serRxBufferTail;
@@ -225,3 +227,5 @@ static int ser_putchar(unsigned char c, FILE *stream)
 	serTx(c);
 	return 0;
 }
+
+#endif

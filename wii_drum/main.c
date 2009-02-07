@@ -191,9 +191,11 @@ int main()
 {
 	sei();
 
+	#ifdef USE_SERPORT
 	// start serial port
 	sbi(uart_port, uart_rx_pin); // pull up
 	serInit(38400);
+	#endif
 
 	// initialize ports
 
@@ -289,9 +291,11 @@ int main()
 		check_for_hits();
 		check_hit_flags();
 
+		#ifdef USE_SERPORT
 		unsigned char d; // serial port latest data
 		unsigned char c; // number of char in serial port buffer
 		d = serRx(&c); // check for serial command
+		#endif
 		
 		if
 		(
@@ -314,6 +318,7 @@ int main()
 				if(hit_f[i] != 0) cbi(but_dat.d[5], i);
 			}
 		}
+		#ifdef USE_SERPORT
 		else if(c > 0) // new command over serial port
 		{
 			but_dat.d[4] = 0xFF;
@@ -329,6 +334,7 @@ int main()
 			if(bit_is_set(d, 6)) cbi(but_dat.d[4], minus_bit);
 			if(bit_is_set(d, 7)) cbi(but_dat.d[4], plus_bit);
 		}
+		#endif
 
 		but_dat.d[2] = 0xFF;
 		but_dat.d[3] = 0xFF;
