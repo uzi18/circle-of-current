@@ -1,14 +1,10 @@
 ISR (TWI_vect){
-
-	/*              //Takes too long, screws up TWI
-	serTx (TWSR);
-	serTx (TWDR);
-	//*/
+	if (bufferMax < 500){
 	TWIBuffer [bufferMax] = TWSR;
 	bufferMax += 1;
 	TWIBuffer [bufferMax] = TWDR;
-	bufferMax += 1;
-	//cli();   	//Turn interrupts off	
+	bufferMax += 1;	
+	}
 	//Static cast the bit masks to save space
 	switch (TWSR&0xF8){		//Mask the prescaler bits to 0
 	
@@ -40,7 +36,7 @@ ISR (TWI_vect){
 	case 0x98:
 		break;
 	case 0xA0:								//Stop or repeated start condition received
-		TWCR &= (0xFF^(1<<TWSTO|1<<TWSTA));
+		//TWCR &= (0xFF^(1<<TWSTO|1<<TWSTA));
 		//TWCR |= 1<<TWEA | 1 << TWINT;
 		break;
 

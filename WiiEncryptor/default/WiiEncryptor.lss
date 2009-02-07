@@ -3,27 +3,27 @@ WiiEncryptor.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .data         00000030  00800100  0000100a  0000107e  2**0
+  0 .data         00000030  00800100  00001018  0000108c  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  1 .text         0000100a  00000000  00000000  00000074  2**1
+  1 .text         00001018  00000000  00000000  00000074  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .bss          0000035e  00800130  0000103a  000010ae  2**0
+  2 .bss          00000232  00800130  00001048  000010bc  2**0
                   ALLOC
-  3 .debug_aranges 00000020  00000000  00000000  000010ae  2**0
+  3 .debug_aranges 00000020  00000000  00000000  000010bc  2**0
                   CONTENTS, READONLY, DEBUGGING
-  4 .debug_pubnames 0000014f  00000000  00000000  000010ce  2**0
+  4 .debug_pubnames 0000014f  00000000  00000000  000010dc  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .debug_info   000006df  00000000  00000000  0000121d  2**0
+  5 .debug_info   0000070b  00000000  00000000  0000122b  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_abbrev 00000235  00000000  00000000  000018fc  2**0
+  6 .debug_abbrev 00000235  00000000  00000000  00001936  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_line   000003d4  00000000  00000000  00001b31  2**0
+  7 .debug_line   000003e6  00000000  00000000  00001b6b  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_frame  000000a0  00000000  00000000  00001f08  2**2
+  8 .debug_frame  000000a0  00000000  00000000  00001f54  2**2
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_str    000001bd  00000000  00000000  00001fa8  2**0
+  9 .debug_str    000001bd  00000000  00000000  00001ff4  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_loc    0000030c  00000000  00000000  00002165  2**0
+ 10 .debug_loc    0000030c  00000000  00000000  000021b1  2**0
                   CONTENTS, READONLY, DEBUGGING
 Disassembly of section .text:
 
@@ -220,7 +220,7 @@ Disassembly of section .text:
      9a4:	11 e0       	ldi	r17, 0x01	; 1
      9a6:	a0 e0       	ldi	r26, 0x00	; 0
      9a8:	b1 e0       	ldi	r27, 0x01	; 1
-     9aa:	ea e0       	ldi	r30, 0x0A	; 10
+     9aa:	e8 e1       	ldi	r30, 0x18	; 24
      9ac:	f0 e1       	ldi	r31, 0x10	; 16
      9ae:	02 c0       	rjmp	.+4      	; 0x9b4 <.do_copy_data_start>
 
@@ -234,7 +234,7 @@ Disassembly of section .text:
      9b8:	d9 f7       	brne	.-10     	; 0x9b0 <.do_copy_data_loop>
 
 000009ba <__do_clear_bss>:
-     9ba:	14 e0       	ldi	r17, 0x04	; 4
+     9ba:	13 e0       	ldi	r17, 0x03	; 3
      9bc:	a0 e3       	ldi	r26, 0x30	; 48
      9be:	b1 e0       	ldi	r27, 0x01	; 1
      9c0:	01 c0       	rjmp	.+2      	; 0x9c4 <.do_clear_bss_start>
@@ -243,18 +243,18 @@ Disassembly of section .text:
      9c2:	1d 92       	st	X+, r1
 
 000009c4 <.do_clear_bss_start>:
-     9c4:	ae 38       	cpi	r26, 0x8E	; 142
+     9c4:	a2 36       	cpi	r26, 0x62	; 98
      9c6:	b1 07       	cpc	r27, r17
      9c8:	e1 f7       	brne	.-8      	; 0x9c2 <.do_clear_bss_loop>
-     9ca:	0e 94 64 07 	call	0xec8	; 0xec8 <main>
-     9ce:	0c 94 03 08 	jmp	0x1006	; 0x1006 <_exit>
+     9ca:	0e 94 61 07 	call	0xec2	; 0xec2 <main>
+     9ce:	0c 94 0a 08 	jmp	0x1014	; 0x1014 <_exit>
 
 000009d2 <__bad_interrupt>:
      9d2:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
 
 000009d6 <serTx>:
 
-uint8_t TWIBuffer [800];
+uint8_t TWIBuffer [500];
 uint16_t bufferIndex,bufferMax = 0;
 
 void serTx(unsigned char data)
@@ -885,447 +885,457 @@ ISR (TWI_vect){
      d8e:	0f 92       	push	r0
      d90:	11 24       	eor	r1, r1
      d92:	2f 93       	push	r18
-     d94:	8f 93       	push	r24
-     d96:	9f 93       	push	r25
-     d98:	ef 93       	push	r30
-     d9a:	ff 93       	push	r31
-
-	/*              //Takes too long, screws up TWI
-	serTx (TWSR);
-	serTx (TWDR);
-	//*/
+     d94:	3f 93       	push	r19
+     d96:	8f 93       	push	r24
+     d98:	9f 93       	push	r25
+     d9a:	ef 93       	push	r30
+     d9c:	ff 93       	push	r31
+	if (bufferMax < 500){
+     d9e:	20 91 39 01 	lds	r18, 0x0139
+     da2:	30 91 3a 01 	lds	r19, 0x013A
+     da6:	81 e0       	ldi	r24, 0x01	; 1
+     da8:	24 3f       	cpi	r18, 0xF4	; 244
+     daa:	38 07       	cpc	r19, r24
+     dac:	98 f4       	brcc	.+38     	; 0xdd4 <__vector_24+0x4c>
 	TWIBuffer [bufferMax] = TWSR;
-     d9c:	80 91 39 01 	lds	r24, 0x0139
-     da0:	90 91 3a 01 	lds	r25, 0x013A
-     da4:	20 91 b9 00 	lds	r18, 0x00B9
-     da8:	fc 01       	movw	r30, r24
-     daa:	e3 5a       	subi	r30, 0xA3	; 163
-     dac:	fe 4f       	sbci	r31, 0xFE	; 254
-     dae:	20 83       	st	Z, r18
+     dae:	80 91 b9 00 	lds	r24, 0x00B9
+     db2:	f9 01       	movw	r30, r18
+     db4:	e3 5a       	subi	r30, 0xA3	; 163
+     db6:	fe 4f       	sbci	r31, 0xFE	; 254
+     db8:	80 83       	st	Z, r24
 	bufferMax += 1;
-     db0:	01 96       	adiw	r24, 0x01	; 1
+     dba:	c9 01       	movw	r24, r18
+     dbc:	01 96       	adiw	r24, 0x01	; 1
 	TWIBuffer [bufferMax] = TWDR;
-     db2:	20 91 bb 00 	lds	r18, 0x00BB
-     db6:	fc 01       	movw	r30, r24
-     db8:	e3 5a       	subi	r30, 0xA3	; 163
-     dba:	fe 4f       	sbci	r31, 0xFE	; 254
-     dbc:	20 83       	st	Z, r18
-	bufferMax += 1;
-     dbe:	01 96       	adiw	r24, 0x01	; 1
-     dc0:	90 93 3a 01 	sts	0x013A, r25
-     dc4:	80 93 39 01 	sts	0x0139, r24
-	//cli();   	//Turn interrupts off	
+     dbe:	20 91 bb 00 	lds	r18, 0x00BB
+     dc2:	fc 01       	movw	r30, r24
+     dc4:	e3 5a       	subi	r30, 0xA3	; 163
+     dc6:	fe 4f       	sbci	r31, 0xFE	; 254
+     dc8:	20 83       	st	Z, r18
+	bufferMax += 1;	
+     dca:	01 96       	adiw	r24, 0x01	; 1
+     dcc:	90 93 3a 01 	sts	0x013A, r25
+     dd0:	80 93 39 01 	sts	0x0139, r24
+	}
 	//Static cast the bit masks to save space
 	switch (TWSR&0xF8){		//Mask the prescaler bits to 0
-     dc8:	80 91 b9 00 	lds	r24, 0x00B9
-     dcc:	90 e0       	ldi	r25, 0x00	; 0
-     dce:	88 7f       	andi	r24, 0xF8	; 248
-     dd0:	90 70       	andi	r25, 0x00	; 0
-     dd2:	80 3a       	cpi	r24, 0xA0	; 160
-     dd4:	91 05       	cpc	r25, r1
-     dd6:	51 f1       	breq	.+84     	; 0xe2c <__vector_24+0xa4>
-     dd8:	81 3a       	cpi	r24, 0xA1	; 161
-     dda:	91 05       	cpc	r25, r1
-     ddc:	3c f4       	brge	.+14     	; 0xdec <__vector_24+0x64>
-     dde:	80 38       	cpi	r24, 0x80	; 128
+     dd4:	80 91 b9 00 	lds	r24, 0x00B9
+     dd8:	90 e0       	ldi	r25, 0x00	; 0
+     dda:	88 7f       	andi	r24, 0xF8	; 248
+     ddc:	90 70       	andi	r25, 0x00	; 0
+     dde:	88 3a       	cpi	r24, 0xA8	; 168
      de0:	91 05       	cpc	r25, r1
-     de2:	71 f0       	breq	.+28     	; 0xe00 <__vector_24+0x78>
-     de4:	88 38       	cpi	r24, 0x88	; 136
+     de2:	39 f1       	breq	.+78     	; 0xe32 <__vector_24+0xaa>
+     de4:	89 3a       	cpi	r24, 0xA9	; 169
      de6:	91 05       	cpc	r25, r1
-     de8:	d9 f5       	brne	.+118    	; 0xe60 <__vector_24+0xd8>
-     dea:	17 c0       	rjmp	.+46     	; 0xe1a <__vector_24+0x92>
-     dec:	80 3b       	cpi	r24, 0xB0	; 176
-     dee:	91 05       	cpc	r25, r1
-     df0:	59 f1       	breq	.+86     	; 0xe48 <__vector_24+0xc0>
-     df2:	88 3b       	cpi	r24, 0xB8	; 184
-     df4:	91 05       	cpc	r25, r1
-     df6:	41 f1       	breq	.+80     	; 0xe48 <__vector_24+0xc0>
-     df8:	88 3a       	cpi	r24, 0xA8	; 168
+     de8:	3c f4       	brge	.+14     	; 0xdf8 <__vector_24+0x70>
+     dea:	80 38       	cpi	r24, 0x80	; 128
+     dec:	91 05       	cpc	r25, r1
+     dee:	59 f0       	breq	.+22     	; 0xe06 <__vector_24+0x7e>
+     df0:	88 38       	cpi	r24, 0x88	; 136
+     df2:	91 05       	cpc	r25, r1
+     df4:	91 f5       	brne	.+100    	; 0xe5a <__vector_24+0xd2>
+     df6:	14 c0       	rjmp	.+40     	; 0xe20 <__vector_24+0x98>
+     df8:	80 3b       	cpi	r24, 0xB0	; 176
      dfa:	91 05       	cpc	r25, r1
-     dfc:	89 f5       	brne	.+98     	; 0xe60 <__vector_24+0xd8>
-     dfe:	1c c0       	rjmp	.+56     	; 0xe38 <__vector_24+0xb0>
+     dfc:	11 f1       	breq	.+68     	; 0xe42 <__vector_24+0xba>
+     dfe:	88 3b       	cpi	r24, 0xB8	; 184
+     e00:	91 05       	cpc	r25, r1
+     e02:	59 f5       	brne	.+86     	; 0xe5a <__vector_24+0xd2>
+     e04:	1e c0       	rjmp	.+60     	; 0xe42 <__vector_24+0xba>
 	case 0x70:				//General Call received, ACK returned
 		break;
 	case 0x78:
 		break;
 	case 0x80:				//Byte received, ACK returned
 		inBuffer [newData++] = TWDR;
-     e00:	80 91 38 01 	lds	r24, 0x0138
-     e04:	e8 2f       	mov	r30, r24
-     e06:	f0 e0       	ldi	r31, 0x00	; 0
-     e08:	90 91 bb 00 	lds	r25, 0x00BB
-     e0c:	e2 58       	subi	r30, 0x82	; 130
-     e0e:	fb 4f       	sbci	r31, 0xFB	; 251
-     e10:	90 83       	st	Z, r25
-     e12:	8f 5f       	subi	r24, 0xFF	; 255
-     e14:	80 93 38 01 	sts	0x0138, r24
-     e18:	23 c0       	rjmp	.+70     	; 0xe60 <__vector_24+0xd8>
+     e06:	80 91 38 01 	lds	r24, 0x0138
+     e0a:	e8 2f       	mov	r30, r24
+     e0c:	f0 e0       	ldi	r31, 0x00	; 0
+     e0e:	90 91 bb 00 	lds	r25, 0x00BB
+     e12:	ee 5a       	subi	r30, 0xAE	; 174
+     e14:	fc 4f       	sbci	r31, 0xFC	; 252
+     e16:	90 83       	st	Z, r25
+     e18:	8f 5f       	subi	r24, 0xFF	; 255
+     e1a:	80 93 38 01 	sts	0x0138, r24
+     e1e:	1d c0       	rjmp	.+58     	; 0xe5a <__vector_24+0xd2>
 		//TWCR &= (0xFF^(1<<TWSTO));
 		//TWCR |= 1<<TWEA | 1 << TWINT;
 		break;
 	case 0x88:				//Byte received, NACK returned
 		inBuffer [newData - 1] = TWDR;
-     e1a:	e0 91 38 01 	lds	r30, 0x0138
-     e1e:	f0 e0       	ldi	r31, 0x00	; 0
-     e20:	80 91 bb 00 	lds	r24, 0x00BB
-     e24:	e3 58       	subi	r30, 0x83	; 131
-     e26:	fb 4f       	sbci	r31, 0xFB	; 251
-     e28:	80 83       	st	Z, r24
-     e2a:	1a c0       	rjmp	.+52     	; 0xe60 <__vector_24+0xd8>
-	case 0x90:
-		break;
-	case 0x98:
-		break;
-	case 0xA0:								//Stop or repeated start condition received
-		TWCR &= (0xFF^(1<<TWSTO|1<<TWSTA));
-     e2c:	80 91 bc 00 	lds	r24, 0x00BC
-     e30:	8f 7c       	andi	r24, 0xCF	; 207
-     e32:	80 93 bc 00 	sts	0x00BC, r24
-     e36:	14 c0       	rjmp	.+40     	; 0xe60 <__vector_24+0xd8>
+     e20:	e0 91 38 01 	lds	r30, 0x0138
+     e24:	f0 e0       	ldi	r31, 0x00	; 0
+     e26:	80 91 bb 00 	lds	r24, 0x00BB
+     e2a:	ef 5a       	subi	r30, 0xAF	; 175
+     e2c:	fc 4f       	sbci	r31, 0xFC	; 252
+     e2e:	80 83       	st	Z, r24
+     e30:	14 c0       	rjmp	.+40     	; 0xe5a <__vector_24+0xd2>
 		break;
 
 	//SLAVE TRANSMITTER MODES
 
 	case 0xA8:
 		nextOut = 1;
-     e38:	81 e0       	ldi	r24, 0x01	; 1
-     e3a:	80 93 34 01 	sts	0x0134, r24
+     e32:	81 e0       	ldi	r24, 0x01	; 1
+     e34:	80 93 34 01 	sts	0x0134, r24
 		TWDR = outBuffer[0];
-     e3e:	80 91 00 01 	lds	r24, 0x0100
-     e42:	80 93 bb 00 	sts	0x00BB, r24
-     e46:	0c c0       	rjmp	.+24     	; 0xe60 <__vector_24+0xd8>
+     e38:	80 91 00 01 	lds	r24, 0x0100
+     e3c:	80 93 bb 00 	sts	0x00BB, r24
+     e40:	0c c0       	rjmp	.+24     	; 0xe5a <__vector_24+0xd2>
 	case 0xB0:
 		TWDR = outBuffer [nextOut++];
 		//TWCR |= 1<<TWEA;
 		break;
 	case 0xB8:
 		TWDR = outBuffer [nextOut++];	
-     e48:	80 91 34 01 	lds	r24, 0x0134
-     e4c:	e8 2f       	mov	r30, r24
-     e4e:	f0 e0       	ldi	r31, 0x00	; 0
-     e50:	e0 50       	subi	r30, 0x00	; 0
-     e52:	ff 4f       	sbci	r31, 0xFF	; 255
-     e54:	90 81       	ld	r25, Z
-     e56:	90 93 bb 00 	sts	0x00BB, r25
-     e5a:	8f 5f       	subi	r24, 0xFF	; 255
-     e5c:	80 93 34 01 	sts	0x0134, r24
+     e42:	80 91 34 01 	lds	r24, 0x0134
+     e46:	e8 2f       	mov	r30, r24
+     e48:	f0 e0       	ldi	r31, 0x00	; 0
+     e4a:	e0 50       	subi	r30, 0x00	; 0
+     e4c:	ff 4f       	sbci	r31, 0xFF	; 255
+     e4e:	90 81       	ld	r25, Z
+     e50:	90 93 bb 00 	sts	0x00BB, r25
+     e54:	8f 5f       	subi	r24, 0xFF	; 255
+     e56:	80 93 34 01 	sts	0x0134, r24
 	case 0xC8:
 		//TWCR &= (0xFF^(1<<TWSTA|1<<TWSTO));
 		//TWCR |= 1<<TWEA;
 		break;
 	}
 	TWCR = _BV(TWEN) | _BV(TWIE) | _BV(TWINT) | _BV(TWEA);
-     e60:	85 ec       	ldi	r24, 0xC5	; 197
-     e62:	80 93 bc 00 	sts	0x00BC, r24
+     e5a:	85 ec       	ldi	r24, 0xC5	; 197
+     e5c:	80 93 bc 00 	sts	0x00BC, r24
 	//TWCR |= (1 << TWEA) | (1 << TWINT);
 }
-     e66:	ff 91       	pop	r31
-     e68:	ef 91       	pop	r30
-     e6a:	9f 91       	pop	r25
-     e6c:	8f 91       	pop	r24
-     e6e:	2f 91       	pop	r18
+     e60:	ff 91       	pop	r31
+     e62:	ef 91       	pop	r30
+     e64:	9f 91       	pop	r25
+     e66:	8f 91       	pop	r24
+     e68:	3f 91       	pop	r19
+     e6a:	2f 91       	pop	r18
+     e6c:	0f 90       	pop	r0
+     e6e:	0f be       	out	0x3f, r0	; 63
      e70:	0f 90       	pop	r0
-     e72:	0f be       	out	0x3f, r0	; 63
-     e74:	0f 90       	pop	r0
-     e76:	1f 90       	pop	r1
-     e78:	18 95       	reti
+     e72:	1f 90       	pop	r1
+     e74:	18 95       	reti
 
-00000e7a <setup>:
+00000e76 <setup>:
 #include "constants.h"
 #include "cryptoFunctions.h"
 #include "handleTWI.h"
 
 void setup ()
 {	
-     e7a:	e1 ec       	ldi	r30, 0xC1	; 193
-     e7c:	f0 e0       	ldi	r31, 0x00	; 0
-     e7e:	80 81       	ld	r24, Z
-     e80:	88 61       	ori	r24, 0x18	; 24
-     e82:	80 83       	st	Z, r24
+     e76:	e1 ec       	ldi	r30, 0xC1	; 193
+     e78:	f0 e0       	ldi	r31, 0x00	; 0
+     e7a:	80 81       	ld	r24, Z
+     e7c:	88 61       	ori	r24, 0x18	; 24
+     e7e:	80 83       	st	Z, r24
 	//*
 	UCSR0B |= (1 << RXEN0) | (1 << TXEN0);
 	UCSR0C |= (1 << UCSZ00) | (1 << UCSZ01);
-     e84:	e2 ec       	ldi	r30, 0xC2	; 194
-     e86:	f0 e0       	ldi	r31, 0x00	; 0
-     e88:	80 81       	ld	r24, Z
-     e8a:	86 60       	ori	r24, 0x06	; 6
-     e8c:	80 83       	st	Z, r24
+     e80:	e2 ec       	ldi	r30, 0xC2	; 194
+     e82:	f0 e0       	ldi	r31, 0x00	; 0
+     e84:	80 81       	ld	r24, Z
+     e86:	86 60       	ori	r24, 0x06	; 6
+     e88:	80 83       	st	Z, r24
 	UBRR0L = BAUD_PRESCALE; 
-     e8e:	8f e0       	ldi	r24, 0x0F	; 15
-     e90:	80 93 c4 00 	sts	0x00C4, r24
+     e8a:	8f e0       	ldi	r24, 0x0F	; 15
+     e8c:	80 93 c4 00 	sts	0x00C4, r24
 	UBRR0H = (BAUD_PRESCALE >> 8);
-     e94:	10 92 c5 00 	sts	0x00C5, r1
+     e90:	10 92 c5 00 	sts	0x00C5, r1
 	//*/
 
 	//Setup TWI
 	MCUCR &= 0xFF^1<<PUD;
-     e98:	85 b7       	in	r24, 0x35	; 53
-     e9a:	8f 7e       	andi	r24, 0xEF	; 239
-     e9c:	85 bf       	out	0x35, r24	; 53
-	PORTC = 0xFF;	//Enable all pull ups
-     e9e:	9f ef       	ldi	r25, 0xFF	; 255
-     ea0:	98 b9       	out	0x08, r25	; 8
+     e94:	85 b7       	in	r24, 0x35	; 53
+     e96:	8f 7e       	andi	r24, 0xEF	; 239
+     e98:	85 bf       	out	0x35, r24	; 53
+	//PORTC = 0xFF;	//Enable all pull ups
 	PRR &= 0xFF^1<<PRTWI;//Set PRTWI bit in power reduction register to 0
-     ea2:	e4 e6       	ldi	r30, 0x64	; 100
-     ea4:	f0 e0       	ldi	r31, 0x00	; 0
-     ea6:	80 81       	ld	r24, Z
-     ea8:	8f 77       	andi	r24, 0x7F	; 127
-     eaa:	80 83       	st	Z, r24
+     e9a:	e4 e6       	ldi	r30, 0x64	; 100
+     e9c:	f0 e0       	ldi	r31, 0x00	; 0
+     e9e:	80 81       	ld	r24, Z
+     ea0:	8f 77       	andi	r24, 0x7F	; 127
+     ea2:	80 83       	st	Z, r24
 	TWAR = (0x52<<1) | (1<<TWGCE); //Set slave address to 0x52 (And skip the TWGCE bit)
-     eac:	85 ea       	ldi	r24, 0xA5	; 165
-     eae:	80 93 ba 00 	sts	0x00BA, r24
+     ea4:	85 ea       	ldi	r24, 0xA5	; 165
+     ea6:	80 93 ba 00 	sts	0x00BA, r24
 	//TWAMR = 0xFF;
     TWCR = (1<<TWEA) | (1<<TWIE) | (1<<TWEN);	//Setup control register (page 238 reference)
-     eb2:	85 e4       	ldi	r24, 0x45	; 69
-     eb4:	80 93 bc 00 	sts	0x00BC, r24
+     eaa:	85 e4       	ldi	r24, 0x45	; 69
+     eac:	80 93 bc 00 	sts	0x00BC, r24
 
 	
 	DDRD = 0x00;
-     eb8:	1a b8       	out	0x0a, r1	; 10
+     eb0:	1a b8       	out	0x0a, r1	; 10
 	PORTD = 0x00;	
-     eba:	1b b8       	out	0x0b, r1	; 11
+     eb2:	1b b8       	out	0x0b, r1	; 11
 
 	DDRB = 0x00;
-     ebc:	14 b8       	out	0x04, r1	; 4
+     eb4:	14 b8       	out	0x04, r1	; 4
 	PORTB = 0xFF; 
-     ebe:	95 b9       	out	0x05, r25	; 5
+     eb6:	8f ef       	ldi	r24, 0xFF	; 255
+     eb8:	85 b9       	out	0x05, r24	; 5
 	SREG |= 1<<7;   //Enable interrupts
-     ec0:	8f b7       	in	r24, 0x3f	; 63
-     ec2:	80 68       	ori	r24, 0x80	; 128
-     ec4:	8f bf       	out	0x3f, r24	; 63
+     eba:	8f b7       	in	r24, 0x3f	; 63
+     ebc:	80 68       	ori	r24, 0x80	; 128
+     ebe:	8f bf       	out	0x3f, r24	; 63
 }
-     ec6:	08 95       	ret
+     ec0:	08 95       	ret
 
-00000ec8 <main>:
+00000ec2 <main>:
 
 int main()
 {
-     ec8:	0e 94 3d 07 	call	0xe7a	; 0xe7a <setup>
+     ec2:	0e 94 3b 07 	call	0xe76	; 0xe76 <setup>
+     ec6:	90 e0       	ldi	r25, 0x00	; 0
+uint8_t TWIBuffer [500];
+uint16_t bufferIndex,bufferMax = 0;
+
+void serTx(unsigned char data)
+{
+	loop_until_bit_is_set(UCSR0A, UDRE0); // wait while previous tx is finished
+     ec8:	80 91 c0 00 	lds	r24, 0x00C0
+     ecc:	85 ff       	sbrs	r24, 5
+     ece:	fc cf       	rjmp	.-8      	; 0xec8 <main+0x6>
+	UDR0 = data; // tx
+     ed0:	90 93 c6 00 	sts	0x00C6, r25
+     ed4:	9f 5f       	subi	r25, 0xFF	; 255
+}
+
+int main()
+{
+	setup();
+	for (int i = 0; i < 10; i++){
+     ed6:	9a 30       	cpi	r25, 0x0A	; 10
+     ed8:	b9 f7       	brne	.-18     	; 0xec8 <main+0x6>
 	//}
 
 	//wiimote_gen_key(&k, d);
 	//wiimote_encrypt(&k, 16, d, 0xa40008);
 	while (1){
 		if (bufferIndex < bufferMax){
-     ecc:	40 91 39 01 	lds	r20, 0x0139
-     ed0:	50 91 3a 01 	lds	r21, 0x013A
-     ed4:	20 91 5b 01 	lds	r18, 0x015B
-     ed8:	30 91 5c 01 	lds	r19, 0x015C
-     edc:	24 17       	cp	r18, r20
-     ede:	35 07       	cpc	r19, r21
-     ee0:	68 f4       	brcc	.+26     	; 0xefc <main+0x34>
+     eda:	40 91 39 01 	lds	r20, 0x0139
+     ede:	50 91 3a 01 	lds	r21, 0x013A
+     ee2:	20 91 5b 01 	lds	r18, 0x015B
+     ee6:	30 91 5c 01 	lds	r19, 0x015C
+     eea:	24 17       	cp	r18, r20
+     eec:	35 07       	cpc	r19, r21
+     eee:	68 f4       	brcc	.+26     	; 0xf0a <main+0x48>
 				serTx (TWIBuffer [bufferIndex]);
-     ee2:	f9 01       	movw	r30, r18
-     ee4:	e3 5a       	subi	r30, 0xA3	; 163
-     ee6:	fe 4f       	sbci	r31, 0xFE	; 254
-     ee8:	e0 81       	ld	r30, Z
-uint8_t TWIBuffer [800];
+     ef0:	f9 01       	movw	r30, r18
+     ef2:	e3 5a       	subi	r30, 0xA3	; 163
+     ef4:	fe 4f       	sbci	r31, 0xFE	; 254
+     ef6:	e0 81       	ld	r30, Z
+uint8_t TWIBuffer [500];
 uint16_t bufferIndex,bufferMax = 0;
 
 void serTx(unsigned char data)
 {
 	loop_until_bit_is_set(UCSR0A, UDRE0); // wait while previous tx is finished
-     eea:	80 91 c0 00 	lds	r24, 0x00C0
-     eee:	85 ff       	sbrs	r24, 5
-     ef0:	fc cf       	rjmp	.-8      	; 0xeea <main+0x22>
+     ef8:	80 91 c0 00 	lds	r24, 0x00C0
+     efc:	85 ff       	sbrs	r24, 5
+     efe:	fc cf       	rjmp	.-8      	; 0xef8 <main+0x36>
 	UDR0 = data; // tx
-     ef2:	e0 93 c6 00 	sts	0x00C6, r30
-     ef6:	2f 5f       	subi	r18, 0xFF	; 255
-     ef8:	3f 4f       	sbci	r19, 0xFF	; 255
-     efa:	f0 cf       	rjmp	.-32     	; 0xedc <main+0x14>
-     efc:	ff cf       	rjmp	.-2      	; 0xefc <main+0x34>
+     f00:	e0 93 c6 00 	sts	0x00C6, r30
+     f04:	2f 5f       	subi	r18, 0xFF	; 255
+     f06:	3f 4f       	sbci	r19, 0xFF	; 255
+     f08:	f0 cf       	rjmp	.-32     	; 0xeea <main+0x28>
+     f0a:	ff cf       	rjmp	.-2      	; 0xf0a <main+0x48>
 
-00000efe <wiimote_gen_key>:
+00000f0c <wiimote_gen_key>:
 
 }
 
 /* generate a ft and sb, given the deviceside keybuffer (rand+key) */
 void wiimote_gen_key(wiimote_key *key, uint8_t *keydata)
 {
-     efe:	6f 92       	push	r6
-     f00:	7f 92       	push	r7
-     f02:	8f 92       	push	r8
-     f04:	9f 92       	push	r9
-     f06:	af 92       	push	r10
-     f08:	bf 92       	push	r11
-     f0a:	cf 92       	push	r12
-     f0c:	df 92       	push	r13
-     f0e:	ef 92       	push	r14
-     f10:	ff 92       	push	r15
-     f12:	0f 93       	push	r16
-     f14:	1f 93       	push	r17
-     f16:	df 93       	push	r29
-     f18:	cf 93       	push	r28
-     f1a:	cd b7       	in	r28, 0x3d	; 61
-     f1c:	de b7       	in	r29, 0x3e	; 62
-     f1e:	66 97       	sbiw	r28, 0x16	; 22
-     f20:	0f b6       	in	r0, 0x3f	; 63
-     f22:	f8 94       	cli
-     f24:	de bf       	out	0x3e, r29	; 62
-     f26:	0f be       	out	0x3f, r0	; 63
-     f28:	cd bf       	out	0x3d, r28	; 61
-     f2a:	5c 01       	movw	r10, r24
-     f2c:	7b 01       	movw	r14, r22
-     f2e:	20 e0       	ldi	r18, 0x00	; 0
-     f30:	30 e0       	ldi	r19, 0x00	; 0
+     f0c:	6f 92       	push	r6
+     f0e:	7f 92       	push	r7
+     f10:	8f 92       	push	r8
+     f12:	9f 92       	push	r9
+     f14:	af 92       	push	r10
+     f16:	bf 92       	push	r11
+     f18:	cf 92       	push	r12
+     f1a:	df 92       	push	r13
+     f1c:	ef 92       	push	r14
+     f1e:	ff 92       	push	r15
+     f20:	0f 93       	push	r16
+     f22:	1f 93       	push	r17
+     f24:	df 93       	push	r29
+     f26:	cf 93       	push	r28
+     f28:	cd b7       	in	r28, 0x3d	; 61
+     f2a:	de b7       	in	r29, 0x3e	; 62
+     f2c:	66 97       	sbiw	r28, 0x16	; 22
+     f2e:	0f b6       	in	r0, 0x3f	; 63
+     f30:	f8 94       	cli
+     f32:	de bf       	out	0x3e, r29	; 62
+     f34:	0f be       	out	0x3f, r0	; 63
+     f36:	cd bf       	out	0x3d, r28	; 61
+     f38:	5c 01       	movw	r10, r24
+     f3a:	7b 01       	movw	r14, r22
+     f3c:	20 e0       	ldi	r18, 0x00	; 0
+     f3e:	30 e0       	ldi	r19, 0x00	; 0
 	uint8_t testkey[6];
 	int idx = 0;
 	int i;
 
 	for(i=0;i<10;i++)
 		rand[i] = keydata[i];
-     f32:	ae 01       	movw	r20, r28
-     f34:	43 5f       	subi	r20, 0xF3	; 243
-     f36:	5f 4f       	sbci	r21, 0xFF	; 255
-     f38:	fa 01       	movw	r30, r20
-     f3a:	e2 0f       	add	r30, r18
-     f3c:	f3 1f       	adc	r31, r19
-     f3e:	d7 01       	movw	r26, r14
-     f40:	a2 0f       	add	r26, r18
-     f42:	b3 1f       	adc	r27, r19
-     f44:	8c 91       	ld	r24, X
-     f46:	80 83       	st	Z, r24
+     f40:	ae 01       	movw	r20, r28
+     f42:	43 5f       	subi	r20, 0xF3	; 243
+     f44:	5f 4f       	sbci	r21, 0xFF	; 255
+     f46:	fa 01       	movw	r30, r20
+     f48:	e2 0f       	add	r30, r18
+     f4a:	f3 1f       	adc	r31, r19
+     f4c:	d7 01       	movw	r26, r14
+     f4e:	a2 0f       	add	r26, r18
+     f50:	b3 1f       	adc	r27, r19
+     f52:	8c 91       	ld	r24, X
+     f54:	80 83       	st	Z, r24
 	uint8_t skey[6];
 	uint8_t testkey[6];
 	int idx = 0;
 	int i;
 
 	for(i=0;i<10;i++)
-     f48:	2f 5f       	subi	r18, 0xFF	; 255
-     f4a:	3f 4f       	sbci	r19, 0xFF	; 255
-     f4c:	2a 30       	cpi	r18, 0x0A	; 10
-     f4e:	31 05       	cpc	r19, r1
-     f50:	99 f7       	brne	.-26     	; 0xf38 <wiimote_gen_key+0x3a>
-     f52:	d7 01       	movw	r26, r14
-     f54:	fe 01       	movw	r30, r28
-     f56:	31 96       	adiw	r30, 0x01	; 1
+     f56:	2f 5f       	subi	r18, 0xFF	; 255
+     f58:	3f 4f       	sbci	r19, 0xFF	; 255
+     f5a:	2a 30       	cpi	r18, 0x0A	; 10
+     f5c:	31 05       	cpc	r19, r1
+     f5e:	99 f7       	brne	.-26     	; 0xf46 <wiimote_gen_key+0x3a>
+     f60:	d7 01       	movw	r26, r14
+     f62:	fe 01       	movw	r30, r28
+     f64:	31 96       	adiw	r30, 0x01	; 1
 		rand[i] = keydata[i];
 	for(i=0;i<6;i++)
-     f58:	9e 01       	movw	r18, r28
-     f5a:	29 5f       	subi	r18, 0xF9	; 249
-     f5c:	3f 4f       	sbci	r19, 0xFF	; 255
+     f66:	9e 01       	movw	r18, r28
+     f68:	29 5f       	subi	r18, 0xF9	; 249
+     f6a:	3f 4f       	sbci	r19, 0xFF	; 255
 		skey[i] = keydata[i+10];
-     f5e:	1a 96       	adiw	r26, 0x0a	; 10
-     f60:	8c 91       	ld	r24, X
-     f62:	1a 97       	sbiw	r26, 0x0a	; 10
-     f64:	81 93       	st	Z+, r24
-     f66:	11 96       	adiw	r26, 0x01	; 1
+     f6c:	1a 96       	adiw	r26, 0x0a	; 10
+     f6e:	8c 91       	ld	r24, X
+     f70:	1a 97       	sbiw	r26, 0x0a	; 10
+     f72:	81 93       	st	Z+, r24
+     f74:	11 96       	adiw	r26, 0x01	; 1
 	int idx = 0;
 	int i;
 
 	for(i=0;i<10;i++)
 		rand[i] = keydata[i];
 	for(i=0;i<6;i++)
-     f68:	e2 17       	cp	r30, r18
-     f6a:	f3 07       	cpc	r31, r19
-     f6c:	c1 f7       	brne	.-16     	; 0xf5e <wiimote_gen_key+0x60>
-     f6e:	00 e0       	ldi	r16, 0x00	; 0
-     f70:	10 e0       	ldi	r17, 0x00	; 0
+     f76:	e2 17       	cp	r30, r18
+     f78:	f3 07       	cpc	r31, r19
+     f7a:	c1 f7       	brne	.-16     	; 0xf6c <wiimote_gen_key+0x60>
+     f7c:	00 e0       	ldi	r16, 0x00	; 0
+     f7e:	10 e0       	ldi	r17, 0x00	; 0
 		skey[i] = keydata[i+10];
 	
 	//*
 
 	for(idx=0;idx<7;idx++) {
 		genkey(rand, idx, testkey);
-     f72:	b7 e0       	ldi	r27, 0x07	; 7
-     f74:	cb 2e       	mov	r12, r27
-     f76:	d1 2c       	mov	r13, r1
-     f78:	cc 0e       	add	r12, r28
-     f7a:	dd 1e       	adc	r13, r29
-     f7c:	ad e0       	ldi	r26, 0x0D	; 13
-     f7e:	6a 2e       	mov	r6, r26
-     f80:	71 2c       	mov	r7, r1
-     f82:	6c 0e       	add	r6, r28
-     f84:	7d 1e       	adc	r7, r29
+     f80:	b7 e0       	ldi	r27, 0x07	; 7
+     f82:	cb 2e       	mov	r12, r27
+     f84:	d1 2c       	mov	r13, r1
+     f86:	cc 0e       	add	r12, r28
+     f88:	dd 1e       	adc	r13, r29
+     f8a:	ad e0       	ldi	r26, 0x0D	; 13
+     f8c:	6a 2e       	mov	r6, r26
+     f8e:	71 2c       	mov	r7, r1
+     f90:	6c 0e       	add	r6, r28
+     f92:	7d 1e       	adc	r7, r29
 		if(!memcmp(testkey,skey,6))
-     f86:	4e 01       	movw	r8, r28
-     f88:	08 94       	sec
-     f8a:	81 1c       	adc	r8, r1
-     f8c:	91 1c       	adc	r9, r1
+     f94:	4e 01       	movw	r8, r28
+     f96:	08 94       	sec
+     f98:	81 1c       	adc	r8, r1
+     f9a:	91 1c       	adc	r9, r1
 		skey[i] = keydata[i+10];
 	
 	//*
 
 	for(idx=0;idx<7;idx++) {
 		genkey(rand, idx, testkey);
-     f8e:	a6 01       	movw	r20, r12
-     f90:	60 2f       	mov	r22, r16
-     f92:	c3 01       	movw	r24, r6
-     f94:	0e 94 f3 04 	call	0x9e6	; 0x9e6 <genkey>
+     f9c:	a6 01       	movw	r20, r12
+     f9e:	60 2f       	mov	r22, r16
+     fa0:	c3 01       	movw	r24, r6
+     fa2:	0e 94 f3 04 	call	0x9e6	; 0x9e6 <genkey>
 		if(!memcmp(testkey,skey,6))
-     f98:	46 e0       	ldi	r20, 0x06	; 6
-     f9a:	50 e0       	ldi	r21, 0x00	; 0
-     f9c:	b4 01       	movw	r22, r8
-     f9e:	c6 01       	movw	r24, r12
-     fa0:	0e 94 f6 07 	call	0xfec	; 0xfec <memcmp>
-     fa4:	00 97       	sbiw	r24, 0x00	; 0
-     fa6:	29 f0       	breq	.+10     	; 0xfb2 <wiimote_gen_key+0xb4>
+     fa6:	46 e0       	ldi	r20, 0x06	; 6
+     fa8:	50 e0       	ldi	r21, 0x00	; 0
+     faa:	b4 01       	movw	r22, r8
+     fac:	c6 01       	movw	r24, r12
+     fae:	0e 94 fd 07 	call	0xffa	; 0xffa <memcmp>
+     fb2:	00 97       	sbiw	r24, 0x00	; 0
+     fb4:	29 f0       	breq	.+10     	; 0xfc0 <wiimote_gen_key+0xb4>
 	for(i=0;i<6;i++)
 		skey[i] = keydata[i+10];
 	
 	//*
 
 	for(idx=0;idx<7;idx++) {
-     fa8:	0f 5f       	subi	r16, 0xFF	; 255
-     faa:	1f 4f       	sbci	r17, 0xFF	; 255
-     fac:	07 30       	cpi	r16, 0x07	; 7
-     fae:	11 05       	cpc	r17, r1
-     fb0:	71 f7       	brne	.-36     	; 0xf8e <wiimote_gen_key+0x90>
+     fb6:	0f 5f       	subi	r16, 0xFF	; 255
+     fb8:	1f 4f       	sbci	r17, 0xFF	; 255
+     fba:	07 30       	cpi	r16, 0x07	; 7
+     fbc:	11 05       	cpc	r17, r1
+     fbe:	71 f7       	brne	.-36     	; 0xf9c <wiimote_gen_key+0x90>
 	//*/
 
 	// default case is idx = 7 which is valid (homebrew uses it for the 0x17 case)
 	//printf("idx:  %d\n", idx);
 	
 	gentabs(keydata, idx, key->ft, key->sb);
-     fb2:	95 01       	movw	r18, r10
-     fb4:	28 5f       	subi	r18, 0xF8	; 248
-     fb6:	3f 4f       	sbci	r19, 0xFF	; 255
-     fb8:	a5 01       	movw	r20, r10
-     fba:	60 2f       	mov	r22, r16
-     fbc:	c7 01       	movw	r24, r14
-     fbe:	0e 94 03 06 	call	0xc06	; 0xc06 <gentabs>
+     fc0:	95 01       	movw	r18, r10
+     fc2:	28 5f       	subi	r18, 0xF8	; 248
+     fc4:	3f 4f       	sbci	r19, 0xFF	; 255
+     fc6:	a5 01       	movw	r20, r10
+     fc8:	60 2f       	mov	r22, r16
+     fca:	c7 01       	movw	r24, r14
+     fcc:	0e 94 03 06 	call	0xc06	; 0xc06 <gentabs>
 	
 	// for homebrew, ft and sb are all 0x97 which is equivalent to 0x17
 }
-     fc2:	66 96       	adiw	r28, 0x16	; 22
-     fc4:	0f b6       	in	r0, 0x3f	; 63
-     fc6:	f8 94       	cli
-     fc8:	de bf       	out	0x3e, r29	; 62
-     fca:	0f be       	out	0x3f, r0	; 63
-     fcc:	cd bf       	out	0x3d, r28	; 61
-     fce:	cf 91       	pop	r28
-     fd0:	df 91       	pop	r29
-     fd2:	1f 91       	pop	r17
-     fd4:	0f 91       	pop	r16
-     fd6:	ff 90       	pop	r15
-     fd8:	ef 90       	pop	r14
-     fda:	df 90       	pop	r13
-     fdc:	cf 90       	pop	r12
-     fde:	bf 90       	pop	r11
-     fe0:	af 90       	pop	r10
-     fe2:	9f 90       	pop	r9
-     fe4:	8f 90       	pop	r8
-     fe6:	7f 90       	pop	r7
-     fe8:	6f 90       	pop	r6
-     fea:	08 95       	ret
+     fd0:	66 96       	adiw	r28, 0x16	; 22
+     fd2:	0f b6       	in	r0, 0x3f	; 63
+     fd4:	f8 94       	cli
+     fd6:	de bf       	out	0x3e, r29	; 62
+     fd8:	0f be       	out	0x3f, r0	; 63
+     fda:	cd bf       	out	0x3d, r28	; 61
+     fdc:	cf 91       	pop	r28
+     fde:	df 91       	pop	r29
+     fe0:	1f 91       	pop	r17
+     fe2:	0f 91       	pop	r16
+     fe4:	ff 90       	pop	r15
+     fe6:	ef 90       	pop	r14
+     fe8:	df 90       	pop	r13
+     fea:	cf 90       	pop	r12
+     fec:	bf 90       	pop	r11
+     fee:	af 90       	pop	r10
+     ff0:	9f 90       	pop	r9
+     ff2:	8f 90       	pop	r8
+     ff4:	7f 90       	pop	r7
+     ff6:	6f 90       	pop	r6
+     ff8:	08 95       	ret
 
-00000fec <memcmp>:
-     fec:	fb 01       	movw	r30, r22
-     fee:	dc 01       	movw	r26, r24
-     ff0:	04 c0       	rjmp	.+8      	; 0xffa <memcmp+0xe>
-     ff2:	8d 91       	ld	r24, X+
-     ff4:	01 90       	ld	r0, Z+
-     ff6:	80 19       	sub	r24, r0
-     ff8:	21 f4       	brne	.+8      	; 0x1002 <memcmp+0x16>
-     ffa:	41 50       	subi	r20, 0x01	; 1
-     ffc:	50 40       	sbci	r21, 0x00	; 0
-     ffe:	c8 f7       	brcc	.-14     	; 0xff2 <memcmp+0x6>
-    1000:	88 1b       	sub	r24, r24
-    1002:	99 0b       	sbc	r25, r25
-    1004:	08 95       	ret
+00000ffa <memcmp>:
+     ffa:	fb 01       	movw	r30, r22
+     ffc:	dc 01       	movw	r26, r24
+     ffe:	04 c0       	rjmp	.+8      	; 0x1008 <memcmp+0xe>
+    1000:	8d 91       	ld	r24, X+
+    1002:	01 90       	ld	r0, Z+
+    1004:	80 19       	sub	r24, r0
+    1006:	21 f4       	brne	.+8      	; 0x1010 <memcmp+0x16>
+    1008:	41 50       	subi	r20, 0x01	; 1
+    100a:	50 40       	sbci	r21, 0x00	; 0
+    100c:	c8 f7       	brcc	.-14     	; 0x1000 <memcmp+0x6>
+    100e:	88 1b       	sub	r24, r24
+    1010:	99 0b       	sbc	r25, r25
+    1012:	08 95       	ret
 
-00001006 <_exit>:
-    1006:	f8 94       	cli
+00001014 <_exit>:
+    1014:	f8 94       	cli
 
-00001008 <__stop_program>:
-    1008:	ff cf       	rjmp	.-2      	; 0x1008 <__stop_program>
+00001016 <__stop_program>:
+    1016:	ff cf       	rjmp	.-2      	; 0x1016 <__stop_program>

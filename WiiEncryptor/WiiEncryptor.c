@@ -8,7 +8,7 @@
 #include <avr/io.h>
 
 #define USART_BAUDRATE 38400
-#define BAUD_PRESCALE 15//(((F_CPU / (USART_BAUDRATE * 16UL))) - 1) 
+#define BAUD_PRESCALE (((F_CPU / (USART_BAUDRATE * 16UL))) - 1) 
 
 #define cbi(sfr, bit) (_SFR_BYTE(sfr) &= ~_BV(bit)) // clear bit
 #define sbi(sfr, bit) (_SFR_BYTE(sfr) |= _BV(bit)) // set bit
@@ -48,7 +48,7 @@ uint8_t d[16];// = {0x99, 0x7f, 0x0c, 0x95, 0x4b, 0xdd, 0xb4, 0x1c, 0xf3, 0xee, 
 
 volatile uint8_t newData = 0;
 
-uint8_t TWIBuffer [800];
+uint8_t TWIBuffer [500];
 uint16_t bufferIndex,bufferMax = 0;
 
 void serTx(unsigned char data)
@@ -72,7 +72,7 @@ void setup ()
 
 	//Setup TWI
 	MCUCR &= 0xFF^1<<PUD;
-	PORTC = 0xFF;	//Enable all pull ups
+	//PORTC = 0xFF;	//Enable all pull ups
 	PRR &= 0xFF^1<<PRTWI;//Set PRTWI bit in power reduction register to 0
 	TWAR = (0x52<<1) | (1<<TWGCE); //Set slave address to 0x52 (And skip the TWGCE bit)
 	//TWAMR = 0xFF;
@@ -90,6 +90,10 @@ void setup ()
 int main()
 {
 	setup();
+	for (int i = 0; i < 10; i++){
+		serTx(i);
+	}
+		
 			
 	//for (int8_t i = 15; i >= 0; i--){
 //		d [i] = inBuffer[i];     //Is this the right order? Backwards?
@@ -102,6 +106,6 @@ int main()
 				serTx (TWIBuffer [bufferIndex]);
 				bufferIndex += 1;
 		}
-		//Everything else should be taken care of, format output data here
+		//Everything else should be taken care of, format and encrypt output data here
 	}
 }

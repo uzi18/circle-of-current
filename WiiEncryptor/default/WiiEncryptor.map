@@ -15,7 +15,7 @@ Common symbol       size              file
 k                   0x10              WiiEncryptor.o
 d                   0x10              WiiEncryptor.o
 bufferIndex         0x2               WiiEncryptor.o
-TWIBuffer           0x320             WiiEncryptor.o
+TWIBuffer           0x1f4             WiiEncryptor.o
 tempByte            0x1               WiiEncryptor.o
 inBuffer            0x10              WiiEncryptor.o
 
@@ -129,7 +129,7 @@ LOAD c:/winavr/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000     0x100a
+.text           0x00000000     0x1018
  *(.vectors)
  .vectors       0x00000000       0x68 c:/winavr/bin/../lib/gcc/avr/4.3.0/../../../../avr/lib/avr5/crtm168.o
                 0x00000000                __vectors
@@ -214,31 +214,31 @@ LOAD c:/winavr/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a
                 0x000009d2                __vector_16
                 0x000009d2                __vector_18
                 0x000009d2                __vector_20
- .text          0x000009d6      0x616 WiiEncryptor.o
+ .text          0x000009d6      0x624 WiiEncryptor.o
                 0x00000d88                __vector_24
                 0x00000bd8                gen_ft_sb
                 0x000009e6                genkey
-                0x00000ec8                main
-                0x00000e7a                setup
+                0x00000ec2                main
+                0x00000e76                setup
                 0x00000d26                wiimote_encrypt
-                0x00000efe                wiimote_gen_key
+                0x00000f0c                wiimote_gen_key
                 0x000009d6                serTx
                 0x00000c06                gentabs
- .text          0x00000fec        0x0 c:/winavr/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_exit.o)
- .text          0x00000fec        0x0 c:/winavr/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_copy_data.o)
- .text          0x00000fec        0x0 c:/winavr/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_clear_bss.o)
- .text          0x00000fec       0x1a c:/winavr/bin/../lib/gcc/avr/4.3.0/../../../../avr/lib/avr5\libc.a(memcmp.o)
-                0x00000fec                memcmp
-                0x00001006                . = ALIGN (0x2)
+ .text          0x00000ffa        0x0 c:/winavr/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_exit.o)
+ .text          0x00000ffa        0x0 c:/winavr/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_copy_data.o)
+ .text          0x00000ffa        0x0 c:/winavr/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_clear_bss.o)
+ .text          0x00000ffa       0x1a c:/winavr/bin/../lib/gcc/avr/4.3.0/../../../../avr/lib/avr5\libc.a(memcmp.o)
+                0x00000ffa                memcmp
+                0x00001014                . = ALIGN (0x2)
  *(.text.*)
- .text.libgcc   0x00001006        0x0 c:/winavr/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_exit.o)
- .text.libgcc   0x00001006        0x0 c:/winavr/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_copy_data.o)
- .text.libgcc   0x00001006        0x0 c:/winavr/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_clear_bss.o)
-                0x00001006                . = ALIGN (0x2)
+ .text.libgcc   0x00001014        0x0 c:/winavr/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_exit.o)
+ .text.libgcc   0x00001014        0x0 c:/winavr/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_copy_data.o)
+ .text.libgcc   0x00001014        0x0 c:/winavr/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_clear_bss.o)
+                0x00001014                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x00001006        0x0 c:/winavr/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_exit.o)
-                0x00001006                exit
-                0x00001006                _exit
+ .fini9         0x00001014        0x0 c:/winavr/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_exit.o)
+                0x00001014                exit
+                0x00001014                _exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -257,11 +257,11 @@ LOAD c:/winavr/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x00001006        0x4 c:/winavr/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_exit.o)
+ .fini0         0x00001014        0x4 c:/winavr/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_exit.o)
  *(.fini0)
-                0x0000100a                _etext = .
+                0x00001018                _etext = .
 
-.data           0x00800100       0x30 load address 0x0000100a
+.data           0x00800100       0x30 load address 0x00001018
                 0x00800100                PROVIDE (__data_start, .)
  *(.data)
  .data          0x00800100        0x0 c:/winavr/bin/../lib/gcc/avr/4.3.0/../../../../avr/lib/avr5/crtm168.o
@@ -279,7 +279,7 @@ LOAD c:/winavr/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a
                 0x00800130                _edata = .
                 0x00800130                PROVIDE (__data_end, .)
 
-.bss            0x00800130      0x35e load address 0x0000103a
+.bss            0x00800130      0x232 load address 0x00001048
                 0x00800130                PROVIDE (__bss_start, .)
  *(.bss)
  .bss           0x00800130        0x0 c:/winavr/bin/../lib/gcc/avr/4.3.0/../../../../avr/lib/avr5/crtm168.o
@@ -297,23 +297,23 @@ LOAD c:/winavr/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a
  .bss           0x0080013b        0x0 c:/winavr/bin/../lib/gcc/avr/4.3.0/../../../../avr/lib/avr5\libc.a(memcmp.o)
  *(.bss*)
  *(COMMON)
- COMMON         0x0080013b      0x353 WiiEncryptor.o
+ COMMON         0x0080013b      0x227 WiiEncryptor.o
                 0x0080013b                k
                 0x0080014b                d
                 0x0080015b                bufferIndex
                 0x0080015d                TWIBuffer
-                0x0080047d                tempByte
-                0x0080047e                inBuffer
-                0x0080048e                PROVIDE (__bss_end, .)
-                0x0000100a                __data_load_start = LOADADDR (.data)
-                0x0000103a                __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x00800351                tempByte
+                0x00800352                inBuffer
+                0x00800362                PROVIDE (__bss_end, .)
+                0x00001018                __data_load_start = LOADADDR (.data)
+                0x00001048                __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x0080048e        0x0
-                0x0080048e                PROVIDE (__noinit_start, .)
+.noinit         0x00800362        0x0
+                0x00800362                PROVIDE (__noinit_start, .)
  *(.noinit*)
-                0x0080048e                PROVIDE (__noinit_end, .)
-                0x0080048e                _end = .
-                0x0080048e                PROVIDE (__heap_start, .)
+                0x00800362                PROVIDE (__noinit_end, .)
+                0x00800362                _end = .
+                0x00800362                PROVIDE (__heap_start, .)
 
 .eeprom         0x00810000        0x0
  *(.eeprom*)
@@ -375,18 +375,18 @@ LOAD c:/winavr/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a
  .debug_pubnames
                 0x00000000      0x14f WiiEncryptor.o
 
-.debug_info     0x00000000      0x6df
+.debug_info     0x00000000      0x70b
  *(.debug_info)
- .debug_info    0x00000000      0x6df WiiEncryptor.o
+ .debug_info    0x00000000      0x70b WiiEncryptor.o
  *(.gnu.linkonce.wi.*)
 
 .debug_abbrev   0x00000000      0x235
  *(.debug_abbrev)
  .debug_abbrev  0x00000000      0x235 WiiEncryptor.o
 
-.debug_line     0x00000000      0x3d4
+.debug_line     0x00000000      0x3e6
  *(.debug_line)
- .debug_line    0x00000000      0x3d4 WiiEncryptor.o
+ .debug_line    0x00000000      0x3e6 WiiEncryptor.o
 
 .debug_frame    0x00000000       0xa0
  *(.debug_frame)
