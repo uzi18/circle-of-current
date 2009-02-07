@@ -91,7 +91,7 @@ void twi_fakeMasterOff()
 	nop(); nop(); nop(); nop();
 	cbi(twi_ddr, twi_sda_pin);
 	// re-enable twi module
-	TWCR = _BV(TWEN) | _BV(TWIE) | _BV(TWEA);;
+	TWCR = _BV(TWEN) | _BV(TWIE) | _BV(TWEA);
 }
 
 ISR(TWI_vect)
