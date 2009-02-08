@@ -1,26 +1,5 @@
 #include "main.h"
 
-// enables the + - up down left right buttons if defined
-//#define GHWT
-
-// trigger on either rising or falling edge (never both please)
-// these only apply to the 5 pads, buttons and bass pedals are always falling edge
-// pull_up_res will enable internal pull-up resistors for the pad pins
-// does not effect buttons and bass pedals
-//#define trig_on_rise
-#define trig_on_fall
-//#define pull_up_res 
-
-// minimum pulse time (x = actual pulse time / 0.003)
-// keep at 5, raise if you see double hits
-#define hit_min_time 5
-
-// hit softness (0 = max, 7 = min, just make it 0)
-#define default_hit_softness 0
-
-// simulated degree of thumb stick movement (something under 32)
-#define thumbstick_speed 16
-
 // most of this data is found on
 // http://wiibrew.org/wiki/Wiimote/Extension_Controllers
 
@@ -199,6 +178,10 @@ int main()
 
 	// initialize ports
 
+	// make power detect pin input
+	cbi(power_detect_port, power_detect_pin);
+	cbi(power_detect_ddr, power_detect_pin);
+
 	#ifdef pull_up_res
 	#ifdef trig_on_fall
 	// setting port = pull ups on
@@ -282,11 +265,33 @@ int main()
 	but_dat.d[4] = 0b11111111;
 	but_dat.d[5] = 0b11111111;
 
-	// start making wiimote think this is a drum
+	// make wiimote think this is a drum
 	wm_init(drum_id, but_dat, cal_data);
 
 	while(1)
 	{
+		// check if connected to wiimote
+		if(bit_is_set(power_detect_input, power_detect_pin))
+		{
+			// connected
+			sbi(dev_detect_port, dev_detect_pin);
+		}
+		else
+		{
+			// not connected, disconnect
+			cbi(dev_detect_port, dev_detect_pin);
+
+			#ifdef USE_SERPORT
+			// clear serial port buffer
+			serFlush();
+			#endif
+
+			// handles reconnections
+			wm_init(drum_id, but_dat, cal_data);
+
+			continue;
+		}
+		
 		// check hardware
 		check_for_hits();
 		check_hit_flags();

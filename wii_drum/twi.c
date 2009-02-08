@@ -3,12 +3,12 @@
 static void (*twi_onTx)(void);
 static void (*twi_onRx)(unsigned char *, unsigned char);
 
-static volatile unsigned char twi_txBuffer[16];
-static volatile unsigned char twi_txBufferIndex;
-static volatile unsigned char twi_txBufferLength;
+static volatile unsigned char twi_txMem[16];
+static volatile unsigned char twi_txMemIndex;
+static volatile unsigned char twi_txMemLength;
 
-static volatile unsigned char twi_rxBuffer[16];
-static volatile unsigned char twi_rxBufferIndex;
+static volatile unsigned char twi_rxMem[16];
+static volatile unsigned char twi_rxMemIndex;
 
 static volatile unsigned char twi_was_receiver_flag;
 
@@ -32,9 +32,9 @@ void twi_slave_init(unsigned char addr)
 void twi_transmit(unsigned char * data, unsigned char length)
 {
 	// set length and copy data into tx buffer
-	twi_txBufferLength = length;
-	memcpy(twi_txBuffer, data, 16);
-	twi_txBufferIndex = 0;
+	twi_txMemLength = length;
+	memcpy(twi_txMem, data, 16);
+	twi_txMemIndex = 0;
 }
 
 // link events to functions
@@ -106,14 +106,14 @@ ISR(TWI_vect)
 		case TW_SR_ARB_LOST_SLA_ACK: // lost arbitration, returned ack
 		case TW_SR_ARB_LOST_GCALL_ACK: // lost arbitration, returned ack
 			// ready rx buffer and ack
-			twi_rxBufferIndex = 0;
+			twi_rxMemIndex = 0;
 			twi_sendAck(1);
 			break;
 		case TW_SR_DATA_ACK: // data received, returned ack
 		case TW_SR_GCALL_DATA_ACK: // data received generally, returned ack
 			// put in buffer and ack
-			twi_rxBuffer[twi_rxBufferIndex] = TWDR;
-			twi_rxBufferIndex++;
+			twi_rxMem[twi_rxMemIndex] = TWDR;
+			twi_rxMemIndex++;
 			twi_sendAck(1);
 			break;
 		case TW_SR_STOP: // stop or repeated start condition
@@ -123,19 +123,18 @@ ISR(TWI_vect)
 			// keep bus busy until user application finishes
 			twi_fakeMaster();
 			// user application
-			twi_onRx(twi_rxBuffer, twi_rxBufferIndex);
+			twi_onRx(twi_rxMem, twi_rxMemIndex);
 			// free the bus
 			twi_fakeMasterOff();
+			#else
+			// user application
+			twi_onRx(twi_rxMem, twi_rxMemIndex);
+			// ack future responses
+			twi_sendAck(1);
+			#endif
 			// set flag
 			twi_was_receiver_flag = 1;
 			break;
-			#else
-			// user application
-			twi_onRx(twi_rxBuffer, twi_rxBufferIndex);
-			// ack future responses
-			twi_sendAck(1);
-			twi_was_receiver_flag = 1;
-			#endif
 		case TW_SR_DATA_NACK: // data received, returned nack
 		case TW_SR_GCALL_DATA_NACK: // data received generally, returned nack
 			// nack
@@ -154,10 +153,10 @@ ISR(TWI_vect)
 			}
 		case TW_ST_DATA_ACK: // byte sent, ack returned
 			// copy data to output
-			TWDR = twi_txBuffer[twi_txBufferIndex];
-			twi_txBufferIndex++; 
+			TWDR = twi_txMem[twi_txMemIndex];
+			twi_txMemIndex++; 
 			// if there is more to send, ack, otherwise nack
-			if(twi_txBufferIndex < twi_txBufferLength)
+			if(twi_txMemIndex < twi_txMemLength)
 			{
 				twi_sendAck(1);
 			}

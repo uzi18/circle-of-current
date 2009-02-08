@@ -16,10 +16,10 @@
 #define LED_port PORTC
 #define LED_ddr DDRC
 
-#define power_detect_pin 3
-#define power_detect_port PORTC
-#define power_detect_ddr DDRC
-#define power_detect_input PINC
+#define power_detect_pin 2
+#define power_detect_port PORTD
+#define power_detect_ddr DDRD
+#define power_detect_input PIND
 
 #define adc_port PORTC
 #define adc_ddr DDRC

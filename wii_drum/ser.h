@@ -1,11 +1,10 @@
 #ifndef ser_h
 
-#include "main.h"
-
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <stdlib.h>
 #include <stdio.h>
+
 #include "macros.h"
 
 // Name Replacements
@@ -24,7 +23,6 @@
 
 #define serRxBufferSize 8
 
-#ifdef USE_SERPORT
 // functions
 
 unsigned int getBaudRate(unsigned long);
@@ -44,8 +42,6 @@ void serTx(unsigned char);
 static int ser_putchar(unsigned char, FILE *);
 
 static FILE serStdout = FDEV_SETUP_STREAM(ser_putchar, NULL, _FDEV_SETUP_WRITE);
-
-#endif
 
 #define ser_h
 #endif

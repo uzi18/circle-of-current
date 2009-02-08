@@ -202,28 +202,10 @@ void wm_newaction(wm_cd_s t)
 	wm_action = t;
 }
 
-void wm_connect()
-{
-	// make the wiimote think something is connected
-	sbi(dev_detect_port, dev_detect_pin);
-}
-
-void wm_disconnect()
-{
-	// make the wiimote think nothing is connected
-	cbi(dev_detect_port, dev_detect_pin);
-}
-
 void wm_init(unsigned char * id, wm_cd_s t, unsigned char * cal_data)
 {
 	// start state
 	wm_action = t;
-
-	// no encryption
-	for(unsigned char i = 0; i < 8; i++)
-	{
-		wm_ft[i] = 0; wm_sb[i] = 0;
-	}
 
 	// set id
 	memcpy(wm_id, id, 6);
@@ -234,7 +216,7 @@ void wm_init(unsigned char * id, wm_cd_s t, unsigned char * cal_data)
 	// initialize device detect pin
 	cbi(dev_detect_port, dev_detect_pin);
 	sbi(dev_detect_ddr, dev_detect_pin);
-	_delay_ms(100); // delay to simulate disconnect
+	_delay_ms(500); // delay to simulate disconnect
 
 	// ready twi bus, no pull-ups
 	cbi(twi_port, twi_scl_pin);
@@ -250,6 +232,6 @@ void wm_init(unsigned char * id, wm_cd_s t, unsigned char * cal_data)
 	// start twi slave
 	twi_slave_init(0x52);
 
-	// connect to wiimote
-	wm_connect();
+	// make the wiimote think something is connected
+	sbi(dev_detect_port, dev_detect_pin);
 }
