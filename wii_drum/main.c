@@ -344,6 +344,8 @@ int main()
 		but_dat.d[2] = 0xFF;
 		but_dat.d[3] = 0xFF;
 
+		#ifdef GHWT
+
 		if(but_dat.d[5] != 0xFF)
 		{
 			// set softness
@@ -364,7 +366,6 @@ int main()
 			}
 		}
 
-		#ifdef GHWT
 		// plus and minus buttons
 		if(bit_is_clear(plus_in_reg, plus_pin)) cbi(but_dat.d[4], plus_bit);
 		if(bit_is_clear(minus_in_reg, minus_pin)) cbi(but_dat.d[4], minus_bit);
