@@ -16,7 +16,7 @@ The code inside \wii_drum is firmware source code for an AVR microcontroller.
 
 [http://code.google.com/p/circle-of-current/source/browse/#svn/wii_drum Link to source code folder]
 
-The code is currently configured for use with an ATmega168 AVR microcontroller.
+The code is written in C and compiled with AVR-GCC (WinAVR is needed). The project file is called "wiidrum.aps" and is opened with AVR Studio. The code is currently configured for use with an ATmega168 AVR microcontroller running on a 8 MHz internal RC oscillator.
 
 === main.c ===
 
