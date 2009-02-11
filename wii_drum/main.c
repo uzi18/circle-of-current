@@ -365,7 +365,7 @@ int main()
 
 		if(but_dat.d[5] != 0xFF)
 		{
-			unsigned long t = wm_read_cnt_read();
+			unsigned long t = wm_timer;
 			
 			// if any pads active, then send "softness"
 			for(unsigned long i = hit_last + t; i < 16; i++)

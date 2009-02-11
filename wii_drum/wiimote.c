@@ -14,6 +14,7 @@ static volatile unsigned char wm_key[6];
 static volatile unsigned char wm_ft[8];
 static volatile unsigned char wm_sb[8];
 
+// button data
 static volatile wm_cd_s wm_action;
 
 /*
@@ -41,6 +42,7 @@ void wm_gentabs()
 		unsigned char ans[6];
 		unsigned char tkey[6];
 		unsigned char t0[10];
+		
 		for(unsigned char i = 0; i < 6; i++)
 		{
 			ans[i] = pgm_read_byte(&(ans_tbl[idx][i]));
@@ -103,6 +105,8 @@ void wm_slaveTxStart(unsigned char addr)
 		{			
 			wm_transmit(wm_action.d[i], 0x00 + i);
 		}
+		// call user event
+		wm_sample_event();
 	}
 	if(addr >= 0x20 && addr <= 0x3F)
 	{
@@ -124,11 +128,6 @@ void wm_slaveTxStart(unsigned char addr)
 
 void wm_slaveTxEnd(unsigned char addr, unsigned char l)
 {
-	if(addr >= 0 && addr <= 0x06)
-	{
-		// if button data was sampled, call user event
-		wm_sample_event();
-	}
 }
 
 void wm_slaveRx(unsigned char addr, unsigned char l)
@@ -155,7 +154,7 @@ void wm_slaveRx(unsigned char addr, unsigned char l)
 void wm_newaction(wm_cd_s t)
 {
 	// load button data from user application
-	wm_action = t;
+	wm_action = t;	
 }
 
 void wm_init(unsigned char * id, wm_cd_s t, unsigned char * cal_data, void (*function)(void))

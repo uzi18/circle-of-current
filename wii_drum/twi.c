@@ -3,9 +3,9 @@
 static volatile unsigned char twi_state;
 static volatile unsigned char twi_slarw;
 
-static volatile void (*twi_tx_start_event)(unsigned char);
-static volatile void (*twi_tx_end_event)(unsigned char, unsigned char);
-static volatile void (*twi_rx_event)(unsigned char, unsigned char);
+static void (*twi_tx_start_event)(unsigned char);
+static void (*twi_tx_end_event)(unsigned char, unsigned char);
+static void (*twi_rx_event)(unsigned char, unsigned char);
 
 static volatile unsigned char twi_reg[256];
 static volatile unsigned char twi_reg_pointer;
@@ -14,29 +14,6 @@ static volatile unsigned char twi_error;
 
 static volatile unsigned char twi_first_addr_flag;
 static volatile unsigned char twi_rw_len;
-
-void twi_event_empty_1(unsigned char a)
-{
-}
-
-void twi_event_empty_2(unsigned char a, unsigned char b)
-{
-}
-
-void twi_attach_rx_event( void (*function)(unsigned char, unsigned char) )
-{
-	twi_rx_event = function;
-}
-
-void twi_attach_tx_start( void (*function)(unsigned char) )
-{
-	twi_tx_start_event = function;
-}
-
-void twi_attach_tx_end( void (*function)(unsigned char, unsigned char) )
-{
-	twi_tx_end_event = function;
-}
 
 void twi_slave_init(unsigned char addr)
 {
@@ -62,6 +39,21 @@ void twi_set_reg(unsigned char addr, unsigned char d)
 unsigned char twi_read_reg(unsigned char addr)
 {
 	return twi_reg[addr];
+}
+
+void twi_attach_rx_event( void (*function)(unsigned char, unsigned char) )
+{
+	twi_rx_event = function;
+}
+
+void twi_attach_tx_start( void (*function)(unsigned char) )
+{
+	twi_tx_start_event = function;
+}
+
+void twi_attach_tx_end( void (*function)(unsigned char, unsigned char) )
+{
+	twi_tx_end_event = function;
 }
 
 void twi_clear_int(unsigned char ack)
