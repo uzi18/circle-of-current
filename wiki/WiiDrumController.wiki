@@ -40,7 +40,7 @@ Thanks to Hector Martin for the decryption and encryption method. He wrote about
 
 ==== twi.c ====
 
-The functions contained in this file handles I2C slave operations (slave, functions for master not included). There are some special functions that aid devices with slow code execution speeds on a fast I2C bus. While the AVR microcontroller is not ready for any new I2C read commands, the microcontroller fakes the behaviour of a I2C master, occupying the bus, and thus not allowing the Wiimote to issue commands until the microcontroller is ready.
+The functions contained in this file handles I2C slave operations (slave only, functions for master not included).
 
 == Hardware ==
 
