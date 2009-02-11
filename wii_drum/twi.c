@@ -1,57 +1,72 @@
 #include "twi.h"
 
-static void (*twi_onTx)(void);
-static void (*twi_onRx)(unsigned char *, unsigned char);
+static volatile unsigned char twi_state;
+static volatile unsigned char twi_slarw;
 
-static volatile unsigned char twi_txMem[16];
-static volatile unsigned char twi_txMemIndex;
-static volatile unsigned char twi_txMemLength;
+static volatile void (*twi_tx_start_event)(unsigned char);
+static volatile void (*twi_tx_end_event)(unsigned char, unsigned char);
+static volatile void (*twi_rx_event)(unsigned char, unsigned char);
 
-static volatile unsigned char twi_rxMem[16];
-static volatile unsigned char twi_rxMemIndex;
+static volatile unsigned char twi_reg[256];
+static volatile unsigned char twi_reg_pointer;
 
-static volatile unsigned char twi_was_receiver_flag;
+static volatile unsigned char twi_error;
+
+static volatile unsigned char twi_first_addr_flag;
+static volatile unsigned char twi_rw_len;
+
+void twi_event_empty_1(unsigned char a)
+{
+}
+
+void twi_event_empty_2(unsigned char a, unsigned char b)
+{
+}
+
+void twi_attach_rx_event( void (*function)(unsigned char, unsigned char) )
+{
+	twi_rx_event = function;
+}
+
+void twi_attach_tx_start( void (*function)(unsigned char) )
+{
+	twi_tx_start_event = function;
+}
+
+void twi_attach_tx_end( void (*function)(unsigned char, unsigned char) )
+{
+	twi_tx_end_event = function;
+}
 
 void twi_slave_init(unsigned char addr)
 {
-	// ready bus
-	cbi(twi_ddr, twi_scl_pin);
-	cbi(twi_ddr, twi_sda_pin);
-	
-	// set address
-	TWAR = addr << 1;
+	// initialize stuff
+	twi_reg_pointer = 0;
+	for(unsigned int i = 0; i < 256; i++) twi_reg[i] = 0;	
+	twi_attach_rx_event(twi_event_empty_2);
+	twi_attach_tx_start(twi_event_empty_1);
+	twi_attach_tx_end(twi_event_empty_2);
 
+	// set slave address
+	TWAR = addr << 1;
+	
 	// enable twi module, acks, and twi interrupt
 	TWCR = _BV(TWEN) | _BV(TWIE) | _BV(TWEA);
-	sei();
-
-	// initialize flag
-	twi_was_receiver_flag = 0;
 }
 
-void twi_transmit(unsigned char * data, unsigned char length)
+void twi_set_reg(unsigned char addr, unsigned char d)
 {
-	// set length and copy data into tx buffer
-	twi_txMemLength = length;
-	memcpy(twi_txMem, data, 16);
-	twi_txMemIndex = 0;
+	twi_reg[addr] = d;
 }
 
-// link events to functions
-void twi_attachRxEvent(void (* function)(unsigned char *, unsigned char))
+unsigned char twi_read_reg(unsigned char addr)
 {
-	twi_onRx = function;
+	return twi_reg[addr];
 }
 
-void twi_attachTxEvent(void (* function)(void))
+void twi_clear_int(unsigned char ack)
 {
-	twi_onTx = function;
-}
-
-
-void twi_sendAck(unsigned char ack)
-{
-	// transmit master read ready signal, with or without ack
+	// get ready by clearing interrupt, with or without ack
 	if(ack != 0)
 	{
 		TWCR = _BV(TWEN) | _BV(TWIE) | _BV(TWINT) | _BV(TWEA);
@@ -62,113 +77,68 @@ void twi_sendAck(unsigned char ack)
 	}
 }
 
-#ifdef USE_FAKEMASTER
-// these functions keep the bus busy so the AVR has more time to process
-void twi_fakeMaster()
-{
-	// stop twi module and issue fake start condition
-	TWCR = 0;
-	sbi(twi_ddr, twi_sda_pin);
-	// delay
-	nop(); nop(); nop(); nop();
-	nop(); nop(); nop(); nop();
-	nop(); nop(); nop(); nop();
-	nop(); nop(); nop(); nop();
-	nop(); nop(); nop(); nop();
-	nop(); nop(); nop(); nop();
-	sbi(twi_ddr, twi_scl_pin);
-}
-
-void twi_fakeMasterOff()
-{
-	// fake stop condition
-	cbi(twi_ddr, twi_scl_pin);
-	// delay
-	nop(); nop(); nop(); nop();
-	nop(); nop(); nop(); nop();
-	nop(); nop(); nop(); nop();
-	nop(); nop(); nop(); nop();
-	nop(); nop(); nop(); nop();
-	nop(); nop(); nop(); nop();
-	cbi(twi_ddr, twi_sda_pin);
-	// re-enable twi module
-	TWCR = _BV(TWEN) | _BV(TWIE) | _BV(TWEA);
-}
-#endif
-
 ISR(TWI_vect)
 {
 	switch(TW_STATUS)
 	{
-		// Slave Receiver
+		// Slave Rx
 		case TW_SR_SLA_ACK: // addressed, returned ack
 		case TW_SR_GCALL_ACK: // addressed generally, returned ack
 		case TW_SR_ARB_LOST_SLA_ACK: // lost arbitration, returned ack
-		case TW_SR_ARB_LOST_GCALL_ACK: // lost arbitration, returned ack
-			// ready rx buffer and ack
-			twi_rxMemIndex = 0;
-			twi_sendAck(1);
+		case TW_SR_ARB_LOST_GCALL_ACK: // lost arbitration generally, returned ack
+			// get ready to receive pointer
+			twi_first_addr_flag = 0;
+			// ack
+			twi_clear_int(1);
 			break;
 		case TW_SR_DATA_ACK: // data received, returned ack
 		case TW_SR_GCALL_DATA_ACK: // data received generally, returned ack
-			// put in buffer and ack
-			twi_rxMem[twi_rxMemIndex] = TWDR;
-			twi_rxMemIndex++;
-			twi_sendAck(1);
+		// put byte in register and ack
+		if(twi_first_addr_flag != 0)
+		{
+			twi_reg[twi_reg_pointer++] = TWDR;
+			twi_rw_len++;
+		}
+		else
+		{
+			twi_reg_pointer = TWDR;
+			twi_first_addr_flag = 1;
+			twi_rw_len = 0;
+		}
+		twi_clear_int(1);
 			break;
-		case TW_SR_STOP: // stop or repeated start condition
-			#ifdef USE_FAKEMASTER
+		case TW_SR_STOP: // stop or repeated start condition received
+			// run user defined function
+			twi_rx_event(twi_reg_pointer - twi_rw_len, twi_rw_len);
 			// ack future responses
-			twi_sendAck(1);
-			// keep bus busy until user application finishes
-			twi_fakeMaster();
-			// user application
-			twi_onRx(twi_rxMem, twi_rxMemIndex);
-			// free the bus
-			twi_fakeMasterOff();
-			#else
-			// user application
-			twi_onRx(twi_rxMem, twi_rxMemIndex);
-			// ack future responses
-			twi_sendAck(1);
-			#endif
-			// set flag
-			twi_was_receiver_flag = 1;
+			twi_clear_int(1);
 			break;
 		case TW_SR_DATA_NACK: // data received, returned nack
 		case TW_SR_GCALL_DATA_NACK: // data received generally, returned nack
-			// nack
-			twi_sendAck(0);
+			// nack back at master
+			twi_clear_int(0);
 			break;
-	
-		// Slave Transmitter
-		case TW_ST_SLA_ACK: // addressed, returned ack
+		
+		// Slave Tx
+		case TW_ST_SLA_ACK:	// addressed, returned ack
 		case TW_ST_ARB_LOST_SLA_ACK: // arbitration lost, returned ack
-			if(twi_was_receiver_flag != 0)
-			{				
-				// load into buffer
-				twi_onTx();
-				// reset flag since now transmitter
-				twi_was_receiver_flag = 0;
-			}
+			// run user defined function
+			twi_tx_start_event(twi_reg_pointer);
+			twi_rw_len = 0;
 		case TW_ST_DATA_ACK: // byte sent, ack returned
-			// copy data to output
-			TWDR = twi_txMem[twi_txMemIndex];
-			twi_txMemIndex++; 
-			// if there is more to send, ack, otherwise nack
-			if(twi_txMemIndex < twi_txMemLength)
-			{
-				twi_sendAck(1);
-			}
-			else
-			{
-				twi_sendAck(0);
-			}
+			// ready output byte
+			TWDR = twi_reg[twi_reg_pointer++];
+			twi_rw_len++;
+			// ack
+			twi_clear_int(1);
 			break;
-		case TW_ST_DATA_NACK: // received nack
-		case TW_ST_LAST_DATA: // received ack
+		case TW_ST_DATA_NACK: // received nack, we are done 
+		case TW_ST_LAST_DATA: // received ack, but we are done already!
 			// ack future responses
-			twi_sendAck(1);
+			twi_clear_int(1);
+			// run user defined function
+			twi_tx_end_event(twi_reg_pointer - twi_rw_len, twi_rw_len);
 			break;
 	}
 }
+

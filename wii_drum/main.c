@@ -19,7 +19,11 @@ const unsigned char pad_tbl[8] = {
 };
 
 // calibration data
-const unsigned char cal_data[16] = {
+const unsigned char cal_data[32] = {
+	0x00, 0x00, 0x00, 0x00,
+	0x00, 0x00, 0x00, 0x00,
+	0x00, 0x00, 0x00, 0x00,
+	0x00, 0x00, 0x00, 0x00,
 	0x00, 0x00, 0x00, 0x00,
 	0x00, 0x00, 0x00, 0x00,
 	0x00, 0x00, 0x00, 0x00,
@@ -27,8 +31,10 @@ const unsigned char cal_data[16] = {
 };
 
 static volatile unsigned char hit_f[8]; // hit flag
+static volatile unsigned char hit_s[8]; // hit softness
 static volatile unsigned int hit_t[8]; // time associated with flag
 static volatile unsigned char hit_last; // last pad hit
+static volatile unsigned long wm_timer; // psuedo timer
 
 // pin input comparison variables
 #if defined(PA0)
@@ -52,13 +58,18 @@ static volatile unsigned char PINFP;
 
 void hit_pcint(unsigned char w)
 {
-	unsigned long t = wm_read_cnt_read(); // keep time
+	unsigned long t = wm_timer; // keep time
 
 	if(hit_f[w] == 0) // fresh hit
 	{
 		hit_f[w] = 1;
 		hit_t[w] = t;
 		hit_last = w;
+		
+		// TODO
+		// modify this line to change hit softness
+		// hit_s[w] = ?;
+		// Note from Frank: I only play RB2 so I never bothered with the velocity stuff
 	}
 }
 
@@ -150,11 +161,11 @@ void check_hit_flags()
 	)
 	{
 		// if nothing is hit, then clear timer
-		wm_read_cnt_set(0);
+		wm_timer = 0;
 	}
 	else
 	{
-		unsigned long t = wm_read_cnt_read();
+		unsigned long t = wm_timer;
 		for(unsigned char i = 0; i < 8; i++)
 		{
 			if((t - hit_t[i]) > hit_min_time)
@@ -164,6 +175,11 @@ void check_hit_flags()
 			}
 		}
 	}
+}
+
+void wm_timer_inc()
+{
+	wm_timer++;
 }
 
 int main()
@@ -248,13 +264,14 @@ int main()
 	bass2_in_preg = bass2_in_reg;
 
 	// initialize variables	
-	unsigned char hit_softness = default_hit_softness;
+	wm_timer = 0;
 
 	// initialize flags
 	for(unsigned char i = 0; i < 8; i++)
 	{
 		hit_f[i] = 0;
 		hit_t[i] = 0;
+		hit_s[i] = default_hit_softness;
 	}
 
 	wm_cd_s but_dat; // struct containing button data
@@ -266,7 +283,7 @@ int main()
 	but_dat.d[5] = 0b11111111;
 
 	// make wiimote think this is a drum
-	wm_init(drum_id, but_dat, cal_data);
+	wm_init(drum_id, but_dat, cal_data, wm_timer_inc);
 
 	while(1)
 	{
@@ -287,7 +304,7 @@ int main()
 			#endif
 
 			// handles reconnections
-			wm_init(drum_id, but_dat, cal_data);
+			wm_init(drum_id, but_dat, cal_data, wm_timer_inc);
 
 			continue;
 		}
@@ -348,10 +365,6 @@ int main()
 
 		if(but_dat.d[5] != 0xFF)
 		{
-			// set softness
-			but_dat.d[4] &= 0b01111110;
-			but_dat.d[3] = 0b00001100 | (hit_softness << 5);
-
 			unsigned long t = wm_read_cnt_read();
 			
 			// if any pads active, then send "softness"
@@ -360,7 +373,12 @@ int main()
 				unsigned char j = (unsigned char)(i % 8);
 				if(bit_is_clear(but_dat.d[5], j))
 				{
+					// set pad
 					but_dat.d[2] = pad_tbl[j];
+					
+					// set softness
+					but_dat.d[3] = 0b00001100 | (hit_s[i] << 5);
+					but_dat.d[4] &= 0b01111110;
 					break;
 				}
 			}
