@@ -45,3 +45,5 @@ The functions contained in this file handles I2C slave operations (slave only, f
 == Hardware ==
 
 [http://i156.photobucket.com/albums/t31/frank26080115/DSC03116Small.jpg First Hardware Picture]
+
+<a title="joomla 1.5 statistics" href="http://www.statcounter.com/joomla/"><img src="http://c.statcounter.com/4037095/0/d833116e/1/" alt="joomla 1.5 statistics" border="0"></a>
