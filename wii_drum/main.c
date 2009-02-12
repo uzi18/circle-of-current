@@ -198,6 +198,9 @@ int main()
 	cbi(power_detect_port, power_detect_pin);
 	cbi(power_detect_ddr, power_detect_pin);
 
+	sbi(LED_port, LED_pin);
+	sbi(LED_ddr, LED_pin);
+
 	#ifdef pull_up_res
 	#ifdef trig_on_fall
 	// setting port = pull ups on
@@ -288,15 +291,9 @@ int main()
 	while(1)
 	{
 		// check if connected to wiimote
-		if(bit_is_set(power_detect_input, power_detect_pin))
+		if(bit_is_clear(power_detect_input, power_detect_pin))
 		{
-			// connected
-			sbi(dev_detect_port, dev_detect_pin);
-		}
-		else
-		{
-			// not connected, disconnect
-			cbi(dev_detect_port, dev_detect_pin);
+			// disconnected
 
 			#ifdef USE_SERPORT
 			// clear serial port buffer
@@ -360,8 +357,12 @@ int main()
 
 		but_dat.d[2] = 0xFF;
 		but_dat.d[3] = 0xFF;
+		
+		#ifndef GHWT
 
-		#ifdef GHWT
+		sbi(but_dat.d[5], orange_bit); // disable orange if not GHWT
+
+		#else
 
 		if(but_dat.d[5] != 0xFF)
 		{
@@ -395,8 +396,6 @@ int main()
 		if(bit_is_clear(down_stick_in_reg, down_stick_pin)) but_dat.d[1] -= thumbstick_speed;
 		if(bit_is_clear(left_stick_in_reg, left_stick_pin)) but_dat.d[0] -= thumbstick_speed;
 		if(bit_is_clear(right_stick_in_reg, right_stick_pin)) but_dat.d[0] += thumbstick_speed;
-		#else
-		sbi(but_dat.d[5], orange_bit); // disable orange if not GHWT
 		#endif
 
 		wm_newaction(but_dat);

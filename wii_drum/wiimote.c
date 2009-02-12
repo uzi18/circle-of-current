@@ -2,7 +2,7 @@
 #include "wm_crypto.h"
 
 // pointer to user function
-static void (*wm_sample_event)(unsigned char);
+static void (*wm_sample_event)();
 
 // id and calibration data
 static volatile unsigned char wm_id[6];
@@ -86,13 +86,13 @@ void wm_gentabs()
 // put data into TWI slave register, encrypted if encryption is enabled
 void wm_transmit(unsigned char d, unsigned char addr)
 {
-	if(twi_reg_read(0xF0) == 0xAA && addr != 0xF0)
+	if(twi_read_reg(0xF0) == 0xAA && addr != 0xF0)
 	{
-		twi_reg_set(addr, (d - wm_ft[addr % 8]) ^ wm_sb[addr % 8]);
+		twi_set_reg(addr, (d - wm_ft[addr % 8]) ^ wm_sb[addr % 8]);
 	}
 	else
 	{
-		twi_reg_set(addr, d);
+		twi_set_reg(addr, d);
 	}
 }
 
@@ -116,7 +116,7 @@ void wm_slaveTxStart(unsigned char addr)
 			wm_transmit(wm_cal_data[i], 0x20 + i);
 		}
 	}
-	if(addr => 0xFA && addr <= 0xFF)
+	if(addr >= 0xFA && addr <= 0xFF)
 	{
 		// requested id
 		for(unsigned char i = 0; i < 6; i++)
@@ -137,11 +137,11 @@ void wm_slaveRx(unsigned char addr, unsigned char l)
 		// if encryption data is sent, store them accordingly
 		for(unsigned char i = 0; i < 10; i++)
 		{
-			wm_rand[9 - i] = twi_reg_read(0x40 + i);
+			wm_rand[9 - i] = twi_read_reg(0x40 + i);
 		}
 		for(unsigned char i = 0; i < 6; i++)
 		{
-			wm_key[5 - i] = twi_reg_read(0x40 + 10 + i);
+			wm_key[5 - i] = twi_read_reg(0x40 + 10 + i);
 		}
 		if(addr + l == 0x4F)
 		{

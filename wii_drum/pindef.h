@@ -6,15 +6,15 @@
 #define twi_sda_pin 4
 
 #define uart_port PORTD
-#define uart_rx_pin 2
+#define uart_rx_pin 0
 
 #define dev_detect_pin 4
 #define dev_detect_port PORTD
 #define dev_detect_ddr DDRD
 
 #define LED_pin 3
-#define LED_port PORTC
-#define LED_ddr DDRC
+#define LED_port PORTD
+#define LED_ddr DDRD
 
 #define power_detect_pin 2
 #define power_detect_port PORTD
