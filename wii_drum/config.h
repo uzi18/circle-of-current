@@ -12,7 +12,7 @@
 #define trig_on_fall
 //#define pull_up_res 
 
-// minimum pulse time (x = actual pulse time / 0.003)
+// minimum pulse time (x = actual pulse time / 0.005)
 // keep at 5, raise if you see double hits
 #define hit_min_time 5
 

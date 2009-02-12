@@ -125,6 +125,9 @@ ISR(TWI_vect)
 			// run user defined function
 			twi_tx_end_event(twi_reg_addr - twi_rw_len, twi_rw_len);
 			break;
+		default:
+			twi_clear_int(0);
+			break;
 	}
 }
 

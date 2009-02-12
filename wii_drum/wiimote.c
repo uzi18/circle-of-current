@@ -98,7 +98,7 @@ void wm_transmit(unsigned char d, unsigned char addr)
 
 void wm_slaveTxStart(unsigned char addr)
 {
-	if(addr >= 0x00 && addr <= 0x06)
+	if(addr >= 0x00 && addr < 0x06)
 	{
 		// requested button data
 		for(unsigned char i = 0; i < 6; i++)
@@ -108,10 +108,34 @@ void wm_slaveTxStart(unsigned char addr)
 		// call user event
 		wm_sample_event();
 	}
-	if(addr >= 0x20 && addr <= 0x3F)
+	if(addr >= 0x20 && addr < 0x28)
 	{
 		// requested calibration data
-		for(unsigned char i; i < 32; i++)
+		for(unsigned char i = 0x00; i < 0x08; i++)
+		{			
+			wm_transmit(wm_cal_data[i], 0x20 + i);
+		}
+	}
+	if(addr >= 0x28 && addr < 0x30)
+	{
+		// requested calibration data
+		for(unsigned char i = 0x08; i < 0x0F; i++)
+		{			
+			wm_transmit(wm_cal_data[i], 0x20 + i);
+		}
+	}
+	if(addr >= 0x30 && addr < 0x38)
+	{
+		// requested calibration data
+		for(unsigned char i = 0x0F; i < 0x18; i++)
+		{			
+			wm_transmit(wm_cal_data[i], 0x20 + i);
+		}
+	}
+	if(addr >= 0x38 && addr <= 0x3F)
+	{
+		// requested calibration data
+		for(unsigned char i = 0x18; i < 0x20; i++)
 		{			
 			wm_transmit(wm_cal_data[i], 0x20 + i);
 		}
@@ -132,21 +156,40 @@ void wm_slaveTxEnd(unsigned char addr, unsigned char l)
 
 void wm_slaveRx(unsigned char addr, unsigned char l)
 {
-	if(addr >= 0x40 && addr + l <= 0x4F)
 	{
 		// if encryption data is sent, store them accordingly
-		for(unsigned char i = 0; i < 10; i++)
+		if(addr >= 0x40 && addr < 0x46)
 		{
-			wm_rand[9 - i] = twi_read_reg(0x40 + i);
+			for(unsigned char i = 0; i < 6; i++)
+			{
+				wm_rand[9 - i] = twi_read_reg(0x40 + i);
+			}
 		}
-		for(unsigned char i = 0; i < 6; i++)
+		else if(addr >= 0x46 && addr < 0x4C)
 		{
-			wm_key[5 - i] = twi_read_reg(0x40 + 10 + i);
+	
+			for(unsigned char i = 6; i < 10; i++)
+			{
+				wm_rand[9 - i] = twi_read_reg(0x40 + i);
+			}
+			for(unsigned char i = 0; i < 2; i++)
+			{
+				wm_key[5 - i] = twi_read_reg(0x40 + 10 + i);
+			}
 		}
-		if(addr + l == 0x4F)
+		else if(addr >= 0x4C && addr < 0x50)
 		{
-			// generate decryption once all data is loaded
-			wm_gentabs();
+			for(unsigned char i = 2; i < 6; i++)
+			{
+				wm_key[5 - i] = twi_read_reg(0x40 + 10 + i);
+			}
+			if(addr + l == 0x50)
+			{
+				// generate decryption once all data is loaded
+				wm_gentabs();
+
+
+			}
 		}
 	}
 }
