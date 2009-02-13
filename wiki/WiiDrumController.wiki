@@ -8,7 +8,7 @@ The code inside \wii_drum is firmware source code for an AVR microcontroller.
 
 [http://i156.photobucket.com/albums/t31/frank26080115/DSC03116Small.jpg First Hardware Picture]
 
-[http://www.youtube.com/watch?v=Kzl0qaKv-Wg Proof of Concept Youtube Video]
+[http://www.youtube.com/watch?v=Kzl0qaKv-Wg&fmt=18 Proof of Concept Youtube Video]
 
 = Details =
 
