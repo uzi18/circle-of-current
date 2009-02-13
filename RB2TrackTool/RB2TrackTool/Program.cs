@@ -29,6 +29,32 @@ namespace RB2TrackTool
             begin = start_time;
         }
     }
+	
+	public struct NoteEvent
+	{
+		public double time, delta_time;
+		public bool[] note = new bool[128];
+		public NoteEvent(double time_, double delta_time_)
+		{
+			time = time_;
+			delta_time = delta_time_;
+			for (int i = 0; i < 128; i++)
+			{
+				note[i] = false;
+			}
+		}
+	}
+	
+	public struct DevEvent
+	{
+		public int dev_id, delay, bitmask;
+		public DevEvent(int id, int delay_, int bitmask_)
+		{
+			dev_id = id;
+			delay = delay_;
+			bitmask = bitmask_;
+		}
+	}
 
     partial class Form1
     {
@@ -368,6 +394,8 @@ namespace RB2TrackTool
             MidiReader.BaseStream.Position = track_start_addr[0];
 
             TempoPeriod[] tempo_period = new TempoPeriod[200];
+			
+			#region
 
             int tempo_index = 0;
             double current_time = 0;
@@ -377,7 +405,7 @@ namespace RB2TrackTool
             {
                 int delta_time = ReadVariableLength(MidiReader);
 
-                current_time = current_time + ((delta_time / ticks_per_beat) / (tempo / 60));//((delta_time * 60 * ticks_per_beat) / tempo);
+                current_time = current_time + ((delta_time / ticks_per_beat) / (tempo / 60));
 
                 int foo = (int)MidiReader.ReadByte();
 
@@ -494,8 +522,340 @@ namespace RB2TrackTool
                     }
                 }
             }
+			
+			#endregion
+			
+			MidiReader.BaseStream.Position = track_start_addr[1];
+			
+			NoteEvent[] drum_note_event = new NoteEvent[3000];
+			
+			#region
 
-            MidiReader.Close();
+			int last_tempo_index = 0;
+            current_time = 0;
+			double last_time = 0;
+            tempo = 120;
+			int note_event_index = 0;
+			int last_note_event_index = 0;
+			drum_note_event[0] = new NoteEvent(current_time);
+
+            while (true)
+            {
+                int delta_time = ReadVariableLength(MidiReader);
+
+				for (int i = last_tempo_index; i < tempo_index; i++)
+				{
+					if (tempo_period[i].begin <= current_time)
+					{
+						tempo = tempo_period[i].tempo;
+						last_tempo_index = i;
+					}
+					else
+					{
+						break;
+					}
+				}
+				
+                current_time = current_time + ((delta_time / ticks_per_beat) / (tempo / 60));
+				
+				if (last_time != current_time)
+				{
+					note_event_index++;
+					drum_note_event[note_event_index] = new NoteEvent(current_time, current_time - last_time);
+				}
+				last_time = current_time;
+
+                int foo = (int)MidiReader.ReadByte();
+
+                if (foo < 0xF0)
+                {
+                    int channel = foo % 16;
+                    int event_type = (foo - channel) / 16;
+
+                    int para1 = (int)MidiReader.ReadByte();
+                    int para2;
+					
+					if (event_type == 0x08)
+					{
+						drum_note_event[note_event_index].note[para1] = false;
+					}
+					else if (event_type == 0x09)
+					{
+						drum_note_event[note_event_index].note[para1] = true;
+					}
+					
+					if (last_note_event_index != note_event_index)
+					{
+						DrumWriter.Write(string.Format("{0},", current_time));
+						DrumWriter.Write(string.Format("{0},", delta_time));
+						
+						for (int i = 0; i < 128; i++)
+						{
+							if (drum_note_event[last_note_event_index].note[i] == true)
+							{
+								DrumWriter.Write(string.Format("#,"));
+							}
+							else
+							{
+								DrumWriter.Write(string.Format(","));
+							}
+						}
+						
+						DrumWriter.Write(string.Format("\r\n"));
+					}
+					
+					last_note_event_index = note_event_index;
+
+                    if (event_type != 0x0C && event_type != 0x0D && event_type >= 0x08)
+                    {
+                        para2 = (int)MidiReader.ReadByte();
+                        while (true)
+                        {
+							for (int i = last_tempo_index; i < tempo_index; i++)
+							{
+								if (tempo_period[i].begin <= current_time)
+								{
+									tempo = tempo_period[i].tempo;
+									last_tempo_index = i;
+								}
+								else
+								{
+									break;
+								}
+							}
+						
+                            long old_position = MidiReader.BaseStream.Position;
+                            delta_time = ReadVariableLength(MidiReader);					
+                            current_time = current_time + ((delta_time / ticks_per_beat) / (tempo / 60));
+							
+							if (last_time != current_time)
+							{
+								note_event_index++;
+								drum_note_event[note_event_index] = new NoteEvent(current_time, current_time - last_time);
+							}
+							last_time = current_time;
+
+                            int new_para1 = (int)MidiReader.ReadByte();
+                            int new_para2;
+
+                            if (new_para1 < 0x80)
+                            {
+                                new_para2 = (int)MidiReader.ReadByte();
+								
+								if (event_type == 0x08)
+								{
+									drum_note_event[note_event_index].note[para1] = false;
+								}
+								else if (event_type == 0x09)
+								{
+									drum_note_event[note_event_index].note[para1] = true;
+								}
+								
+								if (last_note_event_index != note_event_index)
+								{
+									DrumWriter.Write(string.Format("{0},", current_time));
+									DrumWriter.Write(string.Format("{0},", delta_time));
+									
+									for (int i = 0; i < 128; i++)
+									{
+										if (drum_note_event[last_note_event_index].note[i] == true)
+										{
+											DrumWriter.Write(string.Format("#,"));
+										}
+										else
+										{
+											DrumWriter.Write(string.Format(","));
+										}
+									}
+									
+									DrumWriter.Write(string.Format("\r\n"));
+								}
+								
+								last_note_event_index = note_event_index;
+                            }
+                            else
+                            {
+                                MidiReader.BaseStream.Position = old_position;
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                    }
+                }
+                else if (foo == 0xFF)
+                {
+                    int type = (int)MidiReader.ReadByte();
+
+                    if (type == 0x00)
+                    {
+                        MidiReader.ReadByte();
+                        int sequence = (int)MidiReader.ReadByte() * 256 + (int)MidiReader.ReadByte();
+                    }
+                    else if (type == 0x20)
+                    {
+                        MidiReader.ReadByte();
+                        int chan = (int)MidiReader.ReadByte();
+                    }
+                    else if (type == 0x2F)
+                    {
+                        MidiReader.ReadByte();
+                        break;
+                    }
+                    else if (type == 0x51)
+                    {
+                        MidiReader.ReadByte();
+                        int tempo_raw = (int)MidiReader.ReadByte() * 256 * 256 + (int)MidiReader.ReadByte() * 256 + (int)MidiReader.ReadByte();
+                    }
+                    else if (type == 0x54)
+                    {
+                        MidiReader.ReadByte();
+                        int hour = (int)MidiReader.ReadByte();
+                        int min = (int)MidiReader.ReadByte();
+                        int sec = (int)MidiReader.ReadByte();
+                        int frame = (int)MidiReader.ReadByte();
+                        int subframe = (int)MidiReader.ReadByte();
+                    }
+                    else if (type == 0x58)
+                    {
+                        MidiReader.ReadByte();
+                        int number = (int)MidiReader.ReadByte();
+                        int denominator = (int)MidiReader.ReadByte();
+                        int metronome = (int)MidiReader.ReadByte();
+                        int _32nds = (int)MidiReader.ReadByte();
+                    }
+                    else if (type == 0x59)
+                    {
+                        MidiReader.ReadByte();
+                        MidiReader.ReadByte();
+                        MidiReader.ReadByte();
+                    }
+                    else if (type == 0x7F)
+                    {
+                        int len = ReadVariableLength(MidiReader);
+                        for (int i = 0; i < len; i++)
+                        {
+                            MidiReader.ReadByte();
+                        }
+                    }
+                    else
+                    {
+                        string target_string = "";
+                        int string_length = MidiReader.ReadByte();
+                        for (int i = 0; i < string_length; i++)
+                        {
+                            target_string += Convert.ToChar(MidiReader.ReadByte());
+                        }
+                    }
+                }
+                else if (foo >= 0xF0)
+                {
+                    int len = ReadVariableLength(MidiReader);
+                    for (int i = 0; i < len; i++)
+                    {
+                        MidiReader.ReadByte();
+                    }
+                }
+            }
+			
+			DrumWriter.Write(string.Format("{0},", current_time));
+			DrumWriter.Write(string.Format("{0},", delta_time));
+			
+			for (int i = 0; i < 128; i++)
+			{
+				if (drum_note_event[note_event_index].note[i] == true)
+				{
+					DrumWriter.Write(string.Format("#,"));
+				}
+				else
+				{
+					DrumWriter.Write(string.Format(","));
+				}
+			}
+			
+			DrumWriter.Write(string.Format("\r\n"));
+			
+			#endregion
+
+			int dev_event_index = 0;
+			
+			DevEvent[] drum_dev_event = new DevEvent[3000];
+			
+			int bit_mask = 0xFF;
+			int old_bit_mask = 0;
+			double last_time_error = 0;
+			
+            for (int i = 0; i < note_event_index; i++)
+			{
+				bit_mask = 0xFF;
+				
+				if (drum_note_event[i].note[])
+				{
+					bit_mask -= Convert.ToInt32(Math.Pow(2, ));
+				}
+				
+				if (drum_note_event[i].note[])
+				{
+					bit_mask -= Convert.ToInt32(Math.Pow(2, ));
+				}
+				
+				if (drum_note_event[i].note[])
+				{
+					bit_mask -= Convert.ToInt32(Math.Pow(2, ));
+				}
+				
+				if (drum_note_event[i].note[])
+				{
+					bit_mask -= Convert.ToInt32(Math.Pow(2, ));
+				}
+				
+				if (drum_note_event[i].note[])
+				{
+					bit_mask -= Convert.ToInt32(Math.Pow(2, ));
+				}				
+				
+				if (bit_mask != old_bit_mask)
+				{
+					int ticks;
+					
+					double dt = drum_note_event[i].delta_time;
+					
+					if (drum_note_event[i].delta_time >= 5)
+					{
+						for (int j = 0; j < Convert.ToInt32(Math.Floor(drum_note_event[i].delta_time / 5)); j++)
+						{
+							dt -= 5;
+							ticks = (5 * (8000000 / 1024));
+							drum_dev_event = new DevEvent(1, ticks - tick_offset, bit_mask);
+							dev_event_index++;
+						}
+					}
+					
+					ticks = Convert.ToInt32(Math.Floor(dt * (8000000 / 1024)));
+					double ticks_d = (dt * (8000000 / 1024));
+					last_time_error += ticks_d - ticks;
+					
+					if (Convert.ToInt32(Math.Floor(last_time_error)) >= 1)
+					{
+						ticks += Convert.ToInt32(Math.Floor(last_time_error));
+						last_time_error -= Math.Floor(last_time_error);
+					}
+					
+					ticks -= ticks_offset;
+					
+					if (dev_event_index == 0)
+					{
+						ticks = 0;
+					}
+					
+					drum_dev_event = new DevEvent(1, ticks, bit_mask);
+					
+					dev_event_index++;
+				}
+			}
+			
+			MidiReader.Close();
             LogWriter.Close();
             GuitarWriter.Close();
             BassWriter.Close();
