@@ -49,6 +49,7 @@ namespace RB2TrackTool
 	public struct DevEvent
 	{
 		public int sp_code, delay, bitmask;
+		public int delay_autoadj, delay_manualadj;
 		public DevEvent(int id, int delay_, int bitmask_)
 		{
 			sp_code = id;
@@ -59,12 +60,6 @@ namespace RB2TrackTool
 
     partial class Form1
     {
-        int green_bit = 3;
-        int blue_bit = 2;
-        int yellow_bit = 1;
-        int red_bit = 0;
-        int bass_bit = 4;
-
         private int NoteToBit(int n)
         {
             switch (n)
@@ -114,11 +109,7 @@ namespace RB2TrackTool
             BinaryReader MidiReader = new BinaryReader(MidiStreamReader.BaseStream);
             StreamWriter MidiLogWriter = new StreamWriter(fpath + ".midilog.csv");
             StreamWriter DrumMidiLogWriter = new StreamWriter(fpath + ".drumtrack.csv");
-            StreamWriter DrumStream = new StreamWriter(fpath + ".drumtrack.bin");
-            BinaryWriter DrumWriter = new BinaryWriter(DrumStream.BaseStream);
 
-            int ticks_per_frame;
-            int frame_rate = 0;
             int ticks_per_beat = 0;
             double tempo = 120;
             int delta_time;
@@ -141,19 +132,8 @@ namespace RB2TrackTool
             MidiLogWriter.Write(string.Format("# of tracks: {0}\r\n", num_tracks));
             MidiLogWriter.Write(string.Format("time division: {0}\r\n", time_division));
 
-            if (time_division < 0x8000)
-            {
-                ticks_per_beat = time_division;
-                MidiLogWriter.Write(string.Format("ticks per beat: {0}\r\n", ticks_per_beat));
-            }
-            else
-            {
-                time_division -= 0x8000;
-                ticks_per_frame = time_division % 256;
-                frame_rate = (time_division - ticks_per_frame) / 256;
-                MidiLogWriter.Write(string.Format("frames per second: {0}\r\n", frame_rate));
-                MidiLogWriter.Write(string.Format("ticks per frame: {0}\r\n", ticks_per_frame));
-            }
+			ticks_per_beat = time_division;
+			MidiLogWriter.Write(string.Format("ticks per beat: {0}\r\n", ticks_per_beat));
 
             #endregion
 
@@ -854,8 +834,6 @@ namespace RB2TrackTool
             DrumMidiLogWriter.Write(string.Format("\r\n"));
 			
 			#endregion
-			
-			DevEvent[] drum_dev_event = new DevEvent[3000];
 
             #region
 
@@ -943,28 +921,16 @@ namespace RB2TrackTool
 
             for (int i = 0; i < dev_event_index; i++)
             {
-                if (first_instruct == false)
-                {
-                    DrumMidiLogWriter.Write(string.Format("{0,7},", drum_dev_event[i].delay));
-                    DrumMidiLogWriter.Write(string.Format("{0:8},{1}", Convert.ToString(drum_dev_event[i].bitmask, 2), drum_dev_event[i].sp_code));
-                    DrumMidiLogWriter.Write(string.Format("\r\n"));
-
-                    DrumWriter.Write(Convert.ToByte(drum_dev_event[i].sp_code));
-                    DrumWriter.Write(Convert.ToUInt16(drum_dev_event[i].delay));
-                    DrumWriter.Write(Convert.ToByte(drum_dev_event[i].bitmask));
-                }
-                else
+                if (first_instruct)
                 {
                     first_instruct = false;
 
-                    DrumMidiLogWriter.Write(string.Format("{0,7},", drum_dev_event[i].delay));
-                    DrumMidiLogWriter.Write(string.Format("{0:8},{1}", Convert.ToString(drum_dev_event[i].bitmask, 2), 2));
-                    DrumMidiLogWriter.Write(string.Format("\r\n"));
-
-                    DrumWriter.Write(Convert.ToByte(2));
-                    DrumWriter.Write(Convert.ToUInt16(drum_dev_event[i].delay));
-                    DrumWriter.Write(Convert.ToByte(drum_dev_event[i].bitmask));
+                    drum_dev_event[i].sp_code = 2;
                 }
+				
+				DrumMidiLogWriter.Write(string.Format("{0,7},", drum_dev_event[i].delay));
+				DrumMidiLogWriter.Write(string.Format("{0:8},{1}", Convert.ToString(drum_dev_event[i].bitmask, 2), drum_dev_event[i].sp_code));
+				DrumMidiLogWriter.Write(string.Format("\r\n"));
             }
 
             #endregion
@@ -972,11 +938,158 @@ namespace RB2TrackTool
             MidiReader.Close();
             MidiLogWriter.Close();
             DrumMidiLogWriter.Close();
-            DrumStream.Close();
-            DrumWriter.Close();
             MidiStreamReader.Close();
 
             return current_time;
+        }
+		
+		private void LoadAdjFile()
+		{
+			DirectoryInfo dir = new DirectoryInfo(folder_path + "\\" + FileListBox.Items[FileListBox.SelectedIndex]);
+            FileInfo[] fileArray = dir.GetFiles("*.mid.drumtrack.autoadj");
+            bool file_exists = false;
+            for (int i = 0; i < fileArray.Length; i++)
+            {
+                if (fileArray[i].Name == FileListBox.Items[FileListBox.SelectedIndex] + ".mid.drumtrack.adj")
+                {
+                    file_exists = true;
+                    break;
+                }
+            }
+
+            if (file_exists)
+            {
+                StreamReader SR = new StreamReader(fpath + ".drumtrack.adj");
+				
+				length_of_song = Convert.ToDouble(SR.ReadLine());
+				time_taken = Convert.ToDouble(SR.ReadLine());
+				time_taken_tp = Convert.ToDouble(SR.ReadLine());
+				
+				for (int i = 0; i < 3000; i++)
+				{
+					dev_event[i].delay_autoadj = Convert.ToInt32(SR.ReadLine());
+					dev_event[i].delay_manualadj = Convert.ToInt32(SR.ReadLine());
+					
+					if (dev_event[i].sp_code == 3)
+					{
+						break;
+					}
+				}
+				
+				SR.Close();
+            }
+            else
+            {
+				time_taken = length_of_song;
+				time_taken_tp = length_of_song;
+                SaveAutoAdjFile();
+				LoadAdjFile();
+				time_taken = 0;
+				time_taken_tp = 0;
+            }
+		}
+		
+		private void SaveAdjFile()
+		{
+			StreamWriter SW = new StreamWriter(f_path + ".drumtrack.adj");
+			
+			SW.WriteLine(string.Format("{0:F5}", length_of_song));
+			SW.WriteLine(string.Format("{0:F5}", time_taken));
+			SW.WriteLine(string.Format("{0:F5}", time_taken_tp));
+			
+			double accum_adj = 0;
+			
+			for (int i = 0; i < 3000; i++)
+			{
+				int delay = dev_event[i].delay;
+				
+				double new_delay_d = ((double)delay * length_of_song) / time_taken;
+                int new_delay = Convert.ToInt32(Math.Floor(new_delay_d));
+
+                accum_adj += new_delay_d - (double)new_delay;
+
+                while (accum_adj >= (double)1)
+				{
+					delay += 1;
+					accum_adj -= 1;
+				}
+				while (accum_adj <= (double)-1)
+				{
+					delay -= 1;
+					accum_adj += 1;
+				}
+				
+				dev_event[i].delay_autoadj = new_delay - delay;
+				
+				SW.WriteLine(dev_event[i].delay_autoadj);
+				SW.WriteLine(dev_event[i].delay_manualadj);
+				
+				if (dev_event[i].sp_code == 3)
+				{
+					break;
+				}
+			}
+			
+			SW.Close();
+		}
+
+        private void GenerateBin()
+        {
+            fpath = folder_path + "\\" + FileListBox.Items[FileListBox.SelectedIndex] + "\\" + FileListBox.Items[FileListBox.SelectedIndex];
+            length_of_song = MidiToDrumChart(fpath + ".mid", 12000000d);
+
+            int i;
+
+            for (i = 0; i < 3000; i++)
+            {
+                dev_event[i].sp_code = drum_dev_event[i].sp_code;
+                dev_event[i].delay = drum_dev_event[i].delay;
+				dev_event[i].delay_autoadj = 0;
+				dev_event[i].delay_manualadj = 0;
+                dev_event[i].bitmask = drum_dev_event[i].bitmask;
+                if (dev_event[i].sp_code == 3)
+                {
+                    break;
+                }
+            }
+            event_cnt = 0;
+            event_length = i;
+        }
+		
+		private void SendNextInstruct()
+        {
+            if (SerPort.BytesToWrite < 8)
+            {
+                byte[] b = new byte[5];
+                b[0] = 0;
+                b[1] = (byte)dev_event[event_cnt].sp_code;
+
+                int delay = dev_event[event_cnt].delay;
+				delay += dev_event[event_cnt].delay_manualadj;
+
+                if (is_cali == false)
+                {
+					delay += dev_event[event_cnt].delay_autoadj;
+                }
+
+                b[3] = Convert.ToByte(delay % 256);
+                b[2] = Convert.ToByte((delay - Convert.ToInt32(b[3])) / 256);
+
+                b[4] = (byte)dev_event[event_cnt].bitmask;
+
+                SerPort.Write(b, 0, 5);
+
+                event_cnt++;
+
+                if (b[1] == 3)
+                {
+                    is_playing = false;
+					if (is_cali)
+					{
+						SaveAdjFile();
+					}
+                }
+            }
         }
     }
 }

@@ -14,8 +14,25 @@ namespace RB2TrackTool
     public partial class Form1 : Form
     {
         string folder_path = "C:\\MOO\\midi\\songs";
-        StreamReader instruct_stream;
-        BinaryReader instruct_bin;
+        bool is_playing = false;
+		string fpath;
+        double length_of_song;
+        double time_taken;
+        double time_taken_tp;
+		DevEvent[] dev_event = new DevEvent[3000];
+        int event_cnt;
+        int event_length;		
+        int bot_status;
+        Stopwatch stop_watch = new Stopwatch();
+		bool is_cali = false;
+		int green_bit = 3;
+        int blue_bit = 2;
+        int yellow_bit = 1;
+        int red_bit = 0;
+        int bass_bit = 4;
+		DevEvent[] drum_dev_event = new DevEvent[3000];
+		int minimum_row_height = 22;
+		double height_scale = 1;
 
         public Form1()
         {
@@ -55,6 +72,7 @@ namespace RB2TrackTool
             {
                 SongStatusLabel.Text = "Song Status: Midi Exists";
                 GenerateBin();
+				LoadAdjFile();
                 GroupBox.Enabled = true;
             }
             else
@@ -63,8 +81,6 @@ namespace RB2TrackTool
                 GroupBox.Enabled = false;
             }
         }
-
-        bool is_playing = false;
 
         private void Checker_Tick(object sender, EventArgs e)
         {
@@ -139,50 +155,10 @@ namespace RB2TrackTool
             }
         }
 
-        string fpath;
-        double length_of_song;
-        double time_taken;
-        double time_taken_tp;
-        double accum_adj;
-
-        private void GenerateBin()
-        {
-            fpath = folder_path + "\\" + FileListBox.Items[FileListBox.SelectedIndex] + "\\" + FileListBox.Items[FileListBox.SelectedIndex] + ".mid";
-            length_of_song = MidiToDrumChart(fpath, 12000000d);
-        }
-
-        DevEvent[] dev_event = new DevEvent[3000];
-        int event_cnt;
-        int event_length;
-
         private void PlayButton_Click(object sender, EventArgs e)
         {
-            instruct_stream = new StreamReader(fpath + ".drumtrack.bin");
-            instruct_bin = new BinaryReader(instruct_stream.BaseStream);
-            instruct_bin.BaseStream.Position = 0;
-
-            int i;
-
-            for (i = 0; i < 3000; i++)
-            {
-                dev_event[i].sp_code = instruct_bin.ReadByte();
-                dev_event[i].delay = instruct_bin.ReadUInt16();
-                dev_event[i].bitmask = instruct_bin.ReadByte();
-                if (dev_event[i].sp_code == 3)
-                {
-                    break;
-                }
-            }
-            event_cnt = 0;
-            event_length = i;
-
-            accum_adj = 0;
-
             is_playing = true;
             is_cali = false;
-
-            instruct_stream.Close();
-            instruct_bin.Close();
         }
 
         private void AbortButton_Click(object sender, EventArgs e)
@@ -197,71 +173,20 @@ namespace RB2TrackTool
             SerPort.Write(b, 0, 5);
         }
 
-        private void SendNextInstruct()
-        {
-            if (SerPort.BytesToWrite < 8)
-            {
-                byte[] b = new byte[5];
-                b[0] = 0;
-                b[1] = (byte)dev_event[event_cnt].sp_code;
-
-                int delay = dev_event[event_cnt].delay;
-
-                if (is_cali == false)
-                {
-                    double new_delay_d = ((double)delay * length_of_song) / time_taken;
-                    int new_delay = Convert.ToInt32(Math.Floor(new_delay_d));
-
-                    accum_adj += new_delay_d - (double)new_delay;
-
-                    delay = new_delay;
-
-                    while (accum_adj >= (double)1)
-                    {
-                        delay += 1;
-                        accum_adj -= 1;
-                    }
-                    while (accum_adj <= (double)-1)
-                    {
-                        delay -= 1;
-                        accum_adj += 1;
-                    }
-                }
-
-                b[3] = Convert.ToByte(delay % 256);
-                b[2] = Convert.ToByte((delay - Convert.ToInt32(b[3])) / 256);
-
-                b[4] = (byte)dev_event[event_cnt].bitmask;
-
-                SerPort.Write(b, 0, 5);
-
-                event_cnt++;
-
-                if (b[1] == 3)
-                {
-                    is_playing = false;
-                }
-            }
-        }
-
-        int bot_status;
-
-        Stopwatch stop_watch = new Stopwatch();
-
         private void Player_Tick(object sender, EventArgs e)
         {
-            if (SerPort.IsOpen && is_playing)
+            if (SerPort.IsOpen)
             {
                 if (SerPort.BytesToRead > 0)
                 {
                     bot_status = (int)SerPort.ReadByte();
 
-                    if (bot_status == 1)
+                    if (bot_status == 1 && is_playing)
                     {
                         event_cnt = 0;
                         SendNextInstruct();
                     }
-                    else if (bot_status == 0)
+                    else if (bot_status == 0 && is_playing)
                     {
                         SendNextInstruct();
                     }
@@ -275,27 +200,9 @@ namespace RB2TrackTool
                         stop_watch.Reset();
                         stop_watch.Start();
                     }
-                }
-            }
-            else if (SerPort.IsOpen && is_playing == false)
-            {
-                if (SerPort.BytesToRead > 0)
-                {
-                    bot_status = (int)SerPort.ReadByte();
-
-                    if (bot_status == 4)
+					else if (bot_status == 4)
                     {
                         stop_watch.Stop();
-                    }
-                    else if (bot_status == 2)
-                    {
-                        is_playing = false;
-                        event_cnt = 0;
-                    }
-                    else if (bot_status == 3)
-                    {
-                        stop_watch.Reset();
-                        stop_watch.Start();
                     }
                 }
             }
@@ -309,36 +216,141 @@ namespace RB2TrackTool
             }
         }
 
-        bool is_cali = false;
-
         private void CalBut_Click(object sender, EventArgs e)
         {
-            instruct_stream = new StreamReader(fpath + ".drumtrack.bin");
-            instruct_bin = new BinaryReader(instruct_stream.BaseStream);
-            instruct_bin.BaseStream.Position = 0;
-
-            int i;
-
-            for (i = 0; i < 3000; i++)
-            {
-                dev_event[i].sp_code = instruct_bin.ReadByte();
-                dev_event[i].delay = instruct_bin.ReadUInt16();
-                dev_event[i].bitmask = instruct_bin.ReadByte();
-                if (dev_event[i].sp_code == 3)
-                {
-                    break;
-                }
-            }
-            event_cnt = 0;
-            event_length = i;
-
             is_playing = true;
             is_cali = true;
-
-            accum_adj = 0;
-
-            instruct_stream.Close();
-            instruct_bin.Close();
         }
+		
+		private void HeightChange(object sender, DataGridViewRowEventArgs e)
+		{
+			int delay = Convert.ToInt32(Math.Round((double)(e.Height - minimum_row_height) * height_scale));
+			int i = Convert.ToString(e.Cells[0].Value);
+			dev_event[i].delay_manualadj = delay - dev_event[i].delay - dev_event[i].delay_autoadj;
+			ApplyToList();
+		}
+		
+		private void ChangeManualAdj(object sender, DataGridViewCellValidatingEventArgs e)
+		{
+			if (e.ColumnIndex == 3)
+			{
+				int new_manadj;
+				if (Int32.TryParse(ListOfNotes.Rows[i].Cells[0].Value, out new_manadj))
+				{
+					dev_event[e.RowIndex].delay_manualadj = new_manadj;				
+				}
+				ApplyToList();
+			}
+		}
+		
+		private bool BitIsClear(int b, int i)
+		{
+			if (Convert.ToInt32(Math.Floor(b / Math.Pow(2, i))) % 2 == 1)
+			{
+				return false;
+			}
+			else
+			{
+				return true;
+			}
+		}
+		
+		private void ApplyToList()
+		{
+			string bitmap_fpath = folder_path + "\\";
+			
+			Bitmap BMbl = new Bitmap(bitmap_fpath + "black.bmp");
+			Bitmap BMr = new Bitmap(bitmap_fpath + "red.bmp");
+			Bitmap BMy = new Bitmap(bitmap_fpath + "yellow.bmp");
+			Bitmap BMb = new Bitmap(bitmap_fpath + "blue.bmp");
+			Bitmap BMg = new Bitmap(bitmap_fpath + "green.bmp");
+			Bitmap BMo = new Bitmap(bitmap_fpath + "orange.bmp");
+			Bitmap BMrb = new Bitmap(bitmap_fpath + "redb.bmp");
+			Bitmap BMyb = new Bitmap(bitmap_fpath + "yellowb.bmp");
+			Bitmap BMbb = new Bitmap(bitmap_fpath + "blueb.bmp");
+			Bitmap BMgb = new Bitmap(bitmap_fpath + "greenb.bmp");
+			
+			int i;
+			for (i = 0; i < event_length; i++)
+			{
+				try
+				{
+					ListOfNotes.Rows[i].MinimumHeight = minimum_row_height;
+					ListOfNotes.Rows[i].Height = minimum_row_height + Convert.ToInt32(Math.Round(((double)(dev_event[i].delay + dev_event[i].delay_autoadj + dev_event[i].delay_manualadj) * scale)));
+					ListOfNotes.Rows[i].Cells[0].Value = Convert.ToString(i);
+					ListOfNotes.Rows[i].Cells[1].Value = Convert.ToString(dev_event[i].delay);
+					ListOfNotes.Rows[i].Cells[2].Value = Convert.ToString(dev_event[i].delay_autoadj);
+					ListOfNotes.Rows[i].Cells[3].Value = Convert.ToString(dev_event[i].delay_manualadj);
+					
+					if (BitIsClear(dev_event[i].bitmask, bass_bit))
+					{
+						ListOfNotes.Rows[i].Cells[4].Value = BMo;
+						ListOfNotes.Rows[i].Cells[5].Value = BMo;
+						ListOfNotes.Rows[i].Cells[6].Value = BMo;
+						ListOfNotes.Rows[i].Cells[7].Value = BMo;
+						
+						if (BitIsClear(dev_event[i].bitmask, red_bit))
+						{
+							ListOfNotes.Rows[i].Cells[4].Value = BMrb;
+						}
+						
+						if (BitIsClear(dev_event[i].bitmask, yellow_bit))
+						{
+							ListOfNotes.Rows[i].Cells[5].Value = BMyb;
+						}
+						
+						if (BitIsClear(dev_event[i].bitmask, blue_bit))
+						{
+							ListOfNotes.Rows[i].Cells[6].Value = BMbb;
+						}
+						
+						if (BitIsClear(dev_event[i].bitmask, green_bit))
+						{
+							ListOfNotes.Rows[i].Cells[7].Value = BMgb;
+						}
+						
+						ListOfNotes.Rows[i].Cells[8].Value = BMo;
+					}
+					else
+					{
+						ListOfNotes.Rows[i].Cells[4].Value = BMbl;
+						ListOfNotes.Rows[i].Cells[5].Value = BMbl;
+						ListOfNotes.Rows[i].Cells[6].Value = BMbl;
+						ListOfNotes.Rows[i].Cells[7].Value = BMbl;
+						
+						if (BitIsClear(dev_event[i].bitmask, red_bit))
+						{
+							ListOfNotes.Rows[i].Cells[4].Value = BMr;
+						}
+						
+						if (BitIsClear(dev_event[i].bitmask, yellow_bit))
+						{
+							ListOfNotes.Rows[i].Cells[5].Value = BMy;
+						}
+						
+						if (BitIsClear(dev_event[i].bitmask, blue_bit))
+						{
+							ListOfNotes.Rows[i].Cells[6].Value = BMb;
+						}
+						
+						if (BitIsClear(dev_event[i].bitmask, green_bit))
+						{
+							ListOfNotes.Rows[i].Cells[7].Value = BMg;
+						}
+						
+						ListOfNotes.Rows[i].Cells[8].Value = BMbl;
+					}					
+				}
+				catch
+				{
+					ListOfNotes.Rows.Add();
+					i--;
+				}
+			}
+			for (int j = i; event_length <= ListOfNotes.Rows.Count - 1; j++)
+			{
+				ListOfNotes.Rows.RemoveAt(i);
+			}
+		}
     }
 }
