@@ -30,7 +30,7 @@ const unsigned char cal_data[32] = {
 	0x00, 0x00, 0x00, 0x00
 };
 
-static volatile unsigned char hit_f[8]; // hit flag
+static volatile unsigned char hit_f; // hit flag
 static volatile unsigned char hit_s[8]; // hit softness
 static volatile unsigned int hit_t[8]; // time associated with flag
 static volatile unsigned char hit_last; // last pad hit
@@ -44,9 +44,9 @@ void hit_pcint(unsigned char w)
 {
 	unsigned long t = wm_timer; // keep time
 
-	if(hit_f[w] == 1) // fresh hit
+	if(bit_is_set(hit_f, w)) // fresh hit
 	{
-		hit_f[w] = 0;
+		cbi(hit_f, w);
 		hit_t[w] = t;
 		hit_last = w;
 		
@@ -54,29 +54,24 @@ void hit_pcint(unsigned char w)
 		// modify this line to change hit softness
 		// hit_s[w] = ?;
 		// Note from Frank: I only play RB2 so I never bothered with the velocity stuff
-
-		tog(LED_port, LED_pin);
 	}
 }
 
 void check_for_hits()
 {
-	unsigned char c;
-	unsigned char s;
-
 	// compare before and after states
 
 	#ifdef trig_on_fall
 
-	c = drum_in_reg;
-	s = drum_in_preg;
+	unsigned char c = drum_in_reg;
+	unsigned char s = drum_in_preg;
 
 	#endif
 
 	#ifdef trig_on_rise
 
-	s = drum_in_reg;
-	c = drum_in_preg;
+	unsigned char s = drum_in_reg;
+	unsigned char c = drum_in_preg;
 
 	#endif
 
@@ -104,16 +99,13 @@ void check_for_hits()
 
 void check_hit_flags()
 {
-	if(hit_f != 0xFF)
+	unsigned long t = wm_timer;
+	for(unsigned char i = 0; i < 8; i++)
 	{
-		unsigned long t = wm_timer;
-		for(unsigned char i = 0; i < 8; i++)
+		if(bit_is_clear(hit_f, i) && ((t - hit_t[i]) > hit_min_time))
 		{
-			if(hit_f[i] == 0 && ((t - hit_t[i]) > hit_min_time))
-			{
-				// clear flag if flag has been set for too long
-				hit_f[i] = 1;
-			}
+			// clear flag if flag has been set for too long
+			sbi(hit_f, i);
 		}
 	}
 }
@@ -121,27 +113,11 @@ void check_hit_flags()
 void wm_timer_inc()
 {
 	wm_timer++;
-	unsigned char d[8] = {1, 1, 1, 1, 1, 1, 1, 1};
-	if(memcmp(hit_f, d, 8) == 0)
+	if(hit_f == 0xFF)
 	{
 		// if nothing is hit, then clear timer
 		wm_timer = 0;
 	}
-}
-
-ISR(PCINT0_vect)
-{
-	check_for_hits();
-}
-
-ISR(PCINT1_vect)
-{
-	check_for_hits();
-}
-
-ISR(PCINT2_vect)
-{
-	check_for_hits();
 }
 
 int main()
@@ -193,12 +169,12 @@ int main()
 	sbi(bass_port, bass2_pin);
 
 	#ifdef GHWT
-	sbi(plus_port, plus_pin);
-	sbi(minus_port, minus_pin);
-	sbi(up_stick_port, up_stick_pin);
-	sbi(down_stick_port, down_stick_pin);
-	sbi(left_stick_port, left_stick_pin);
-	sbi(right_stick_port, right_stick_pin);
+	sbi(plusminus_port, plus_pin);
+	sbi(plusminus_port, minus_pin);
+	sbi(stick_port, up_stick_pin);
+	sbi(stick_port, down_stick_pin);
+	sbi(stick_port, left_stick_pin);
+	sbi(stick_port, right_stick_pin);
 	#endif
 
 	// all input
@@ -211,12 +187,12 @@ int main()
 	cbi(bass_ddr, bass2_pin);
 
 	#ifdef GHWT
-	cbi(plus_ddr, plus_pin);
-	cbi(minus_ddr, minus_pin);
-	cbi(up_stick_ddr, up_stick_pin);
-	cbi(down_stick_ddr, down_stick_pin);
-	cbi(left_stick_ddr, left_stick_pin);
-	cbi(right_stick_ddr, right_stick_pin);
+	cbi(plusminus_ddr, plus_pin);
+	cbi(plusminus_ddr, minus_pin);
+	cbi(stick_ddr, up_stick_pin);
+	cbi(stick_ddr, down_stick_pin);
+	cbi(stick_ddr, left_stick_pin);
+	cbi(stick_ddr, right_stick_pin);
 	#endif
 
 	// preinitialize comparison
@@ -227,9 +203,9 @@ int main()
 	wm_timer = 0;
 
 	// initialize flags
+	hit_f = 0xFF;
 	for(unsigned char i = 0; i < 8; i++)
 	{
-		hit_f[i] = 1;
 		hit_t[i] = 0;
 		hit_s[i] = default_hit_softness;
 	}
@@ -241,12 +217,6 @@ int main()
 	but_dat.d[3] = 0b11111111;
 	but_dat.d[4] = 0b11111111;
 	but_dat.d[5] = 0b11111111;
-
-	// pin change interrupts on
-	PCICR = _BV(PCIE0) | _BV(PCIE1) | _BV(PCIE2);
-	PCMSK0 = 0x00;
-	PCMSK1 = 0x00;
-	PCMSK2 = 0x00;
 
 	// make wiimote think this is a drum
 	wm_init(drum_id, but_dat, cal_data, wm_timer_inc);
@@ -274,14 +244,7 @@ int main()
 		check_hit_flags();
 
 		// apply hits
-		but_dat.d[5] = 0xFF;
-		for(unsigned char i = 0; i < 8; i++)
-		{
-			if(hit_f[i] == 0)
-			{
-				cbi(but_dat.d[5], i);
-			}
-		}
+		but_dat.d[5] = hit_f;
 
 		#ifdef USE_SERPORT
 		unsigned char d; // serial port latest data
@@ -332,16 +295,16 @@ int main()
 		}
 
 		// plus and minus buttons
-		if(bit_is_clear(plus_in_reg, plus_pin)) cbi(but_dat.d[4], plus_bit);
-		if(bit_is_clear(minus_in_reg, minus_pin)) cbi(but_dat.d[4], minus_bit);
+		if(bit_is_clear(plusminus_in_reg, plus_pin)) cbi(but_dat.d[4], plus_bit);
+		if(bit_is_clear(plusminus_in_reg, minus_pin)) cbi(but_dat.d[4], minus_bit);
 
 		// simulate thumbstick with switches
 		but_dat.d[0] = 0b00011111;
 		but_dat.d[1] = 0b00011111;
-		if(bit_is_clear(up_stick_in_reg, up_stick_pin)) but_dat.d[1] += thumbstick_speed;
-		if(bit_is_clear(down_stick_in_reg, down_stick_pin)) but_dat.d[1] -= thumbstick_speed;
-		if(bit_is_clear(left_stick_in_reg, left_stick_pin)) but_dat.d[0] -= thumbstick_speed;
-		if(bit_is_clear(right_stick_in_reg, right_stick_pin)) but_dat.d[0] += thumbstick_speed;
+		if(bit_is_clear(stick_in_reg, up_stick_pin)) but_dat.d[1] += thumbstick_speed;
+		if(bit_is_clear(stick_in_reg, down_stick_pin)) but_dat.d[1] -= thumbstick_speed;
+		if(bit_is_clear(stick_in_reg, left_stick_pin)) but_dat.d[0] -= thumbstick_speed;
+		if(bit_is_clear(stick_in_reg, right_stick_pin)) but_dat.d[0] += thumbstick_speed;
 
 		#endif
 

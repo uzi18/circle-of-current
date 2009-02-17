@@ -175,7 +175,6 @@ void wm_slaveRx(unsigned char addr, unsigned char l)
 		}
 		else if(addr >= 0x46 && addr < 0x4C)
 		{
-	
 			for(unsigned char i = 6; i < 10; i++)
 			{
 				wm_rand[9 - i] = twi_read_reg(0x40 + i);

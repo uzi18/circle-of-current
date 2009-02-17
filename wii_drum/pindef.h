@@ -55,37 +55,24 @@
 #define bass1_pin 1
 #define bass2_pin 2
 
+#define plusminus_port PORTA
+#define plusminus_ddr DDRA
+#define plusminus_in_reg PINA
+
+#define stick_in_reg PINA
+#define stick_port PORTA
+#define stick_ddr DDRA
+
 #define plus_bit 2
 #define plus_pin 6
-#define plus_in_reg PINA
-#define plus_port PORTA
-#define plus_ddr DDRA
 
 #define minus_bit 4
 #define minus_pin 7
-#define minus_in_reg PINA
-#define minus_port PORTA
-#define minus_ddr DDRA
 
 #define up_stick_pin 6
-#define up_stick_in_reg PINA
-#define up_stick_port PORTA
-#define up_stick_ddr DDRA
-
 #define down_stick_pin 6
-#define down_stick_in_reg PINA
-#define down_stick_port PORTA
-#define down_stick_ddr DDRA
-
 #define left_stick_pin 6
-#define left_stick_in_reg PINA
-#define left_stick_port PORTA
-#define left_stick_ddr DDRA
-
 #define right_stick_pin 6
-#define right_stick_in_reg PINA
-#define right_stick_port PORTA
-#define right_stick_ddr DDRA
 
 #define pindef_h
 #endif
