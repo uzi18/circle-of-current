@@ -36,10 +36,10 @@ namespace RB2TrackTool
 		public bool[] note;
 		public NoteEvent(double time_, double delta_time_)
 		{
-            note = new bool[5];
+            note = new bool[8];
 			time = time_;
 			delta_time = delta_time_;
-			for (int i = 0; i < 5; i++)
+			for (int i = 0; i < 8; i++)
 			{
 				note[i] = false;
 			}
@@ -59,10 +59,10 @@ namespace RB2TrackTool
 
     partial class Form1
     {
-        int green_bit = 0;
-        int blue_bit = 1;
-        int yellow_bit = 2;
-        int red_bit = 3;
+        int green_bit = 3;
+        int blue_bit = 2;
+        int yellow_bit = 1;
+        int red_bit = 0;
         int bass_bit = 4;
 
         private int NoteToBit(int n)
@@ -108,13 +108,13 @@ namespace RB2TrackTool
             return sum;
         }
 
-        private void LogMidi(OpenFileDialog ofd)
+        private double MidiToDrumChart(string fpath, double clk_freq)
         {
-            Stream MidiFile = ofd.OpenFile();
-            BinaryReader MidiReader = new BinaryReader(MidiFile);
-            StreamWriter LogWriter = new StreamWriter(ofd.FileName + ".midilog.csv");
-            StreamWriter DrumLogWriter = new StreamWriter(ofd.FileName + ".drumtrack.csv");
-            StreamWriter DrumStream = new StreamWriter(ofd.FileName + ".drumtrack.bin");
+            StreamReader MidiStreamReader = new StreamReader(fpath);
+            BinaryReader MidiReader = new BinaryReader(MidiStreamReader.BaseStream);
+            StreamWriter MidiLogWriter = new StreamWriter(fpath + ".midilog.csv");
+            StreamWriter DrumMidiLogWriter = new StreamWriter(fpath + ".drumtrack.csv");
+            StreamWriter DrumStream = new StreamWriter(fpath + ".drumtrack.bin");
             BinaryWriter DrumWriter = new BinaryWriter(DrumStream.BaseStream);
 
             int ticks_per_frame;
@@ -125,34 +125,34 @@ namespace RB2TrackTool
 
             #region
 
-            LogWriter.Write(string.Format("file: {0}\r\n", MidiOpenFileDialog.FileName));
-            LogWriter.Write("reading header chunk\r\n");
-            LogWriter.Write(string.Format("midi file header: {0}{1}{2}{3}\r\n", MidiReader.ReadChar(), MidiReader.ReadChar(), MidiReader.ReadChar(), MidiReader.ReadChar()));
+            MidiLogWriter.Write(string.Format("file: {0}\r\n", fpath));
+            MidiLogWriter.Write("reading header chunk\r\n");
+            MidiLogWriter.Write(string.Format("midi file header: {0}{1}{2}{3}\r\n", MidiReader.ReadChar(), MidiReader.ReadChar(), MidiReader.ReadChar(), MidiReader.ReadChar()));
 
             int chunk_size = (int)MidiReader.ReadByte() * 256 * 256 * 256 + (int)MidiReader.ReadByte() * 256 * 256 + (int)MidiReader.ReadByte() * 256 + (int)MidiReader.ReadByte();
 
-            LogWriter.Write(string.Format("chunk size: {0}\r\n", chunk_size));
+            MidiLogWriter.Write(string.Format("chunk size: {0}\r\n", chunk_size));
 
             int format_type = (int)MidiReader.ReadByte() * 256 + (int)MidiReader.ReadByte();
             int num_tracks = (int)MidiReader.ReadByte() * 256 + (int)MidiReader.ReadByte();
             int time_division = (int)MidiReader.ReadByte() * 256 + (int)MidiReader.ReadByte();
 
-            LogWriter.Write(string.Format("format type: {0}\r\n", format_type));
-            LogWriter.Write(string.Format("# of tracks: {0}\r\n", num_tracks));
-            LogWriter.Write(string.Format("time division: {0}\r\n", time_division));
+            MidiLogWriter.Write(string.Format("format type: {0}\r\n", format_type));
+            MidiLogWriter.Write(string.Format("# of tracks: {0}\r\n", num_tracks));
+            MidiLogWriter.Write(string.Format("time division: {0}\r\n", time_division));
 
             if (time_division < 0x8000)
             {
                 ticks_per_beat = time_division;
-                LogWriter.Write(string.Format("ticks per beat: {0}\r\n", ticks_per_beat));
+                MidiLogWriter.Write(string.Format("ticks per beat: {0}\r\n", ticks_per_beat));
             }
             else
             {
                 time_division -= 0x8000;
                 ticks_per_frame = time_division % 256;
                 frame_rate = (time_division - ticks_per_frame) / 256;
-                LogWriter.Write(string.Format("frames per second: {0}\r\n", frame_rate));
-                LogWriter.Write(string.Format("ticks per frame: {0}\r\n", ticks_per_frame));
+                MidiLogWriter.Write(string.Format("frames per second: {0}\r\n", frame_rate));
+                MidiLogWriter.Write(string.Format("ticks per frame: {0}\r\n", ticks_per_frame));
             }
 
             #endregion
@@ -165,16 +165,16 @@ namespace RB2TrackTool
             {
                 try
                 {
-                    LogWriter.Write(string.Format("track #: {0}\r\n", track_index + 1));
-                    LogWriter.Write(string.Format("track header: {0}{1}{2}{3}\r\n", MidiReader.ReadChar(), MidiReader.ReadChar(), MidiReader.ReadChar(), MidiReader.ReadChar()));
+                    MidiLogWriter.Write(string.Format("track #: {0}\r\n", track_index + 1));
+                    MidiLogWriter.Write(string.Format("track header: {0}{1}{2}{3}\r\n", MidiReader.ReadChar(), MidiReader.ReadChar(), MidiReader.ReadChar(), MidiReader.ReadChar()));
 
                     chunk_size = (int)MidiReader.ReadByte() * 256 * 256 * 256 + (int)MidiReader.ReadByte() * 256 * 256 + (int)MidiReader.ReadByte() * 256 + (int)MidiReader.ReadByte();
 
-                    LogWriter.Write(string.Format("track chunk size: {0}\r\n", chunk_size));
+                    MidiLogWriter.Write(string.Format("track chunk size: {0}\r\n", chunk_size));
 
                     int event_index = 0;
 
-                    LogWriter.Write(string.Format("track #, event #, delta time, event type, parameters\r\n"));
+                    MidiLogWriter.Write(string.Format("track #, event #, delta time, event type, parameters\r\n"));
 
                     track_start_addr[track_index] = MidiReader.BaseStream.Position;
 
@@ -183,9 +183,9 @@ namespace RB2TrackTool
                         try
                         {
                             delta_time = ReadVariableLength(MidiReader);
-                            LogWriter.Write(string.Format("{0}, ", track_index + 1));
-                            LogWriter.Write(string.Format("{0}, ", event_index + 1));
-                            LogWriter.Write(string.Format("{0}, ", delta_time));
+                            MidiLogWriter.Write(string.Format("{0}, ", track_index + 1));
+                            MidiLogWriter.Write(string.Format("{0}, ", event_index + 1));
+                            MidiLogWriter.Write(string.Format("{0}, ", delta_time));
 
                             int temp = (int)MidiReader.ReadByte();
 
@@ -223,8 +223,8 @@ namespace RB2TrackTool
                                         break;
                                 }
 
-                                LogWriter.Write(string.Format("\"{0}\", ", event_type_s));
-                                LogWriter.Write(string.Format("ch: {0}, ", channel));
+                                MidiLogWriter.Write(string.Format("\"{0}\", ", event_type_s));
+                                MidiLogWriter.Write(string.Format("ch: {0}, ", channel));
 
                                 int para1 = (int)MidiReader.ReadByte();
                                 int para2;
@@ -232,7 +232,7 @@ namespace RB2TrackTool
                                 if (event_type != 0x0C && event_type != 0x0D && event_type >= 0x08)
                                 {
                                     para2 = (int)MidiReader.ReadByte();
-                                    LogWriter.Write(string.Format("p1: {0}, p2: {1}\r\n", para1, para2));
+                                    MidiLogWriter.Write(string.Format("p1: {0}, p2: {1}\r\n", para1, para2));
                                     while (true)
                                     {
                                         long old_position = MidiReader.BaseStream.Position;
@@ -243,7 +243,7 @@ namespace RB2TrackTool
                                         if (new_para1 < 0x80)
                                         {
                                             new_para2 = (int)MidiReader.ReadByte();
-                                            LogWriter.Write(string.Format("{0}, {1}, {2}, \"{3}\", ch: {4}, p1: {5}, p2: {6}\r\n", track_index + 1, event_index + 1, delta_time, event_type_s, channel, new_para1, new_para2));
+                                            MidiLogWriter.Write(string.Format("{0}, {1}, {2}, \"{3}\", ch: {4}, p1: {5}, p2: {6}\r\n", track_index + 1, event_index + 1, delta_time, event_type_s, channel, new_para1, new_para2));
                                         }
                                         else
                                         {
@@ -254,7 +254,7 @@ namespace RB2TrackTool
                                 }
                                 else
                                 {
-                                    LogWriter.Write(string.Format("p1: {0}\r\n", para1));
+                                    MidiLogWriter.Write(string.Format("p1: {0}\r\n", para1));
                                 }
                             }
                             else if (temp == 0xFF)
@@ -315,19 +315,19 @@ namespace RB2TrackTool
                                         break;
                                 }
 
-                                LogWriter.Write(string.Format("meta event: \"{0}\", ", meta_event));
+                                MidiLogWriter.Write(string.Format("meta event: \"{0}\", ", meta_event));
 
                                 if (type == 0x00)
                                 {
                                     MidiReader.ReadByte();
                                     int sequence = (int)MidiReader.ReadByte() * 256 + (int)MidiReader.ReadByte();
-                                    LogWriter.Write(string.Format("seq: {0}", sequence));
+                                    MidiLogWriter.Write(string.Format("seq: {0}", sequence));
                                 }
                                 else if (type == 0x20)
                                 {
                                     MidiReader.ReadByte();
                                     int chan = (int)MidiReader.ReadByte();
-                                    LogWriter.Write(string.Format("ch: {0}", chan));
+                                    MidiLogWriter.Write(string.Format("ch: {0}", chan));
                                 }
                                 else if (type == 0x2F)
                                 {
@@ -337,7 +337,7 @@ namespace RB2TrackTool
                                 {
                                     MidiReader.ReadByte();
                                     tempo = Convert.ToDouble((int)MidiReader.ReadByte() * 256 * 256 + (int)MidiReader.ReadByte() * 256 + (int)MidiReader.ReadByte());
-                                    LogWriter.Write(string.Format("tempo: {0}", tempo));
+                                    MidiLogWriter.Write(string.Format("tempo: {0}", tempo));
                                 }
                                 else if (type == 0x54)
                                 {
@@ -347,7 +347,7 @@ namespace RB2TrackTool
                                     int sec = (int)MidiReader.ReadByte();
                                     int frame = (int)MidiReader.ReadByte();
                                     int subframe = (int)MidiReader.ReadByte();
-                                    LogWriter.Write(string.Format("h: {0}, m: {1}, s: {2}, fr: {3}, subfr: {4}", hour, min, sec, frame, subframe));
+                                    MidiLogWriter.Write(string.Format("h: {0}, m: {1}, s: {2}, fr: {3}, subfr: {4}", hour, min, sec, frame, subframe));
                                 }
                                 else if (type == 0x58)
                                 {
@@ -356,7 +356,7 @@ namespace RB2TrackTool
                                     int denominator = (int)MidiReader.ReadByte();
                                     int metronome = (int)MidiReader.ReadByte();
                                     int _32nds = (int)MidiReader.ReadByte();
-                                    LogWriter.Write(string.Format("#: {0}, denom: {1}, metro: {2}, 32nds: {3}", number, denominator, metronome, _32nds));
+                                    MidiLogWriter.Write(string.Format("#: {0}, denom: {1}, metro: {2}, 32nds: {3}", number, denominator, metronome, _32nds));
                                 }
                                 else if (type == 0x59)
                                 {
@@ -380,9 +380,9 @@ namespace RB2TrackTool
                                     {
                                         target_string += Convert.ToChar(MidiReader.ReadByte());
                                     }
-                                    LogWriter.Write(string.Format("text: \"{0}\"", target_string));
+                                    MidiLogWriter.Write(string.Format("text: \"{0}\"", target_string));
                                 }
-                                LogWriter.Write(string.Format("\r\n"));
+                                MidiLogWriter.Write(string.Format("\r\n"));
                             }
                             else if (temp >= 0xF0)
                             {
@@ -406,7 +406,7 @@ namespace RB2TrackTool
                 }
                 catch (EndOfStreamException)
                 {
-                    LogWriter.Write("Corrupted File\r\n");
+                    MidiLogWriter.Write("Corrupted File\r\n");
                     break;
                 }
             }
@@ -415,7 +415,7 @@ namespace RB2TrackTool
 
             MidiReader.BaseStream.Position = track_start_addr[0];
 
-            TempoPeriod[] tempo_period = new TempoPeriod[200];
+            TempoPeriod[] tempo_period = new TempoPeriod[3000];
 			
 			#region
 
@@ -427,9 +427,11 @@ namespace RB2TrackTool
             {
                 delta_time = ReadVariableLength(MidiReader);
 
-                current_time = current_time + ((delta_time / ticks_per_beat) / (tempo / 60));
+                current_time = current_time + ((Convert.ToDouble(delta_time) / Convert.ToDouble(ticks_per_beat)) / (tempo / 60));
 
                 int foo = (int)MidiReader.ReadByte();
+
+                #region
 
                 if (foo < 0xF0)
                 {
@@ -466,6 +468,9 @@ namespace RB2TrackTool
                     {
                     }
                 }
+
+                #endregion
+
                 else if (foo == 0xFF)
                 {
                     int type = (int)MidiReader.ReadByte();
@@ -491,9 +496,12 @@ namespace RB2TrackTool
                         int tempo_raw = (int)MidiReader.ReadByte() * 256 * 256 + (int)MidiReader.ReadByte() * 256 + (int)MidiReader.ReadByte();
                         tempo_period[tempo_index] = new TempoPeriod(tempo_raw, current_time);
                         tempo = tempo_period[tempo_index].tempo;
-                        LogWriter.Write(string.Format("New Tempo # {0} is {1} BPM at {2}\r\n", tempo_index + 1, tempo, current_time));
+                        MidiLogWriter.Write(string.Format("New Tempo # {0} is {1} BPM at {2}\r\n", tempo_index + 1, tempo, current_time));
                         tempo_index++;
                     }
+
+                    #region
+
                     else if (type == 0x54)
                     {
                         MidiReader.ReadByte();
@@ -544,10 +552,12 @@ namespace RB2TrackTool
                     }
                 }
             }
-			
-			#endregion
-			
-			MidiReader.BaseStream.Position = track_start_addr[1];
+
+                    #endregion
+
+            #endregion
+
+            MidiReader.BaseStream.Position = track_start_addr[1];
 			
 			NoteEvent[] drum_note_event = new NoteEvent[3000];
 			
@@ -557,19 +567,19 @@ namespace RB2TrackTool
 			double last_time = 0;
             tempo = 120;
 			int note_event_index = 0;
-			int last_note_event_index = 0;
-            bool[] note = new bool[5];
-            for (int i = 0; i < 5; i++)
+            bool first_note_flag = true;
+            bool[] note = new bool[8];
+            for (int i = 0; i < 8; i++)
             {
                 note[i] = false;
             }
 
-            DrumLogWriter.Write(string.Format("_,_,"));
-            for (int i = 0; i < 5; i++)
+            DrumMidiLogWriter.Write(string.Format("_,_,"));
+            for (int i = 0; i < 8; i++)
             {
-                DrumLogWriter.Write(string.Format("{0},", i % 10));
+                DrumMidiLogWriter.Write(string.Format("{0},", i % 10));
             }
-            DrumLogWriter.Write(string.Format("\r\n"));
+            DrumMidiLogWriter.Write(string.Format("\r\n"));
 
             drum_note_event[note_event_index] = new NoteEvent(0, 0);
 
@@ -579,22 +589,23 @@ namespace RB2TrackTool
 
                 if (delta_time != 0)
                 {
-                    for (int i = 0; i < tempo_index; i++)
+                    for (int j = 0; j < delta_time; j++)
                     {
-                        if (tempo_period[i].begin <= current_time)
+                        for (int i = 1; i < tempo_index; i++)
                         {
-                            tempo = tempo_period[i].tempo;
+                            if (tempo_period[i].begin <= current_time)
+                            {
+                                tempo = tempo_period[i - 1].tempo;
+                            }
+                            else
+                            {
+                                break;
+                            }
                         }
-                        else
-                        {
-                            break;
-                        }
+
+                        current_time += (Convert.ToDouble(60) / (Convert.ToDouble(ticks_per_beat) * tempo));
                     }
-
-                    current_time = current_time + ((Convert.ToDouble(delta_time) / Convert.ToDouble(ticks_per_beat)) / (tempo / Convert.ToDouble(60)));
                 }
-
-                current_time = current_time + ((delta_time / ticks_per_beat) / (tempo / 60));
 
                 int foo = (int)MidiReader.ReadByte();
 
@@ -611,40 +622,43 @@ namespace RB2TrackTool
                         int bit = NoteToBit(para1);
                         if (bit >= 0)
                         {
-                            note[bit] = true;
+                            if (first_note_flag)
+                            {
+                                first_note_flag = false;
+                                current_time = 0;
+                                note[bit] = true;
+                            }
+
                             if (last_time != current_time)
                             {
+                                DrumMidiLogWriter.Write(string.Format("{0,8:F2},,", current_time));
+
+                                for (int i = 0; i < 8; i++)
+                                {
+                                    drum_note_event[note_event_index].note[i] = note[i];
+                                    if (drum_note_event[note_event_index].note[i] == true)
+                                    {
+                                        DrumMidiLogWriter.Write(string.Format("#,"));
+                                    }
+                                    else
+                                    {
+                                        DrumMidiLogWriter.Write(string.Format("_,"));
+                                    }
+                                }
+
+                                DrumMidiLogWriter.Write(string.Format("\r\n"));
+
+                                for (int i = 0; i < 8; i++)
+                                {
+                                    note[i] = false;
+                                }
+
                                 note_event_index++;
                                 drum_note_event[note_event_index] = new NoteEvent(current_time, current_time - last_time);
                                 last_time = current_time;
                             }
 
-                            if (last_note_event_index != note_event_index)
-                            {
-                                DrumLogWriter.Write(string.Format("{0,8:F2},,", current_time));
-
-                                for (int i = 0; i < 5; i++)
-                                {
-                                    drum_note_event[last_note_event_index].note[i] = note[i];
-                                    if (drum_note_event[last_note_event_index].note[i] == true)
-                                    {
-                                        DrumLogWriter.Write(string.Format("#,"));
-                                    }
-                                    else
-                                    {
-                                        DrumLogWriter.Write(string.Format("_,"));
-                                    }
-                                }
-
-                                DrumLogWriter.Write(string.Format("\r\n"));
-
-                                last_note_event_index = note_event_index;
-
-                                for (int i = 0; i < 5; i++)
-                                {
-                                    note[i] = false;
-                                }
-                            }
+                            note[bit] = true;
                         }
 					}
 
@@ -652,19 +666,7 @@ namespace RB2TrackTool
                     {
                         para2 = (int)MidiReader.ReadByte();
                         while (true)
-                        {
-							for (int i = 0; i < tempo_index; i++)
-							{
-								if (tempo_period[i].begin <= current_time)
-								{
-									tempo = tempo_period[i].tempo;
-								}
-								else
-								{
-									break;
-								}
-							}
-						
+                        {						
                             long old_position = MidiReader.BaseStream.Position;
                             delta_time = ReadVariableLength(MidiReader);
 
@@ -675,19 +677,22 @@ namespace RB2TrackTool
                             {
                                 if (delta_time != 0)
                                 {
-                                    for (int i = 0; i < tempo_index; i++)
+                                    for (int j = 0; j < delta_time; j++)
                                     {
-                                        if (tempo_period[i].begin <= current_time)
+                                        for (int i = 1; i < tempo_index; i++)
                                         {
-                                            tempo = tempo_period[i].tempo;
+                                            if (tempo_period[i].begin <= current_time)
+                                            {
+                                                tempo = tempo_period[i - 1].tempo;
+                                            }
+                                            else
+                                            {
+                                                break;
+                                            }
                                         }
-                                        else
-                                        {
-                                            break;
-                                        }
-                                    }
 
-                                    current_time = current_time + ((Convert.ToDouble(delta_time) / Convert.ToDouble(ticks_per_beat)) / (tempo / Convert.ToDouble(60)));
+                                        current_time += (Convert.ToDouble(60) / (Convert.ToDouble(ticks_per_beat) * tempo));
+                                    }
                                 }
 
                                 new_para2 = (int)MidiReader.ReadByte();
@@ -697,40 +702,43 @@ namespace RB2TrackTool
                                     int bit = NoteToBit(new_para1);
                                     if (bit >= 0)
                                     {
-                                        note[bit] = true;
+                                        if (first_note_flag)
+                                        {
+                                            first_note_flag = false;
+                                            current_time = 0;
+                                            note[bit] = true;
+                                        }
+
                                         if (last_time != current_time)
                                         {
+                                            DrumMidiLogWriter.Write(string.Format("{0,8:F2},,", current_time));
+
+                                            for (int i = 0; i < 8; i++)
+                                            {
+                                                drum_note_event[note_event_index].note[i] = note[i];
+                                                if (drum_note_event[note_event_index].note[i] == true)
+                                                {
+                                                    DrumMidiLogWriter.Write(string.Format("#,"));
+                                                }
+                                                else
+                                                {
+                                                    DrumMidiLogWriter.Write(string.Format("_,"));
+                                                }
+                                            }
+
+                                            DrumMidiLogWriter.Write(string.Format("\r\n"));
+
+                                            for (int i = 0; i < 8; i++)
+                                            {
+                                                note[i] = false;
+                                            }
+
                                             note_event_index++;
                                             drum_note_event[note_event_index] = new NoteEvent(current_time, current_time - last_time);
                                             last_time = current_time;
                                         }
 
-                                        if (last_note_event_index != note_event_index)
-                                        {
-                                            DrumLogWriter.Write(string.Format("{0,8:F2},,", current_time));
-
-                                            for (int i = 0; i < 5; i++)
-                                            {
-                                                drum_note_event[last_note_event_index].note[i] = note[i];
-                                                if (drum_note_event[last_note_event_index].note[i] == true)
-                                                {
-                                                    DrumLogWriter.Write(string.Format("#,"));
-                                                }
-                                                else
-                                                {
-                                                    DrumLogWriter.Write(string.Format("_,"));
-                                                }
-                                            }
-
-                                            DrumLogWriter.Write(string.Format("\r\n"));
-
-                                            last_note_event_index = note_event_index;
-
-                                            for (int i = 0; i < 5; i++)
-                                            {
-                                                note[i] = false;
-                                            }
-                                        }
+                                        note[bit] = true;
                                     }
                                 }
                             }
@@ -826,38 +834,42 @@ namespace RB2TrackTool
 
             }
 
-            DrumLogWriter.Write(string.Format("{0,8:F2},,", current_time));
+            DrumMidiLogWriter.Write(string.Format("{0,8:F2},,", current_time));
 
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 8; i++)
             {
-                drum_note_event[last_note_event_index].note[i] = note[i];
-                if (drum_note_event[last_note_event_index].note[i] == true)
+                drum_note_event[note_event_index].note[i] = note[i];
+                if (drum_note_event[note_event_index].note[i] == true)
                 {
-                    DrumLogWriter.Write(string.Format("#,"));
+                    DrumMidiLogWriter.Write(string.Format("#,"));
                 }
                 else
                 {
-                    DrumLogWriter.Write(string.Format("_,"));
+                    DrumMidiLogWriter.Write(string.Format("_,"));
                 }
             }
 
-            DrumLogWriter.Write(string.Format("\r\n"));
+            note_event_index++;
+
+            DrumMidiLogWriter.Write(string.Format("\r\n"));
 			
 			#endregion
-
-			int dev_event_index = 0;
 			
 			DevEvent[] drum_dev_event = new DevEvent[3000];
-			
-			int bit_mask;
+
+            #region
+
+            int bit_mask = 0xFF;
 			double last_time_error = 0;
-            int tick_offset = 0;
+            int dev_event_index = 0;
+            bool first_over_5_flag = true;
+            bool dont_mask_flag = false;
 			
             for (int i = 0; i < note_event_index; i++)
 			{
 				bit_mask = 0xFF;
 
-                for (int j = 0; j < 5; j++)
+                for (int j = 0; j < 8; j++)
                 {
                     if (drum_note_event[i].note[j])
                     {
@@ -866,61 +878,105 @@ namespace RB2TrackTool
                 }
 
 				int ticks;
-
-                int sp_code = 0;
-
-                if (dev_event_index == 0)
-                {
-                    sp_code = 1;
-                }
 				
 				double dt = drum_note_event[i + 1].delta_time;
-				
-				if (dt >= 5)
-				{
-					for (int j = 0; j < Convert.ToInt32(Math.Floor(drum_note_event[i + 1].delta_time / 5)); j++)
-					{
-						dt -= 5;
-						ticks = (5 * (8000000 / 1024));
-                        drum_dev_event[dev_event_index] = new DevEvent(sp_code, Convert.ToInt32(Math.Max(ticks - tick_offset, 0)), 0xFF);
-						dev_event_index++;
-					}
-				}
-				
-				ticks = Convert.ToInt32(Math.Floor(dt * (8000000 / 1024)));
-				double ticks_d = (dt * (8000000 / 1024));
-				last_time_error += ticks_d - ticks;
-				
-				if (Convert.ToInt32(Math.Floor(last_time_error)) >= 1)
-				{
-					ticks += Convert.ToInt32(Math.Floor(last_time_error));
-					last_time_error -= Math.Floor(last_time_error);
-				}
-				
-				ticks -= tick_offset;
 
-                drum_dev_event[dev_event_index] = new DevEvent(sp_code, Convert.ToInt32(Math.Max(ticks, 0)), bit_mask);
+                double ticks_d;
+
+                while (dt >= (double)5)
+				{
+                    dt -= (double)5;
+                    ticks = Convert.ToInt32(Math.Floor((double)5 * ((double)clk_freq / (double)1024)));
+                    ticks_d = ((double)5 * ((double)clk_freq / (double)1024));
+                    last_time_error += ticks_d - Convert.ToDouble(ticks);
+                    if (first_over_5_flag)
+                    {
+                        drum_dev_event[dev_event_index] = new DevEvent(1, ticks, bit_mask);
+                        first_over_5_flag = false;
+                        dont_mask_flag = true;
+                    }
+                    else
+                    {
+                        drum_dev_event[dev_event_index] = new DevEvent(1, ticks, 0xFF);
+                    }
+					dev_event_index++;
+				}
+				
+				ticks = Convert.ToInt32(Math.Floor(dt * (clk_freq / 1024d)));
+				ticks_d = (dt * (clk_freq / 1024d));
+				last_time_error += ticks_d - Convert.ToDouble(ticks);
+
+                while (last_time_error >= (double)1)
+				{
+					ticks += 1;
+                    last_time_error -= (double)1;
+				}
+
+                while (last_time_error <= (double)-1)
+                {
+                    ticks -= 1;
+                    last_time_error += (double)1;
+                }
+
+                if (dont_mask_flag)
+                {
+                    drum_dev_event[dev_event_index] = new DevEvent(1, ticks, 0xFF);
+                    dont_mask_flag = false;
+                }
+                else
+                {
+                    drum_dev_event[dev_event_index] = new DevEvent(1, ticks, bit_mask);
+                }
+
+                first_over_5_flag = false;
 				
 				dev_event_index++;
 			}
 
+            drum_dev_event[dev_event_index - 1] = new DevEvent(3, 1000, bit_mask);
+
+            #endregion
+
+            #region
+
+            bool first_instruct = true;
+
             for (int i = 0; i < dev_event_index; i++)
             {
-                DrumLogWriter.Write(string.Format("{0,7},", drum_dev_event[i].delay));
-                DrumLogWriter.Write(string.Format("{0:8},{1}", Convert.ToString(drum_dev_event[i].bitmask, 2), drum_dev_event[i].sp_code));
-                DrumLogWriter.Write(string.Format("\r\n"));
+                if (first_instruct == false)
+                {
+                    DrumMidiLogWriter.Write(string.Format("{0,7},", drum_dev_event[i].delay));
+                    DrumMidiLogWriter.Write(string.Format("{0:8},{1}", Convert.ToString(drum_dev_event[i].bitmask, 2), drum_dev_event[i].sp_code));
+                    DrumMidiLogWriter.Write(string.Format("\r\n"));
 
-                DrumWriter.Write(Convert.ToByte(drum_dev_event[i].sp_code));
-                DrumWriter.Write(Convert.ToUInt16(drum_dev_event[i].delay));
-                DrumWriter.Write(Convert.ToByte(drum_dev_event[i].bitmask));
+                    DrumWriter.Write(Convert.ToByte(drum_dev_event[i].sp_code));
+                    DrumWriter.Write(Convert.ToUInt16(drum_dev_event[i].delay));
+                    DrumWriter.Write(Convert.ToByte(drum_dev_event[i].bitmask));
+                }
+                else
+                {
+                    first_instruct = false;
+
+                    DrumMidiLogWriter.Write(string.Format("{0,7},", drum_dev_event[i].delay));
+                    DrumMidiLogWriter.Write(string.Format("{0:8},{1}", Convert.ToString(drum_dev_event[i].bitmask, 2), 2));
+                    DrumMidiLogWriter.Write(string.Format("\r\n"));
+
+                    DrumWriter.Write(Convert.ToByte(2));
+                    DrumWriter.Write(Convert.ToUInt16(drum_dev_event[i].delay));
+                    DrumWriter.Write(Convert.ToByte(drum_dev_event[i].bitmask));
+                }
             }
-			
-			MidiReader.Close();
-            LogWriter.Close();
-            DrumLogWriter.Close();
+
+            #endregion
+
+            MidiReader.Close();
+            MidiLogWriter.Close();
+            DrumMidiLogWriter.Close();
             DrumStream.Close();
             DrumWriter.Close();
-            MidiFile.Close();
+            MidiStreamReader.Close();
+
+            return current_time;
         }
     }
 }
