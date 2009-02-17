@@ -12,9 +12,9 @@
 #define dev_detect_port PORTD
 #define dev_detect_ddr DDRD
 
-#define LED_pin 3
-#define LED_port PORTD
-#define LED_ddr DDRD
+#define LED_pin 0
+#define LED_port PORTB
+#define LED_ddr DDRB
 
 #define power_detect_pin 2
 #define power_detect_port PORTD
@@ -27,54 +27,33 @@
 // for the bit numbers, go to
 // http://wiibrew.org/wiki/Wiimote/Extension_Controllers
 
+#define drum_port PORTC
+#define drum_ddr DDRC
+#define drum_in_reg PINC
+
+#define bass_port PORTB
+#define bass_ddr DDRB
+#define bass_in_reg PINB
+
 #define green_bit 4
 #define green_pin 3
-#define green_in_reg PINC
-#define green_in_preg PINCP
-#define green_port PORTC
-#define green_ddr DDRC
 
 #define red_bit 6
 #define red_pin 2
-#define red_in_reg PINC
-#define red_in_preg PINCP
-#define red_port PORTC
-#define red_ddr DDRC
 
 #define yellow_bit 5
 #define yellow_pin 1
-#define yellow_in_reg PINC
-#define yellow_in_preg PINCP
-#define yellow_port PORTC
-#define yellow_ddr DDRC
 
 #define blue_bit 3
 #define blue_pin 0
-#define blue_in_reg PINC
-#define blue_in_preg PINCP
-#define blue_port PORTC
-#define blue_ddr DDRC
 
 #define orange_bit 7
 #define orange_pin 4
-#define orange_in_reg PINC
-#define orange_in_preg PINCP
-#define orange_port PORTC
-#define orange_ddr DDRC
 
 #define bass_bit 2
 
 #define bass1_pin 1
-#define bass1_in_reg PINB
-#define bass1_in_preg PINBP
-#define bass1_port PORTB
-#define bass1_ddr DDRB
-
 #define bass2_pin 2
-#define bass2_in_reg PINB
-#define bass2_in_preg PINBP
-#define bass2_port PORTB
-#define bass2_ddr DDRB
 
 #define plus_bit 2
 #define plus_pin 6

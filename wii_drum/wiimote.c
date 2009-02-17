@@ -16,6 +16,7 @@ static volatile unsigned char wm_sb[8];
 
 // button data
 static volatile wm_cd_s wm_action;
+static volatile wm_cd_s wm_action_old;
 
 /*
 
@@ -84,69 +85,76 @@ void wm_gentabs()
 }
 
 // put data into TWI slave register, encrypted if encryption is enabled
-void wm_transmit(unsigned char d, unsigned char addr)
+void wm_transmit(unsigned char * d, unsigned char addr, unsigned char l)
 {
 	if(twi_read_reg(0xF0) == 0xAA && addr != 0xF0)
 	{
-		twi_set_reg(addr, (d - wm_ft[addr % 8]) ^ wm_sb[addr % 8]);
+		for(unsigned char i = 0; i < l; i++)
+		{
+			twi_set_reg(addr + i, (d[i] - wm_ft[(addr + i) % 8]) ^ wm_sb[(addr + i) % 8]);
+		}
 	}
 	else
 	{
-		twi_set_reg(addr, d);
+		for(unsigned char i = 0; i < l; i++)
+		{
+			twi_set_reg(addr + i, d[i]);
+		}
 	}
 }
 
 void wm_slaveTxStart(unsigned char addr)
 {
+	unsigned char d[8];
 	if(addr >= 0x00 && addr < 0x06)
 	{
-		// requested button data
-		for(unsigned char i = 0; i < 6; i++)
-		{			
-			wm_transmit(wm_action.d[i], 0x00 + i);
-		}
 		// call user event
 		wm_sample_event();
 	}
 	if(addr >= 0x20 && addr < 0x28)
 	{
 		// requested calibration data
-		for(unsigned char i = 0x00; i < 0x08; i++)
+		for(unsigned char i = addr - 0x20, j = 0; j < 8; i++, j++)
 		{			
-			wm_transmit(wm_cal_data[i], 0x20 + i);
+			d[j] = wm_cal_data[i];
 		}
+		wm_transmit(d, addr, 8);
 	}
 	if(addr >= 0x28 && addr < 0x30)
 	{
 		// requested calibration data
-		for(unsigned char i = 0x08; i < 0x0F; i++)
+		for(unsigned char i = addr - 0x20, j = 0; j < 8; i++, j++)
 		{			
-			wm_transmit(wm_cal_data[i], 0x20 + i);
+			d[j] = wm_cal_data[i];
 		}
+		wm_transmit(d, addr, 8);
 	}
 	if(addr >= 0x30 && addr < 0x38)
 	{
 		// requested calibration data
-		for(unsigned char i = 0x0F; i < 0x18; i++)
+		for(unsigned char i = addr - 0x20, j = 0; j < 8; i++, j++)
 		{			
-			wm_transmit(wm_cal_data[i], 0x20 + i);
+			d[j] = wm_cal_data[i];
 		}
+		wm_transmit(d, addr, 8);
 	}
 	if(addr >= 0x38 && addr <= 0x3F)
 	{
 		// requested calibration data
-		for(unsigned char i = 0x18; i < 0x20; i++)
+		for(unsigned char i = addr - 0x20, j = 0; j < 8; i++, j++)
 		{			
-			wm_transmit(wm_cal_data[i], 0x20 + i);
+			d[j] = wm_cal_data[i];
 		}
+		wm_transmit(d, addr, 8);
 	}
 	if(addr >= 0xFA && addr <= 0xFF)
 	{
 		// requested id
-		for(unsigned char i = 0; i < 6; i++)
+		for(unsigned char i = addr - 0xFA, j = 0; j < 6; i++, j++)
 		{			
-			wm_transmit(wm_id[i], 0xFA + i);
+			d[j] = wm_id[i];
 		}
+		wm_transmit(d, addr, 6);
 	}
 }
 
@@ -187,8 +195,8 @@ void wm_slaveRx(unsigned char addr, unsigned char l)
 			{
 				// generate decryption once all data is loaded
 				wm_gentabs();
-
-
+		
+				wm_transmit(wm_action.d, 0x00, 6);
 			}
 		}
 	}
@@ -197,7 +205,24 @@ void wm_slaveRx(unsigned char addr, unsigned char l)
 void wm_newaction(wm_cd_s t)
 {
 	// load button data from user application
-	wm_action = t;	
+	wm_action = t;
+
+	#ifdef GHWT
+
+	if(memcmp(wm_action_old.d, wm_action.d) != 0)
+	{
+		// encrypt button data
+		wm_transmit(wm_action.d, 0x00, 6);
+		wm_action_old = wm_action;
+	}
+
+	#else
+
+	unsigned char c[1];
+	c[0] = wm_action.d[5];
+	wm_transmit(c, 0x00 + 5, 1);
+
+	#endif
 }
 
 void wm_init(unsigned char * id, wm_cd_s t, unsigned char * cal_data, void (*function)(void))
