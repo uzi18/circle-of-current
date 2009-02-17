@@ -591,11 +591,11 @@ namespace RB2TrackTool
                 {
                     for (int j = 0; j < delta_time; j++)
                     {
-                        for (int i = 1; i < tempo_index; i++)
+                        for (int i = 0; i < tempo_index; i++)
                         {
                             if (tempo_period[i].begin <= current_time)
                             {
-                                tempo = tempo_period[i - 1].tempo;
+                                tempo = tempo_period[i].tempo;
                             }
                             else
                             {
@@ -679,11 +679,11 @@ namespace RB2TrackTool
                                 {
                                     for (int j = 0; j < delta_time; j++)
                                     {
-                                        for (int i = 1; i < tempo_index; i++)
+                                        for (int i = 0; i < tempo_index; i++)
                                         {
                                             if (tempo_period[i].begin <= current_time)
                                             {
-                                                tempo = tempo_period[i - 1].tempo;
+                                                tempo = tempo_period[i].tempo;
                                             }
                                             else
                                             {
