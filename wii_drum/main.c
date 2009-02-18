@@ -30,9 +30,10 @@ const unsigned char cal_data[32] = {
 	0x00, 0x00, 0x00, 0x00
 };
 
-static volatile unsigned char hit_f; // hit flag
-static volatile unsigned char hit_s[8]; // hit softness
-static volatile unsigned int hit_t[8]; // time associated with flag
+static volatile unsigned char hit_f_l; // hit flag, ensures pad is "hit" for minimum counts of time
+static volatile unsigned char hit_f_h; // second flag, ensures pad is "released" for same amount of time
+static volatile unsigned char hit_s[8]; // hit softness, 0 = hard, 7 = softest, do not go over 7
+static volatile unsigned int hit_t[8]; // time associated with flags
 static volatile unsigned char hit_last; // last pad hit
 static volatile unsigned long wm_timer; // psuedo timer
 
@@ -43,10 +44,15 @@ static volatile unsigned char bass_in_preg;
 void hit_pcint(unsigned char w)
 {
 	unsigned long t = wm_timer; // keep time
-
-	if(bit_is_set(hit_f, w)) // fresh hit
-	{
-		cbi(hit_f, w);
+	
+	#if GUARANTEE_RELEASE
+	if(bit_is_set(hit_f_h, w))
+	#else
+	if(bit_is_set(hit_f_l, w))
+	#endif
+	{ // fresh hit
+		cbi(hit_f_l, w);
+		cbi(hit_f_h, w);
 		hit_t[w] = t;
 		hit_last = w;
 		
@@ -97,23 +103,28 @@ void check_for_hits()
 	bass_in_preg = bass_in_reg;
 }
 
-void check_hit_flags()
+void check_hit_f_llags()
 {
 	unsigned long t = wm_timer;
 	for(unsigned char i = 0; i < 8; i++)
 	{
-		if(bit_is_clear(hit_f, i) && ((t - hit_t[i]) > hit_min_time))
+		if(bit_is_clear(hit_f_l, i) && ((t - hit_t[i]) > hit_min_time))
 		{
 			// clear flag if flag has been set for too long
-			sbi(hit_f, i);
+			sbi(hit_f_l, i);
 		}
+		if(bit_is_clear(hit_f_h, i) && ((t - hit_t[i]) > (hit_min_time * 2)))
+		{
+			// clear flag if flag has been set for too long
+			sbi(hit_f_h, i);
+		}		
 	}
 }
 
 void wm_timer_inc()
 {
 	wm_timer++;
-	if(hit_f == 0xFF)
+	if(hit_f_h == 0xFF)
 	{
 		// if nothing is hit, then clear timer
 		wm_timer = 0;
@@ -203,7 +214,8 @@ int main()
 	wm_timer = 0;
 
 	// initialize flags
-	hit_f = 0xFF;
+	hit_f_l = 0xFF;
+	hit_f_h = 0xFF;
 	for(unsigned char i = 0; i < 8; i++)
 	{
 		hit_t[i] = 0;
@@ -241,10 +253,10 @@ int main()
 		
 		// check hardware
 		check_for_hits();
-		check_hit_flags();
+		check_hit_f_llags();
 
 		// apply hits
-		but_dat.d[5] = hit_f;
+		but_dat.d[5] = hit_f_l;
 
 		#ifdef USE_SERPORT
 		unsigned char d; // serial port latest data

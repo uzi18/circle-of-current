@@ -12,9 +12,12 @@
 #define trig_on_fall
 //#define pull_up_res 
 
+// guarantee the release of a pad before the next hit if defined
+//#define GUARANTEE_RELEASE
+
 // minimum pulse time (x = actual pulse time / 0.005)
 // keep at 5, raise if you see double hits
-#define hit_min_time 5
+#define hit_min_time 4
 
 // hit softness (0 = max, 7 = min, just make it 0)
 #define default_hit_softness 0
