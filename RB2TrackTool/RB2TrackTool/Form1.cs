@@ -32,7 +32,8 @@ namespace RB2TrackTool
         int bass_bit = 4;
 		DevEvent[] drum_dev_event = new DevEvent[3000];
 		int minimum_row_height = 22;
-		double height_scale = 1;
+		double height_scale = 0.025;
+        double percent_adj = 1;
 
         public Form1()
         {
@@ -121,12 +122,14 @@ namespace RB2TrackTool
             }
 
             PlayProgBar.Minimum = 0;
-            PlayProgBar.Maximum = event_length + 1;
+            PlayProgBar.Maximum = event_length;
             PlayProgBar.Value = event_cnt;
 
             SongLengthLabel.Text = Convert.ToString(length_of_song);
             TimeTakenLabel.Text = Convert.ToString(time_taken);
             TimeTakenToPlayLabel.Text = Convert.ToString(time_taken_tp);
+
+            PercentAdjLabel.Text = Convert.ToString(percent_adj * 100);
         }
 
         private void FolderBrowseButton_Click(object sender, EventArgs e)
@@ -185,6 +188,7 @@ namespace RB2TrackTool
                     {
                         event_cnt = 0;
                         SendNextInstruct();
+                        stop_watch.Reset();
                     }
                     else if (bot_status == 0 && is_playing)
                     {
@@ -203,6 +207,11 @@ namespace RB2TrackTool
 					else if (bot_status == 4)
                     {
                         stop_watch.Stop();
+                        if (is_cali)
+                        {
+                            CalcAutoAdj();
+                            ApplyToList();
+                        }
                     }
                 }
             }
@@ -221,27 +230,47 @@ namespace RB2TrackTool
             is_playing = true;
             is_cali = true;
         }
-		
-		private void HeightChange(object sender, DataGridViewRowEventArgs e)
+
+        bool manual_lock;
+
+        private void ListOfNotes_RowHeightChanged(object sender, DataGridViewRowEventArgs e)
 		{
-			int delay = Convert.ToInt32(Math.Round((double)(e.Height - minimum_row_height) * height_scale));
-			int i = Convert.ToString(e.Cells[0].Value);
-			dev_event[i].delay_manualadj = delay - dev_event[i].delay - dev_event[i].delay_autoadj;
-			ApplyToList();
+            if (manual_lock == false)
+            {
+                int delay = Convert.ToInt32(Math.Round((double)(e.Row.Height - minimum_row_height) / height_scale));
+                int i = Convert.ToInt32(e.Row.Cells[0].Value);
+                dev_event[i].delay_manualadj = delay - dev_event[i].delay - dev_event[i].delay_autoadj;
+                ListOfNotes.Rows[i].MinimumHeight = minimum_row_height;
+                ListOfNotes.Rows[i].Height = minimum_row_height + Convert.ToInt32(Math.Round(((double)(dev_event[i].delay + dev_event[i].delay_autoadj + dev_event[i].delay_manualadj) * height_scale)));
+                ListOfNotes.Rows[i].Cells[3].Value = Convert.ToString(dev_event[i].delay_manualadj);
+            }
 		}
-		
-		private void ChangeManualAdj(object sender, DataGridViewCellValidatingEventArgs e)
+
+        private void ListOfNotes_CellLeave(object sender, DataGridViewCellEventArgs e)
 		{
 			if (e.ColumnIndex == 3)
 			{
 				int new_manadj;
-				if (Int32.TryParse(ListOfNotes.Rows[i].Cells[0].Value, out new_manadj))
+                if (Int32.TryParse(Convert.ToString(ListOfNotes.Rows[e.RowIndex].Cells[0].Value), out new_manadj))
 				{
 					dev_event[e.RowIndex].delay_manualadj = new_manadj;				
 				}
 				ApplyToList();
 			}
 		}
+
+        private void ListOfNotes_CellValidated(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex == 3)
+            {
+                int new_manadj;
+                if (Int32.TryParse(Convert.ToString(ListOfNotes.Rows[e.RowIndex].Cells[0].Value), out new_manadj))
+                {
+                    dev_event[e.RowIndex].delay_manualadj = new_manadj;
+                }
+                ApplyToList();
+            }
+        }
 		
 		private bool BitIsClear(int b, int i)
 		{
@@ -269,88 +298,138 @@ namespace RB2TrackTool
 			Bitmap BMyb = new Bitmap(bitmap_fpath + "yellowb.bmp");
 			Bitmap BMbb = new Bitmap(bitmap_fpath + "blueb.bmp");
 			Bitmap BMgb = new Bitmap(bitmap_fpath + "greenb.bmp");
+
+            while (event_length > ListOfNotes.Rows.Count)
+            {
+                ListOfNotes.Rows.Add();
+            }
 			
 			int i;
 			for (i = 0; i < event_length; i++)
 			{
-				try
-				{
-					ListOfNotes.Rows[i].MinimumHeight = minimum_row_height;
-					ListOfNotes.Rows[i].Height = minimum_row_height + Convert.ToInt32(Math.Round(((double)(dev_event[i].delay + dev_event[i].delay_autoadj + dev_event[i].delay_manualadj) * scale)));
-					ListOfNotes.Rows[i].Cells[0].Value = Convert.ToString(i);
-					ListOfNotes.Rows[i].Cells[1].Value = Convert.ToString(dev_event[i].delay);
-					ListOfNotes.Rows[i].Cells[2].Value = Convert.ToString(dev_event[i].delay_autoadj);
-					ListOfNotes.Rows[i].Cells[3].Value = Convert.ToString(dev_event[i].delay_manualadj);
+                ListOfNotes.Rows[i].Resizable = DataGridViewTriState.True;
+                ListOfNotes.Rows[i].MinimumHeight = minimum_row_height;
+                manual_lock = true;
+                ListOfNotes.Rows[i].Height = minimum_row_height + Convert.ToInt32(Math.Round(((double)(dev_event[i].delay + dev_event[i].delay_autoadj + dev_event[i].delay_manualadj) * height_scale)));
+                manual_lock = false;
+				ListOfNotes.Rows[i].Cells[0].Value = Convert.ToString(i);
+				ListOfNotes.Rows[i].Cells[1].Value = Convert.ToString(dev_event[i].delay);
+				ListOfNotes.Rows[i].Cells[2].Value = Convert.ToString(dev_event[i].delay_autoadj);
+				ListOfNotes.Rows[i].Cells[3].Value = Convert.ToString(dev_event[i].delay_manualadj);
 					
-					if (BitIsClear(dev_event[i].bitmask, bass_bit))
-					{
-						ListOfNotes.Rows[i].Cells[4].Value = BMo;
-						ListOfNotes.Rows[i].Cells[5].Value = BMo;
-						ListOfNotes.Rows[i].Cells[6].Value = BMo;
-						ListOfNotes.Rows[i].Cells[7].Value = BMo;
-						
-						if (BitIsClear(dev_event[i].bitmask, red_bit))
-						{
-							ListOfNotes.Rows[i].Cells[4].Value = BMrb;
-						}
-						
-						if (BitIsClear(dev_event[i].bitmask, yellow_bit))
-						{
-							ListOfNotes.Rows[i].Cells[5].Value = BMyb;
-						}
-						
-						if (BitIsClear(dev_event[i].bitmask, blue_bit))
-						{
-							ListOfNotes.Rows[i].Cells[6].Value = BMbb;
-						}
-						
-						if (BitIsClear(dev_event[i].bitmask, green_bit))
-						{
-							ListOfNotes.Rows[i].Cells[7].Value = BMgb;
-						}
-						
-						ListOfNotes.Rows[i].Cells[8].Value = BMo;
-					}
-					else
-					{
-						ListOfNotes.Rows[i].Cells[4].Value = BMbl;
-						ListOfNotes.Rows[i].Cells[5].Value = BMbl;
-						ListOfNotes.Rows[i].Cells[6].Value = BMbl;
-						ListOfNotes.Rows[i].Cells[7].Value = BMbl;
-						
-						if (BitIsClear(dev_event[i].bitmask, red_bit))
-						{
-							ListOfNotes.Rows[i].Cells[4].Value = BMr;
-						}
-						
-						if (BitIsClear(dev_event[i].bitmask, yellow_bit))
-						{
-							ListOfNotes.Rows[i].Cells[5].Value = BMy;
-						}
-						
-						if (BitIsClear(dev_event[i].bitmask, blue_bit))
-						{
-							ListOfNotes.Rows[i].Cells[6].Value = BMb;
-						}
-						
-						if (BitIsClear(dev_event[i].bitmask, green_bit))
-						{
-							ListOfNotes.Rows[i].Cells[7].Value = BMg;
-						}
-						
-						ListOfNotes.Rows[i].Cells[8].Value = BMbl;
-					}					
-				}
-				catch
+				if (BitIsClear(dev_event[i].bitmask, bass_bit))
 				{
-					ListOfNotes.Rows.Add();
-					i--;
+					ListOfNotes.Rows[i].Cells[4].Value = BMo;
+					ListOfNotes.Rows[i].Cells[5].Value = BMo;
+					ListOfNotes.Rows[i].Cells[6].Value = BMo;
+					ListOfNotes.Rows[i].Cells[7].Value = BMo;
+					
+					if (BitIsClear(dev_event[i].bitmask, red_bit))
+					{
+						ListOfNotes.Rows[i].Cells[4].Value = BMrb;
+					}
+					
+					if (BitIsClear(dev_event[i].bitmask, yellow_bit))
+					{
+						ListOfNotes.Rows[i].Cells[5].Value = BMyb;
+					}
+					
+					if (BitIsClear(dev_event[i].bitmask, blue_bit))
+					{
+						ListOfNotes.Rows[i].Cells[6].Value = BMbb;
+					}
+					
+					if (BitIsClear(dev_event[i].bitmask, green_bit))
+					{
+						ListOfNotes.Rows[i].Cells[7].Value = BMgb;
+					}
+					
+					ListOfNotes.Rows[i].Cells[8].Value = BMo;
+				}
+				else
+				{
+					ListOfNotes.Rows[i].Cells[4].Value = BMbl;
+					ListOfNotes.Rows[i].Cells[5].Value = BMbl;
+					ListOfNotes.Rows[i].Cells[6].Value = BMbl;
+					ListOfNotes.Rows[i].Cells[7].Value = BMbl;
+					
+					if (BitIsClear(dev_event[i].bitmask, red_bit))
+					{
+						ListOfNotes.Rows[i].Cells[4].Value = BMr;
+					}
+					
+					if (BitIsClear(dev_event[i].bitmask, yellow_bit))
+					{
+						ListOfNotes.Rows[i].Cells[5].Value = BMy;
+					}
+					
+					if (BitIsClear(dev_event[i].bitmask, blue_bit))
+					{
+						ListOfNotes.Rows[i].Cells[6].Value = BMb;
+					}
+					
+					if (BitIsClear(dev_event[i].bitmask, green_bit))
+					{
+						ListOfNotes.Rows[i].Cells[7].Value = BMg;
+					}
+					
+					ListOfNotes.Rows[i].Cells[8].Value = BMbl;
 				}
 			}
-			for (int j = i; event_length <= ListOfNotes.Rows.Count - 1; j++)
+			for (int j = i; event_length < ListOfNotes.Rows.Count; j++)
 			{
 				ListOfNotes.Rows.RemoveAt(i);
 			}
 		}
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ScaleBar_Scroll(object sender, EventArgs e)
+        {
+            height_scale = (double)ScaleBar.Value / 1000;
+            for (int i = 0; i < event_length; i++)
+            {
+                ListOfNotes.Rows[i].MinimumHeight = minimum_row_height;
+                manual_lock = true;
+                ListOfNotes.Rows[i].Height = minimum_row_height + Convert.ToInt32(Math.Round(((double)(dev_event[i].delay + dev_event[i].delay_autoadj + dev_event[i].delay_manualadj) * height_scale)));
+                manual_lock = false;
+            }
+        }
+
+        private void SaveButton_Click(object sender, EventArgs e)
+        {
+            SaveAdjFile();
+        }
+
+        private void LoadButton_Click(object sender, EventArgs e)
+        {
+            LoadAdjFile();
+        }
+
+        private void ResetButton_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < event_length + 1; i++)
+            {
+                dev_event[i].delay_manualadj = 0;
+            }
+            ApplyToList();
+        }
+
+        private void ClearCaliBut_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < event_length + 1; i++)
+            {
+                dev_event[i].delay_autoadj = 0;
+            }
+            ApplyToList();
+        }
+
+        private void PercentAdjBar_Scroll(object sender, EventArgs e)
+        {
+            percent_adj = (double)PercentAdjBar.Value / (double)10000;
+        }
     }
 }

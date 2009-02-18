@@ -55,6 +55,8 @@ namespace RB2TrackTool
 			sp_code = id;
 			delay = delay_;
 			bitmask = bitmask_;
+            delay_autoadj = 0;
+            delay_manualadj = 0;
 		}
 	}
 
@@ -103,12 +105,12 @@ namespace RB2TrackTool
             return sum;
         }
 
-        private double MidiToDrumChart(string fpath, double clk_freq)
+        private double MidiToDrumChart(string f_path, double clk_freq)
         {
-            StreamReader MidiStreamReader = new StreamReader(fpath);
+            StreamReader MidiStreamReader = new StreamReader(f_path);
             BinaryReader MidiReader = new BinaryReader(MidiStreamReader.BaseStream);
-            StreamWriter MidiLogWriter = new StreamWriter(fpath + ".midilog.csv");
-            StreamWriter DrumMidiLogWriter = new StreamWriter(fpath + ".drumtrack.csv");
+            StreamWriter MidiLogWriter = new StreamWriter(f_path + ".midilog.csv");
+            StreamWriter DrumMidiLogWriter = new StreamWriter(f_path + ".drumtrack.csv");
 
             int ticks_per_beat = 0;
             double tempo = 120;
@@ -946,11 +948,11 @@ namespace RB2TrackTool
 		private void LoadAdjFile()
 		{
 			DirectoryInfo dir = new DirectoryInfo(folder_path + "\\" + FileListBox.Items[FileListBox.SelectedIndex]);
-            FileInfo[] fileArray = dir.GetFiles("*.mid.drumtrack.autoadj");
+            FileInfo[] fileArray = dir.GetFiles("*.drumtrack.adj");
             bool file_exists = false;
             for (int i = 0; i < fileArray.Length; i++)
             {
-                if (fileArray[i].Name == FileListBox.Items[FileListBox.SelectedIndex] + ".mid.drumtrack.adj")
+                if (fileArray[i].Name == FileListBox.Items[FileListBox.SelectedIndex] + ".drumtrack.adj")
                 {
                     file_exists = true;
                     break;
@@ -959,7 +961,7 @@ namespace RB2TrackTool
 
             if (file_exists)
             {
-                StreamReader SR = new StreamReader(fpath + ".drumtrack.adj");
+                StreamReader SR = new StreamReader(fpath + FileListBox.Items[FileListBox.SelectedIndex] + ".drumtrack.adj");
 				
 				length_of_song = Convert.ToDouble(SR.ReadLine());
 				time_taken = Convert.ToDouble(SR.ReadLine());
@@ -975,52 +977,76 @@ namespace RB2TrackTool
 						break;
 					}
 				}
-				
+
+                try
+                {
+                    percent_adj = Convert.ToDouble(SR.ReadLine());
+                    PercentAdjBar.Value = Convert.ToInt32(Math.Round(10000 * percent_adj));
+                }
+                catch
+                {
+                    percent_adj = 1;
+                    PercentAdjBar.Value = Convert.ToInt32(Math.Round(10000 * percent_adj));
+                }
+
 				SR.Close();
+
+                ApplyToList();
             }
             else
             {
 				time_taken = length_of_song;
 				time_taken_tp = length_of_song;
-                SaveAutoAdjFile();
-				LoadAdjFile();
+                SaveAdjFile();
 				time_taken = 0;
 				time_taken_tp = 0;
             }
 		}
+
+        private void CalcAutoAdj()
+        {
+            double accum_adj = 0;
+
+            for (int i = 0; i < 3000; i++)
+            {
+                int delay = dev_event[i].delay;
+
+                double new_delay_d = 0;
+                int new_delay = 0;
+
+                if (time_taken != 0)
+                {
+                    new_delay_d = ((double)delay * length_of_song) / time_taken;
+                    new_delay = Convert.ToInt32(Math.Floor(new_delay_d));
+                }
+
+                accum_adj += new_delay_d - (double)new_delay;
+
+                while (accum_adj >= (double)1)
+                {
+                    delay += 1;
+                    accum_adj -= 1;
+                }
+                while (accum_adj <= (double)-1)
+                {
+                    delay -= 1;
+                    accum_adj += 1;
+                }
+
+                dev_event[i].delay_autoadj = new_delay - delay;
+            }
+        }
 		
 		private void SaveAdjFile()
 		{
-			StreamWriter SW = new StreamWriter(f_path + ".drumtrack.adj");
+            StreamWriter SW = new StreamWriter(fpath + FileListBox.Items[FileListBox.SelectedIndex] + ".drumtrack.adj");
 			
 			SW.WriteLine(string.Format("{0:F5}", length_of_song));
 			SW.WriteLine(string.Format("{0:F5}", time_taken));
 			SW.WriteLine(string.Format("{0:F5}", time_taken_tp));
 			
-			double accum_adj = 0;
-			
 			for (int i = 0; i < 3000; i++)
-			{
-				int delay = dev_event[i].delay;
-				
-				double new_delay_d = ((double)delay * length_of_song) / time_taken;
-                int new_delay = Convert.ToInt32(Math.Floor(new_delay_d));
-
-                accum_adj += new_delay_d - (double)new_delay;
-
-                while (accum_adj >= (double)1)
-				{
-					delay += 1;
-					accum_adj -= 1;
-				}
-				while (accum_adj <= (double)-1)
-				{
-					delay -= 1;
-					accum_adj += 1;
-				}
-				
-				dev_event[i].delay_autoadj = new_delay - delay;
-				
+			{				
 				SW.WriteLine(dev_event[i].delay_autoadj);
 				SW.WriteLine(dev_event[i].delay_manualadj);
 				
@@ -1029,14 +1055,18 @@ namespace RB2TrackTool
 					break;
 				}
 			}
-			
+
+            SW.WriteLine(percent_adj);
+
 			SW.Close();
+
+            ApplyToList();
 		}
 
         private void GenerateBin()
         {
-            fpath = folder_path + "\\" + FileListBox.Items[FileListBox.SelectedIndex] + "\\" + FileListBox.Items[FileListBox.SelectedIndex];
-            length_of_song = MidiToDrumChart(fpath + ".mid", 12000000d);
+            fpath = folder_path + "\\" + FileListBox.Items[FileListBox.SelectedIndex] + "\\";
+            length_of_song = MidiToDrumChart(fpath + FileListBox.Items[FileListBox.SelectedIndex] + ".mid", 12000000d);
 
             int i;
 
@@ -1053,7 +1083,7 @@ namespace RB2TrackTool
                 }
             }
             event_cnt = 0;
-            event_length = i;
+            event_length = i + 1;
         }
 		
 		private void SendNextInstruct()
@@ -1065,12 +1095,15 @@ namespace RB2TrackTool
                 b[1] = (byte)dev_event[event_cnt].sp_code;
 
                 int delay = dev_event[event_cnt].delay;
+
 				delay += dev_event[event_cnt].delay_manualadj;
 
                 if (is_cali == false)
                 {
 					delay += dev_event[event_cnt].delay_autoadj;
                 }
+
+                delay = Convert.ToInt32(Math.Round((double)delay * percent_adj));
 
                 b[3] = Convert.ToByte(delay % 256);
                 b[2] = Convert.ToByte((delay - Convert.ToInt32(b[3])) / 256);
@@ -1086,7 +1119,8 @@ namespace RB2TrackTool
                     is_playing = false;
 					if (is_cali)
 					{
-						SaveAdjFile();
+						CalcAutoAdj();
+                        ApplyToList();
 					}
                 }
             }
