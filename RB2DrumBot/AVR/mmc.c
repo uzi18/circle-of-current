@@ -37,13 +37,11 @@
 void MMCSelect()
 {
 	PORTB &= ~0b00001000;
-	SPSR |= 0b00000001;
 }
 
 void MMCDeselect()
 {
 	PORTB |= 0b00001000;
-	SPSR &= ~0b00000001;
 }
 
 #define SOCKPORT	PINB			/* Socket contact port */

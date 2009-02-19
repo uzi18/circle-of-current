@@ -28,4 +28,5 @@ void SPIInitMasterMode0()
 	
 	SPCR = 0b01010000;
 	SPSR = 0b00000000;
+	SPSR |= 0b00000001;
 }

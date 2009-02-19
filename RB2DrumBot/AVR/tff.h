@@ -26,7 +26,7 @@
 /  miss-aligned access results incorrect behavior, the _MCU_ENDIAN must be set to 2.
 /  If it is not the case, it can also be set to 1 for good code efficiency. */
 
-#define _FS_READONLY	1
+#define _FS_READONLY	0
 /* Setting _FS_READONLY to 1 defines read only configuration. This removes
 /  writing functions, f_write, f_sync, f_unlink, f_mkdir, f_chmod, f_rename,
 /  f_truncate, f_getfree and internal writing codes. */
@@ -38,7 +38,7 @@
 /  2: f_opendir and f_readdir are removed in addition to level 1.
 /  3: f_lseek is removed in addition to level 2. */
 
-#define	_USE_STRFUNC	2
+#define	_USE_STRFUNC	0
 /* To enable string functions, set _USE_STRFUNC to 1 or 2. */
 
 #define	_USE_FORWARD	0
