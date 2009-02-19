@@ -16,7 +16,6 @@ static volatile unsigned char wm_sb[8];
 
 // button data
 static volatile wm_cd_s wm_action;
-static volatile wm_cd_s wm_action_old;
 
 /*
 
@@ -205,23 +204,9 @@ void wm_newaction(wm_cd_s t)
 {
 	// load button data from user application
 	wm_action = t;
-
-	#ifdef GHWT
-
-	if(memcmp(wm_action_old.d, wm_action.d) != 0)
-	{
-		// encrypt button data
-		wm_transmit(wm_action.d, 0x00, 6);
-		wm_action_old = wm_action;
-	}
-
-	#else
-
-	unsigned char c[1];
-	c[0] = wm_action.d[5];
-	wm_transmit(c, 0x00 + 5, 1);
-
-	#endif
+	
+	// encrypt button data
+	wm_transmit(wm_action.d, 0x00, 6);
 }
 
 void wm_init(unsigned char * id, wm_cd_s t, unsigned char * cal_data, void (*function)(void))
