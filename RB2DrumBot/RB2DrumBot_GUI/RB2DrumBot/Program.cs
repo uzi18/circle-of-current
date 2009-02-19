@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using System.IO;
+using System.Drawing;
 
 namespace RB2DrumBot
 {
@@ -1014,7 +1015,7 @@ namespace RB2DrumBot
                 double new_delay_d = 0;
                 int new_delay = 0;
 
-                if (time_taken != 0 && is_cali)
+                if (time_taken != 0 && is_cali && is_playing == false)
                 {
                     new_delay_d = ((double)delay * length_of_song) / time_taken;
                     new_delay = Convert.ToInt32(Math.Floor(new_delay_d));
@@ -1163,7 +1164,9 @@ namespace RB2DrumBot
 			Bitmap BMyb = new Bitmap(bitmap_fpath + "yellowb.bmp");
 			Bitmap BMbb = new Bitmap(bitmap_fpath + "blueb.bmp");
 			Bitmap BMgb = new Bitmap(bitmap_fpath + "greenb.bmp");
-			
+
+            PlayProgBar.Maximum = event_length;
+
 			int i;
 			for (i = 0; i < event_length; i++)
 			{

@@ -268,7 +268,7 @@ namespace RB2DrumBot
                 manual_lock = true;
                 ListOfNotes.Rows[e.RowIndex].Height = minimum_row_height + Convert.ToInt32(Math.Round(((double)(dev_event[e.RowIndex].delay + dev_event[e.RowIndex].delay_autoadj + dev_event[e.RowIndex].delay_manualadj) * height_scale)));
 				manual_lock = false;
-				ListOfNotes.Rows[e.RowIndex].Cells[3].Value = Convert.ToString(dev_event[i].delay_manualadj);
+                ListOfNotes.Rows[e.RowIndex].Cells[3].Value = Convert.ToString(dev_event[e.RowIndex].delay_manualadj);
             }
         }
 

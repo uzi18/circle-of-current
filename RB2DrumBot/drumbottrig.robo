@@ -1,0 +1,88 @@
+<head><version>2.0.6.7</version></head>
+<Display_Variables>
+  <display_as_annotation>TRUE</display_as_annotation>
+  <display_value_only>TRUE</display_value_only>
+  <dim_background>FALSE</dim_background>
+  <southeast>B_AT_TRIG
+G_AT_TRIG
+R_AT_TRIG
+</southeast>
+  <southwest>DIFF_FLAG
+MOUSE_CLICK_X
+MOUSE_CLICK_Y
+</southwest>
+</Display_Variables>
+<Display_Point>
+  <display_as_annotation>TRUE</display_as_annotation>
+  <color_index>6</color_index>
+  <y_coord>100</y_coord>
+  <size_index>2</size_index>
+  <y_variable>MOUSE_CLICK_Y</y_variable>
+  <x_variable>MOUSE_CLICK_X</x_variable>
+  <clear_image>FALSE</clear_image>
+  <shape_index>7</shape_index>
+  <x_coord>100</x_coord>
+</Display_Point>
+<Set_Variable>
+  <set_1_once>FALSE</set_1_once>
+  <set_3_once>FALSE</set_3_once>
+  <value_1>32</value_1>
+  <set_4_once>FALSE</set_4_once>
+  <set_2_once>FALSE</set_2_once>
+  <variable_1>COL_REDUC</variable_1>
+</Set_Variable>
+<Camera_Properties disabled>
+  <video_size>320 x 240</video_size>
+  <video_rate>1</video_rate>
+  <software_auto_exposure>FALSE</software_auto_exposure>
+</Camera_Properties>
+<Display_Circle disabled>
+  <display_as_annotation>FALSE</display_as_annotation>
+  <color_index>5</color_index>
+  <fill_shape>TRUE</fill_shape>
+  <radius>50</radius>
+  <clear_image>FALSE</clear_image>
+</Display_Circle>
+<VBScript_Program>
+  <script>imgW = GetVariable("IMAGE_WIDTH")
+imgH = GetVariable("IMAGE_HEIGHT")
+posX = GetVariable("MOUSE_CLICK_X")
+posY = GetVariable("MOUSE_CLICK_Y")
+colReduc = GetVariable("COL_REDUC")
+oldR = GetVariable("R_AT_TRIG")
+oldG = GetVariable("G_AT_TRIG")
+oldB = GetVariable("B_AT_TRIG")
+diffFlag = GetVariable("DIFF_FLAG")
+
+colArr = GetPixels()
+
+index = (posY * imgW * 3) + (posX * 3)
+
+rVal = colArr(index + 2) \ colReduc
+gVal = colArr(index + 1) \ colReduc
+bVal = colArr(index + 0) \ colReduc
+
+if rVal &lt;&gt; oldR or gVal &lt;&gt; oldG or bVal &lt;&gt; oldB then
+diffFlag = (diffFlag + 1) mod 256
+end if
+
+SetVariable "R_AT_TRIG", rVal
+SetVariable "G_AT_TRIG", gVal
+SetVariable "B_AT_TRIG", bVal
+SetVariable "CUR_M_INDEX", index
+SetVariable "DIFF_FLAG", diffFlag</script>
+  <source_mode>gui</source_mode>
+</VBScript_Program>
+<Serial>
+  <enable_send_sequence>TRUE</enable_send_sequence>
+  <port>COM1 - Communications Port</port>
+  <data_bits>7</data_bits>
+  <baud>5</baud>
+  <flow_control_in_x>FALSE</flow_control_in_x>
+  <read_rate_index>6</read_rate_index>
+  <flow_control_dsr>FALSE</flow_control_dsr>
+  <flow_control_cts>FALSE</flow_control_cts>
+  <send>\[DIFF_FLAG]</send>
+  <send_only_on_change>TRUE</send_only_on_change>
+  <flow_control_out_x>FALSE</flow_control_out_x>
+</Serial>
