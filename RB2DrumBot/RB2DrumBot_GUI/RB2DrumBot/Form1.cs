@@ -17,13 +17,9 @@ namespace RB2DrumBot
         bool is_playing = false;
 		string fpath;
         double length_of_song;
-        double time_taken;
-        double time_taken_tp;
 		DevEvent[] dev_event = new DevEvent[3000];
-        int event_cnt;
         int event_length;		
         int bot_status;
-        Stopwatch stop_watch = new Stopwatch();
 		bool is_cali = false;
 		int green_bit = 3;
         int blue_bit = 2;
@@ -54,14 +50,13 @@ namespace RB2DrumBot
             {
                 FileListBox.Items.Add(dirArray[i].Name);
             }
+			FileListBox.SelectedIndex = 0;
+			EventArgs e = new EventArgs();
+			FileListBox.OnSelectedIndexChanged(e);
         }
 
         private void FileListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-			is_playing = false;
-			is_cali = false;
-			stop_watch.Stop();
-			
             DirectoryInfo dir = new DirectoryInfo(folder_path + "\\" + FileListBox.Items[FileListBox.SelectedIndex]);
             FileInfo[] fileArray = dir.GetFiles("*.mid");
             bool file_exists = false;
@@ -97,7 +92,6 @@ namespace RB2DrumBot
             else
             {
                 PortStatusLabel.Text = "Port Status: Closed";
-                is_playing = false;
                 try
                 {
                     SerPort.PortName = "COM6";
@@ -110,29 +104,20 @@ namespace RB2DrumBot
                 }
             }
 
-            if (is_playing)
+            if (bot_busy)
             {
                 PlayButton.Enabled = false;
-                CaliButton.Enabled = false;
-                AbortButton.Enabled = true;
+                LoadFileButton.Enabled = false;
                 FileListBox.Enabled = false;
             }
             else
             {
-                CaliButton.Enabled = true;
                 PlayButton.Enabled = true;
-                AbortButton.Enabled = false;
+                LoadFileButton.Enabled = true;
                 FileListBox.Enabled = true;
-                stop_watch.Stop();
             }
 
-            PlayProgBar.Minimum = 0;
-            PlayProgBar.Maximum = event_length;
-            PlayProgBar.Value = event_cnt;
-
             SongLengthLabel.Text = Convert.ToString(length_of_song);
-            TimeTakenLabel.Text = Convert.ToString(time_taken);
-            TimeTakenToPlayLabel.Text = Convert.ToString(time_taken_tp);
 
             PercentAdjLabel.Text = Convert.ToString(percent_adj * 100);
         }
@@ -165,77 +150,36 @@ namespace RB2DrumBot
 
         private void PlayButton_Click(object sender, EventArgs e)
         {
-            is_playing = true;
-            is_cali = false;
-        }
-
-        private void AbortButton_Click(object sender, EventArgs e)
-        {
-            is_playing = false;
 			if (SerPort.IsOpen)
 			{
-	            byte[] b = new byte[5];
-	            b[0] = 0;
-	            b[1] = 3;
-	            b[2] = 0;
-	            b[3] = 0;
-	            b[4] = 0xFF;
+				bot_busy = true;
+	            byte[] b = new byte[1];
+	            b[0] = 2;
 	            SerPort.Write(b, 0, 5);
 			}
         }
 
-        private void Player_Tick(object sender, EventArgs e)
+        private void LoadFileButton_Click(object sender, EventArgs e)
+        {
+            if (SerPort.IsOpen)
+			{
+				bot_busy = true;
+	            byte[] b = new byte[1];
+	            b[0] = 1;
+	            SerPort.Write(b, 0, 5);
+			}
+        }
+
+        private void PortChecker_Tick(object sender, EventArgs e)
         {
             if (SerPort.IsOpen)
             {
                 if (SerPort.BytesToRead > 0)
                 {
                     bot_status = (int)SerPort.ReadByte();
-
-                    if (bot_status == 1 && is_playing)
-                    {
-                        event_cnt = 0;
-                        SendNextInstruct();
-                        stop_watch.Reset();
-                    }
-                    else if (bot_status == 0 && is_playing)
-                    {
-                        SendNextInstruct();
-                    }
-                    else if (bot_status == 2)
-                    {
-                        is_playing = false;
-                        event_cnt = 0;
-                    }
-                    else if (bot_status == 3)
-                    {
-                        stop_watch.Reset();
-                        stop_watch.Start();
-                    }
-					else if (bot_status == 4)
-                    {
-                        stop_watch.Stop();
-                        if (is_cali)
-                        {
-                            CalcAutoAdj();
-                        }
-                    }
-                }
+				}
+				BotCtrl();
             }
-            if (is_cali)
-            {
-                time_taken = Convert.ToDouble(stop_watch.ElapsedMilliseconds) / (double)1000;
-            }
-            else
-            {
-                time_taken_tp = Convert.ToDouble(stop_watch.ElapsedMilliseconds) / (double)1000;
-            }
-        }
-
-        private void CalBut_Click(object sender, EventArgs e)
-        {
-            is_playing = true;
-            is_cali = true;
         }
 
         private void ListOfNotes_RowHeightChanged(object sender, DataGridViewRowEventArgs e)
@@ -288,12 +232,12 @@ namespace RB2DrumBot
             }
         }
 
-        private void SaveButton_Click(object sender, EventArgs e)
+        private void SaveConfigButton_Click(object sender, EventArgs e)
         {
             SaveAdjFile();
         }
 
-        private void LoadButton_Click(object sender, EventArgs e)
+        private void LoadConfigButton_Click(object sender, EventArgs e)
         {
             LoadAdjFile();
         }
@@ -304,18 +248,6 @@ namespace RB2DrumBot
             {
                 dev_event[i].delay_manualadj = 0;
 				ListOfNotes.Rows[i].Cells[3].Value = Convert.ToString(dev_event[i].delay_manualadj);
-				manual_lock = true;
-                ListOfNotes.Rows[i].Height = minimum_row_height + Convert.ToInt32(Math.Round(((double)(dev_event[i].delay + dev_event[i].delay_autoadj + dev_event[i].delay_manualadj) * height_scale)));
-                manual_lock = false;
-            }
-        }
-
-        private void ClearCaliBut_Click(object sender, EventArgs e)
-        {
-            for (int i = 0; i < event_length; i++)
-            {
-                dev_event[i].delay_autoadj = 0;
-				ListOfNotes.Rows[i].Cells[2].Value = Convert.ToString(dev_event[i].delay_autoadj);
 				manual_lock = true;
                 ListOfNotes.Rows[i].Height = minimum_row_height + Convert.ToInt32(Math.Round(((double)(dev_event[i].delay + dev_event[i].delay_autoadj + dev_event[i].delay_manualadj) * height_scale)));
                 manual_lock = false;

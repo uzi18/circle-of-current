@@ -50,13 +50,12 @@ namespace RB2DrumBot
 	public struct DevEvent
 	{
 		public int sp_code, delay, bitmask;
-		public int delay_autoadj, delay_manualadj;
+		public int delay_manualadj;
 		public DevEvent(int id, int delay_, int bitmask_)
 		{
 			sp_code = id;
 			delay = delay_;
 			bitmask = bitmask_;
-            delay_autoadj = 0;
             delay_manualadj = 0;
 		}
 	}
@@ -965,12 +964,9 @@ namespace RB2DrumBot
                 StreamReader SR = new StreamReader(fpath + FileListBox.Items[FileListBox.SelectedIndex] + ".drumbotadj");
 				
 				length_of_song = Convert.ToDouble(SR.ReadLine());
-				time_taken = Convert.ToDouble(SR.ReadLine());
-				time_taken_tp = Convert.ToDouble(SR.ReadLine());
 				
 				for (int i = 0; i < 3000; i++)
 				{
-					dev_event[i].delay_autoadj = Convert.ToInt32(SR.ReadLine());
 					dev_event[i].delay_manualadj = Convert.ToInt32(SR.ReadLine());
 					
 					if (dev_event[i].sp_code == 3)
@@ -996,71 +992,18 @@ namespace RB2DrumBot
             }
             else
             {
-				time_taken = length_of_song;
-				time_taken_tp = length_of_song;
                 SaveAdjFile();
-				time_taken = 0;
-				time_taken_tp = 0;
             }
 		}
-
-        private void CalcAutoAdj()
-        {
-            double accum_adj = 0;
-
-            for (int i = 0; i < 3000; i++)
-            {
-                int delay = dev_event[i].delay;
-
-                double new_delay_d = 0;
-                int new_delay = 0;
-
-                if (time_taken != 0 && is_cali && is_playing == false)
-                {
-                    new_delay_d = ((double)delay * length_of_song) / time_taken;
-                    new_delay = Convert.ToInt32(Math.Floor(new_delay_d));
-                }
-
-                accum_adj += new_delay_d - (double)new_delay;
-
-                while (accum_adj >= (double)1)
-                {
-                    delay += 1;
-                    accum_adj -= 1;
-                }
-                while (accum_adj <= (double)-1)
-                {
-                    delay -= 1;
-                    accum_adj += 1;
-                }
-
-                dev_event[i].delay_autoadj = new_delay - delay;
-				
-				manual_lock = true;
-                ListOfNotes.Rows[i].Height = minimum_row_height + Convert.ToInt32(Math.Round(((double)(dev_event[i].delay + dev_event[i].delay_autoadj + dev_event[i].delay_manualadj) * height_scale)));
-				manual_lock = false;
-				
-				ListOfNotes.Rows[i].Cells[3].Value = Convert.ToString(dev_event[i].delay_manualadj);
-				ListOfNotes.Rows[i].Cells[2].Value = Convert.ToString(dev_event[i].delay_autoadj);
-				
-				if (dev_event[i].sp_code == 3)
-				{
-					break;
-				}
-            }
-        }
 		
 		private void SaveAdjFile()
 		{
             StreamWriter SW = new StreamWriter(fpath + FileListBox.Items[FileListBox.SelectedIndex] + ".drumbotadj");
 			
 			SW.WriteLine(string.Format("{0:F5}", length_of_song));
-			SW.WriteLine(string.Format("{0:F5}", time_taken));
-			SW.WriteLine(string.Format("{0:F5}", time_taken_tp));
 			
 			for (int i = 0; i < 3000; i++)
 			{				
-				SW.WriteLine(dev_event[i].delay_autoadj);
 				SW.WriteLine(dev_event[i].delay_manualadj);
 				
 				if (dev_event[i].sp_code == 3)
@@ -1087,7 +1030,6 @@ namespace RB2DrumBot
             {
                 dev_event[i].sp_code = drum_dev_event[i].sp_code;
                 dev_event[i].delay = drum_dev_event[i].delay;
-				dev_event[i].delay_autoadj = 0;
 				dev_event[i].delay_manualadj = 0;
                 dev_event[i].bitmask = drum_dev_event[i].bitmask;
                 if (dev_event[i].sp_code == 3)
@@ -1095,47 +1037,9 @@ namespace RB2DrumBot
                     break;
                 }
             }
-            event_cnt = 0;
             event_length = i + 1;
-        }
-		
-		private void SendNextInstruct()
-        {
-            if (SerPort.BytesToWrite < 8)
-            {
-                byte[] b = new byte[5];
-                b[0] = 0;
-                b[1] = (byte)dev_event[event_cnt].sp_code;
-
-                int delay = dev_event[event_cnt].delay;
-
-				delay += dev_event[event_cnt].delay_manualadj;
-
-                if (is_cali == false)
-                {
-					delay += dev_event[event_cnt].delay_autoadj;
-                }
-
-                delay = Convert.ToInt32(Math.Round((double)delay * percent_adj));
-
-                b[3] = Convert.ToByte(delay % 256);
-                b[2] = Convert.ToByte((delay - Convert.ToInt32(b[3])) / 256);
-
-                b[4] = (byte)dev_event[event_cnt].bitmask;
-
-                SerPort.Write(b, 0, 5);
-
-                event_cnt++;
-
-                if (b[1] == 3)
-                {
-                    is_playing = false;
-					if (is_cali)
-					{
-						CalcAutoAdj();
-					}
-                }
-            }
+			ProgBar.Minimum = 0;
+            ProgBar.Maximum = event_length;
         }
 		
 		private bool BitIsClear(int b, int i)
@@ -1165,12 +1069,12 @@ namespace RB2DrumBot
 			Bitmap BMbb = new Bitmap(bitmap_fpath + "blueb.bmp");
 			Bitmap BMgb = new Bitmap(bitmap_fpath + "greenb.bmp");
 
-            PlayProgBar.Maximum = event_length;
+            ProgBar.Maximum = event_length;
 
 			int i;
 			for (i = 0; i < event_length; i++)
 			{
-				PlayProgBar.Value = i;
+				ProgBar.Value = i;
 			
 				if (event_length > ListOfNotes.Rows.Count)
 	            {
@@ -1184,71 +1088,174 @@ namespace RB2DrumBot
                 manual_lock = false;
 				ListOfNotes.Rows[i].Cells[0].Value = Convert.ToString(i);
 				ListOfNotes.Rows[i].Cells[1].Value = Convert.ToString(dev_event[i].delay);
-				ListOfNotes.Rows[i].Cells[2].Value = Convert.ToString(dev_event[i].delay_autoadj);
-				ListOfNotes.Rows[i].Cells[3].Value = Convert.ToString(dev_event[i].delay_manualadj);
+				ListOfNotes.Rows[i].Cells[2].Value = Convert.ToString(dev_event[i].delay_manualadj);
 					
 				if (BitIsClear(dev_event[i].bitmask, bass_bit))
 				{
+					ListOfNotes.Rows[i].Cells[3].Value = BMo;
 					ListOfNotes.Rows[i].Cells[4].Value = BMo;
 					ListOfNotes.Rows[i].Cells[5].Value = BMo;
 					ListOfNotes.Rows[i].Cells[6].Value = BMo;
-					ListOfNotes.Rows[i].Cells[7].Value = BMo;
 					
 					if (BitIsClear(dev_event[i].bitmask, red_bit))
 					{
-						ListOfNotes.Rows[i].Cells[4].Value = BMrb;
+						ListOfNotes.Rows[i].Cells[3].Value = BMrb;
 					}
 					
 					if (BitIsClear(dev_event[i].bitmask, yellow_bit))
 					{
-						ListOfNotes.Rows[i].Cells[5].Value = BMyb;
+						ListOfNotes.Rows[i].Cells[4].Value = BMyb;
 					}
 					
 					if (BitIsClear(dev_event[i].bitmask, blue_bit))
 					{
-						ListOfNotes.Rows[i].Cells[6].Value = BMbb;
+						ListOfNotes.Rows[i].Cells[5].Value = BMbb;
 					}
 					
 					if (BitIsClear(dev_event[i].bitmask, green_bit))
 					{
-						ListOfNotes.Rows[i].Cells[7].Value = BMgb;
+						ListOfNotes.Rows[i].Cells[6].Value = BMgb;
 					}
 					
-					ListOfNotes.Rows[i].Cells[8].Value = BMo;
+					ListOfNotes.Rows[i].Cells[7].Value = BMo;
 				}
 				else
 				{
+					ListOfNotes.Rows[i].Cells[3].Value = BMbl;
 					ListOfNotes.Rows[i].Cells[4].Value = BMbl;
 					ListOfNotes.Rows[i].Cells[5].Value = BMbl;
 					ListOfNotes.Rows[i].Cells[6].Value = BMbl;
-					ListOfNotes.Rows[i].Cells[7].Value = BMbl;
 					
 					if (BitIsClear(dev_event[i].bitmask, red_bit))
 					{
-						ListOfNotes.Rows[i].Cells[4].Value = BMr;
+						ListOfNotes.Rows[i].Cells[3].Value = BMr;
 					}
 					
 					if (BitIsClear(dev_event[i].bitmask, yellow_bit))
 					{
-						ListOfNotes.Rows[i].Cells[5].Value = BMy;
+						ListOfNotes.Rows[i].Cells[4].Value = BMy;
 					}
 					
 					if (BitIsClear(dev_event[i].bitmask, blue_bit))
 					{
-						ListOfNotes.Rows[i].Cells[6].Value = BMb;
+						ListOfNotes.Rows[i].Cells[5].Value = BMb;
 					}
 					
 					if (BitIsClear(dev_event[i].bitmask, green_bit))
 					{
-						ListOfNotes.Rows[i].Cells[7].Value = BMg;
+						ListOfNotes.Rows[i].Cells[6].Value = BMg;
 					}
 					
-					ListOfNotes.Rows[i].Cells[8].Value = BMbl;
+					ListOfNotes.Rows[i].Cells[7].Value = BMbl;
 				}
 			}
 			for (int j = i; event_length < ListOfNotes.Rows.Count; j++)
 			{
 				ListOfNotes.Rows.RemoveAt(i);
+			}
+		}
+		
+		int f_ptr;
+		bool bot_busy;
+		
+		void BotCtrl()
+		{
+			if (bot_status == 0)
+			{
+			}
+			else if (bot_status == 1)
+			{
+				bot_busy = false;
+				
+				SongStatusLabel.Text = "Robot Wants File Name";
+				
+				if (FileListBox.Items[FileListBox.SelectedIndex].Length != 0)
+				{
+					string str = "";
+					int i;
+					for (i = 0; i < 8 && i < FileListBox.Items[FileListBox.SelectedIndex].Length; i++)
+					{
+						str +=  FileListBox.Items[FileListBox.SelectedIndex].SubString(i, 1);
+					}
+					for (int j = i; j < 8; j++)
+					{
+						str += "_";
+					}
+					SerPort.Write(str);
+					
+					bot_status = 0;
+					
+					SongStatusLabel.Text = "Robot is Waiting for Command";
+				}
+			}
+			else if (bot_status == 2)
+			{
+				bot_busy = true;
+				byte[] b = new byte[2];
+				b[0] = event_length % 256;
+				b[1] = Convert.ToByte((event_length - (int)b[0]) / 256);
+				SerPort.Write(b, 0, 2);
+				
+				f_ptr = 0;
+				
+				bot_status = 0;
+			}
+			else if (bot_status == 3)
+			{
+				SongStatusLabel.Text = "Robot is Loading New Chart";
+				
+				bot_busy = true;
+				
+				if (SerPort.BytesToWrite < 8)
+	            {
+	                byte[] b = new byte[5];
+	                b[0] = 0;
+	                b[1] = (byte)dev_event[f_ptr].sp_code;
+
+	                int delay = dev_event[f_ptr].delay;
+
+					delay += dev_event[f_ptr].delay_manualadj;
+
+	                delay = Convert.ToInt32(Math.Round((double)delay * percent_adj));
+
+	                b[3] = Convert.ToByte(delay % 256);
+	                b[2] = Convert.ToByte((delay - Convert.ToInt32(b[3])) / 256);
+
+	                b[4] = (byte)dev_event[f_ptr].bitmask;
+
+	                SerPort.Write(b, 0, 5);
+
+	                f_ptr++;
+					
+					ProgBar.Value = f_ptr;
+					
+					bot_status = 0;
+	            }				
+			}
+			else if (bot_status == 4)
+			{
+				bot_busy = false;
+				
+				SongStatusLabel.Text = "Robot is Finished";
+				
+				bot_status = 0;
+			}
+			else if (bot_status == 5)
+			{
+				bot_busy = true;
+				
+				SongStatusLabel.Text = "Robot is Playing";
+				
+				bot_status = 0;
+			}
+			else if (bot_status == 128)
+			{
+				SongStatusLabel.Text = "File Missing on Disk";
+				bot_status = 0;
+			}
+			else if (bot_status == 255)
+			{
+				SongStatusLabel.Text = "Disk Error on Robot";
 			}
 		}
     }

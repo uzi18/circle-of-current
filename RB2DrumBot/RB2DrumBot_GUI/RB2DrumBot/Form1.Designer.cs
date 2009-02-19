@@ -47,14 +47,14 @@
             this.label2 = new System.Windows.Forms.Label();
             this.SongLengthLabel = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.PlayProgBar = new System.Windows.Forms.ProgressBar();
-            this.AbortButton = new System.Windows.Forms.Button();
+            this.ProgBar = new System.Windows.Forms.ProgressBar();
+            this.LoadFileButton = new System.Windows.Forms.Button();
             this.PlayButton = new System.Windows.Forms.Button();
             this.PortStatusLabel = new System.Windows.Forms.Label();
             this.FolderPathText = new System.Windows.Forms.TextBox();
             this.FolderBrowseButton = new System.Windows.Forms.Button();
             this.SerPort = new System.IO.Ports.SerialPort(this.components);
-            this.Player = new System.Windows.Forms.Timer(this.components);
+            this.PortChecker = new System.Windows.Forms.Timer(this.components);
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.ListOfNotes = new System.Windows.Forms.DataGridView();
             this.Index = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -68,8 +68,8 @@
             this.BassBox = new System.Windows.Forms.DataGridViewImageColumn();
             this.ScaleBar = new System.Windows.Forms.TrackBar();
             this.label4 = new System.Windows.Forms.Label();
-            this.SaveButton = new System.Windows.Forms.Button();
-            this.LoadButton = new System.Windows.Forms.Button();
+            this.SaveConfigButton = new System.Windows.Forms.Button();
+            this.LoadConfigButton = new System.Windows.Forms.Button();
             this.ResetButton = new System.Windows.Forms.Button();
             this.ClearCaliBut = new System.Windows.Forms.Button();
             this.PercentAdjBar = new System.Windows.Forms.TrackBar();
@@ -127,8 +127,8 @@
             this.GroupBox.Controls.Add(this.PercentAdjBar);
             this.GroupBox.Controls.Add(this.ClearCaliBut);
             this.GroupBox.Controls.Add(this.ResetButton);
-            this.GroupBox.Controls.Add(this.LoadButton);
-            this.GroupBox.Controls.Add(this.SaveButton);
+            this.GroupBox.Controls.Add(this.LoadConfigButton);
+            this.GroupBox.Controls.Add(this.SaveConfigButton);
             this.GroupBox.Controls.Add(this.CaliButton);
             this.GroupBox.Controls.Add(this.TimeTakenToPlayLabel);
             this.GroupBox.Controls.Add(this.TimeTakenLabel);
@@ -136,8 +136,8 @@
             this.GroupBox.Controls.Add(this.label2);
             this.GroupBox.Controls.Add(this.SongLengthLabel);
             this.GroupBox.Controls.Add(this.label1);
-            this.GroupBox.Controls.Add(this.PlayProgBar);
-            this.GroupBox.Controls.Add(this.AbortButton);
+            this.GroupBox.Controls.Add(this.ProgBar);
+            this.GroupBox.Controls.Add(this.LoadFileButton);
             this.GroupBox.Controls.Add(this.PlayButton);
             this.GroupBox.Controls.Add(this.PortStatusLabel);
             this.GroupBox.Controls.Add(this.SongStatusLabel);
@@ -213,24 +213,24 @@
             this.label1.TabIndex = 8;
             this.label1.Text = "Length of Song:";
             // 
-            // PlayProgBar
+            // ProgBar
             // 
-            this.PlayProgBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.ProgBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.PlayProgBar.Location = new System.Drawing.Point(9, 94);
-            this.PlayProgBar.Name = "PlayProgBar";
-            this.PlayProgBar.Size = new System.Drawing.Size(237, 23);
-            this.PlayProgBar.TabIndex = 7;
+            this.ProgBar.Location = new System.Drawing.Point(9, 94);
+            this.ProgBar.Name = "ProgBar";
+            this.ProgBar.Size = new System.Drawing.Size(237, 23);
+            this.ProgBar.TabIndex = 7;
             // 
-            // AbortButton
+            // LoadFileButton
             // 
-            this.AbortButton.Location = new System.Drawing.Point(90, 65);
-            this.AbortButton.Name = "AbortButton";
-            this.AbortButton.Size = new System.Drawing.Size(75, 23);
-            this.AbortButton.TabIndex = 6;
-            this.AbortButton.Text = "Abort";
-            this.AbortButton.UseVisualStyleBackColor = true;
-            this.AbortButton.Click += new System.EventHandler(this.AbortButton_Click);
+            this.LoadFileButton.Location = new System.Drawing.Point(90, 65);
+            this.LoadFileButton.Name = "LoadFileButton";
+            this.LoadFileButton.Size = new System.Drawing.Size(75, 23);
+            this.LoadFileButton.TabIndex = 6;
+            this.LoadFileButton.Text = "Abort";
+            this.LoadFileButton.UseVisualStyleBackColor = true;
+            this.LoadFileButton.Click += new System.EventHandler(this.LoadFileButton_Click);
             // 
             // PlayButton
             // 
@@ -271,11 +271,11 @@
             this.FolderBrowseButton.UseVisualStyleBackColor = true;
             this.FolderBrowseButton.Click += new System.EventHandler(this.FolderBrowseButton_Click);
             // 
-            // Player
+            // PortChecker
             // 
-            this.Player.Enabled = true;
-            this.Player.Interval = 10;
-            this.Player.Tick += new System.EventHandler(this.Player_Tick);
+            this.PortChecker.Enabled = true;
+            this.PortChecker.Interval = 10;
+            this.PortChecker.Tick += new System.EventHandler(this.PortChecker_Tick);
             // 
             // groupBox1
             // 
@@ -442,25 +442,25 @@
             this.label4.TabIndex = 0;
             this.label4.Text = "Scale";
             // 
-            // SaveButton
+            // SaveConfigButton
             // 
-            this.SaveButton.Location = new System.Drawing.Point(9, 353);
-            this.SaveButton.Name = "SaveButton";
-            this.SaveButton.Size = new System.Drawing.Size(75, 23);
-            this.SaveButton.TabIndex = 13;
-            this.SaveButton.Text = "Save Config";
-            this.SaveButton.UseVisualStyleBackColor = true;
-            this.SaveButton.Click += new System.EventHandler(this.SaveButton_Click);
+            this.SaveConfigButton.Location = new System.Drawing.Point(9, 353);
+            this.SaveConfigButton.Name = "SaveConfigButton";
+            this.SaveConfigButton.Size = new System.Drawing.Size(75, 23);
+            this.SaveConfigButton.TabIndex = 13;
+            this.SaveConfigButton.Text = "Save Config";
+            this.SaveConfigButton.UseVisualStyleBackColor = true;
+            this.SaveConfigButton.Click += new System.EventHandler(this.SaveConfigButton_Click);
             // 
-            // LoadButton
+            // LoadConfigButton
             // 
-            this.LoadButton.Location = new System.Drawing.Point(90, 353);
-            this.LoadButton.Name = "LoadButton";
-            this.LoadButton.Size = new System.Drawing.Size(75, 23);
-            this.LoadButton.TabIndex = 14;
-            this.LoadButton.Text = "Load Config";
-            this.LoadButton.UseVisualStyleBackColor = true;
-            this.LoadButton.Click += new System.EventHandler(this.LoadButton_Click);
+            this.LoadConfigButton.Location = new System.Drawing.Point(90, 353);
+            this.LoadConfigButton.Name = "LoadConfigButton";
+            this.LoadConfigButton.Size = new System.Drawing.Size(75, 23);
+            this.LoadConfigButton.TabIndex = 14;
+            this.LoadConfigButton.Text = "Load Config";
+            this.LoadConfigButton.UseVisualStyleBackColor = true;
+            this.LoadConfigButton.Click += new System.EventHandler(this.LoadConfigButton_Click);
             // 
             // ResetButton
             // 
@@ -550,10 +550,10 @@
         private System.Windows.Forms.Button FolderBrowseButton;
         private System.Windows.Forms.Label PortStatusLabel;
         private System.IO.Ports.SerialPort SerPort;
-        private System.Windows.Forms.Button AbortButton;
+        private System.Windows.Forms.Button LoadFileButton;
         private System.Windows.Forms.Button PlayButton;
-        private System.Windows.Forms.Timer Player;
-        private System.Windows.Forms.ProgressBar PlayProgBar;
+        private System.Windows.Forms.Timer PortChecker;
+        private System.Windows.Forms.ProgressBar ProgBar;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label TimeTakenLabel;
         private System.Windows.Forms.Label label2;
@@ -574,8 +574,8 @@
         private System.Windows.Forms.DataGridViewImageColumn BlueBox;
         private System.Windows.Forms.DataGridViewImageColumn GreenBox;
         private System.Windows.Forms.DataGridViewImageColumn BassBox;
-        private System.Windows.Forms.Button LoadButton;
-        private System.Windows.Forms.Button SaveButton;
+        private System.Windows.Forms.Button LoadConfigButton;
+        private System.Windows.Forms.Button SaveConfigButton;
         private System.Windows.Forms.Button ResetButton;
         private System.Windows.Forms.Button ClearCaliBut;
         private System.Windows.Forms.TrackBar PercentAdjBar;
