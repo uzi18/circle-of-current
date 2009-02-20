@@ -8,6 +8,7 @@
 #include <util/delay.h>
 #include <avr/io.h>
 #include "diskio.h"
+#include "pindef.h"
 
 /* Definitions for MMC/SDC command */
 #define CMD0	(0x40+0)	/* GO_IDLE_STATE */
@@ -33,15 +34,14 @@
 //#define MMCSelect()	PORTB &= ~0b00001000		/* MMC CS = L */
 //#define	MMCDeselect()	PORTB |= 0b00001000		/* MMC CS = H */
 
-// Frank: edited to allow faster card reading by enabling SPI2X
 void MMCSelect()
 {
-	PORTB &= ~0b00001000;
+	SD_CS_port &= ~_BV(SD_CS_pin);
 }
 
 void MMCDeselect()
 {
-	PORTB |= 0b00001000;
+	SD_CS_port |= _BV(SD_CS_pin);
 }
 
 #define SOCKPORT	PINB			/* Socket contact port */
@@ -82,9 +82,7 @@ BYTE CardType;			/* b0:MMC, b1:SDv1, b2:SDv2, b3:Block addressing */
 static
 BYTE rcvr_spi (void)
 {
-	SPDR = 0xFF;
-	loop_until_bit_is_set(SPSR, SPIF);
-	return SPDR;
+	return SPIRx(0xFF);
 }
 
 /* Alternative macro to receive data fast */
@@ -143,7 +141,7 @@ void power_on (void)
 	/* Frank: This is where you need to initilize your SPI port (mode 0, double speed on)*/
 	//PORTB = 0b01011000; // edited by Frank			/* Enable drivers */
 	//DDRB  = 0b10111000; // edited by Frank
-	DDRB |= 0b00001000; // edited by Frank, output to CS pin on card
+	SD_CS_ddr |= _BV(SD_CS_pin); // edited by Frank, output to CS pin on card
 
 	//SPCR = 0b01010000; // commented out by Frank			/* Initialize SPI port (Mode 0) */
 	//SPSR = 0b00000001; // commented out by Frank

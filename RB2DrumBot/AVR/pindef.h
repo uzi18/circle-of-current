@@ -12,6 +12,18 @@
 #define button_pin 2
 #define button_input_reg PINC
 
+#define SD_CS_port PORTB
+#define SD_CS_ddr DDRB
+#define SD_CS_pin 3
+
+#define SPI_port PORTB
+#define SPI_ddr DDRB
+#define SPI_MOSI 5
+#define SPI_MISO 6
+#define SPI_SCK 7
+#define SPI_SS 4
+
+
 // for the bit numbers, go to
 // http://wiibrew.org/wiki/Wiimote/Extension_Controllers
 

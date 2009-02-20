@@ -16,15 +16,18 @@ unsigned char SPIRx(unsigned char c)
 void SPIInitMasterMode0()
 {
 	// SS pin must be output and high
-	sbi(PORTB, 4);
-	sbi(DDRB, 4);
+	sbi(SPI_port, SPI_SS);
+	sbi(SPI_ddr, SPI_SS);
 
 	// output
-	sbi(DDRB, 5);
-	sbi(DDRB, 7);
+	sbi(SPI_port, SPI_MOSI);
+	sbi(SPI_port, SPI_SCK);
+	sbi(SPI_ddr, SPI_MOSI);
+	sbi(SPI_ddr, SPI_SCK);
 
 	// input
-	cbi(DDRB, 6);
+	cbi(SPI_ddr, SPI_MISO);
+	sbi(SPI_port, SPI_MISO);
 	
 	SPCR = 0b01010000;
 	SPSR = 0b00000000;

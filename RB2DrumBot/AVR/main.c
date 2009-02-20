@@ -15,11 +15,24 @@ void ser_tx(unsigned char data)
 }
 
 // waits for byte to be received
-unsigned char ser_rx()
+unsigned char ser_rx_wait()
 {
 	while(bit_is_clear(UCSR0A, RXC0));
 	unsigned char d = UDR0;
 	return d;
+}
+
+// return a byte received if new, or else return -1
+signed int ser_rx_nowait()
+{
+	if(bit_is_set(UCSR0A, RXC0))
+	{
+		return (signed int)UDR0;
+	}
+	else
+	{
+		return -1;
+	}
 }
 
 // start UART hardware
@@ -101,7 +114,7 @@ unsigned char instruct_buff_length()
 void exe_instruct()
 {
 	if(cur_instruct.special == 2) // 2 indicates "wait for button to start"
-	{
+	{ 
 		// stop everything
 		drum_out_port = 0xFF;
 		TCCR1B = 0b00000000;
@@ -116,6 +129,7 @@ void exe_instruct()
 	drum_out_port = cur_instruct.bitmask; // drum action
 	if(cur_instruct.special == 3) // 3 means last instruction
 	{
+		ser_tx(8); // stop timer
 		// stop everything
 		TCCR1B = 0b00000000;
 		cbi(TIMSK1, OCIE1A);
@@ -123,6 +137,10 @@ void exe_instruct()
 	}
 	else
 	{
+		if(cur_instruct.special == 2)
+		{
+			ser_tx(7); // start timer
+		}
 		// set delay for next instruction
 		OCR1A = cur_instruct.delay;
 		OCR1B = cur_instruct.delay / 2;
@@ -184,11 +202,11 @@ int main()
 		unsigned char fn[14] = {'/', 0, 0, 0, 0, 0, 0, 0, 0, '.', 'b', 'i', 'n', 0};		
 		for(unsigned char i = 1; i <= 8; i++)
 		{
-			fn[i] = ser_rx();
+			fn[i] = ser_rx_wait();
 		}
 		
 		// get command
-		unsigned char cmd = ser_rx();
+		unsigned char cmd = ser_rx_wait();
 		
 		if(cmd == 1) // if write to file
 		{		
@@ -201,8 +219,8 @@ int main()
 				ser_tx(2); // notify computer,  file creation succeeded
 				
 				// retrieve length of file
-				unsigned int length_of_file = ser_rx();
-				length_of_file += ((unsigned int)ser_rx()) << 8;
+				unsigned int length_of_file = ser_rx_wait();
+				length_of_file += ((unsigned int)ser_rx_wait()) << 8;
 				
 				for(unsigned int i = 0; i < length_of_file; i++)
 				{
@@ -210,16 +228,10 @@ int main()
 				
 					unsigned char data[5];
 					
-					do // wait for sync byte
-					{
-						data[4] = ser_rx();
-					}
-					while(data[4] != 0);
-					
-					data[0] = ser_rx();
-					data[1] = ser_rx();
-					data[2] = ser_rx();
-					data[3] = ser_rx();
+					data[0] = ser_rx_wait();
+					data[1] = ser_rx_wait();
+					data[2] = ser_rx_wait();
+					data[3] = ser_rx_wait();
 					
 					// write to file
 					f_write(&inst_fil, &data, 4, &data[4]);
@@ -258,7 +270,7 @@ int main()
 				get_instruct();
 				exe_instruct();
 				
-				while(status == 0)
+				while(status == 0 && ser_rx_nowait() != 3) // exit when not working or commanded to stop
 				{
 					// fill buffer only if needed and if there is room
 					if(instruct_buff_length() < instruct_buff_size)
@@ -268,9 +280,8 @@ int main()
 				}
 				
 				// end of song, close file and notify computer
-				f_close($inst_fil);
-				
-				ser_tx(4);
+				f_close($inst_fil);				
+				ser_tx(6);
 			}
 			else
 			{

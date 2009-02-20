@@ -2,6 +2,7 @@
 
 #include <avr/io.h>
 #include "macros.h"
+#include "pindef.h"
 
 void SPITx(unsigned char c);
 unsigned char SPIRx(unsigned char c);
