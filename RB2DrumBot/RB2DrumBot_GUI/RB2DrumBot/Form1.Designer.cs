@@ -40,7 +40,7 @@
             this.SongStatusLabel = new System.Windows.Forms.Label();
             this.Checker = new System.Windows.Forms.Timer(this.components);
             this.GroupBox = new System.Windows.Forms.GroupBox();
-            this.CaliButton = new System.Windows.Forms.Button();
+            this.StopPlayButton = new System.Windows.Forms.Button();
             this.TimeTakenToPlayLabel = new System.Windows.Forms.Label();
             this.TimeTakenLabel = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -129,7 +129,7 @@
             this.GroupBox.Controls.Add(this.ResetButton);
             this.GroupBox.Controls.Add(this.LoadConfigButton);
             this.GroupBox.Controls.Add(this.SaveConfigButton);
-            this.GroupBox.Controls.Add(this.CaliButton);
+            this.GroupBox.Controls.Add(this.StopPlayButton);
             this.GroupBox.Controls.Add(this.TimeTakenToPlayLabel);
             this.GroupBox.Controls.Add(this.TimeTakenLabel);
             this.GroupBox.Controls.Add(this.label3);
@@ -149,15 +149,15 @@
             this.GroupBox.TabStop = false;
             this.GroupBox.Text = "Drum Bot Control";
             // 
-            // CaliButton
+            // StopPlayButton
             // 
-            this.CaliButton.Location = new System.Drawing.Point(171, 65);
-            this.CaliButton.Name = "CaliButton";
-            this.CaliButton.Size = new System.Drawing.Size(75, 23);
-            this.CaliButton.TabIndex = 12;
-            this.CaliButton.Text = "Calibrate";
-            this.CaliButton.UseVisualStyleBackColor = true;
-            this.CaliButton.Click += new System.EventHandler(this.CalBut_Click);
+            this.StopPlayButton.Location = new System.Drawing.Point(171, 65);
+            this.StopPlayButton.Name = "StopPlayButton";
+            this.StopPlayButton.Size = new System.Drawing.Size(75, 23);
+            this.StopPlayButton.TabIndex = 12;
+            this.StopPlayButton.Text = "Calibrate";
+            this.StopPlayButton.UseVisualStyleBackColor = true;
+            this.StopPlayButton.Click += new System.EventHandler(this.CalBut_Click);
             // 
             // TimeTakenToPlayLabel
             // 
@@ -558,7 +558,7 @@
         private System.Windows.Forms.Label TimeTakenLabel;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label SongLengthLabel;
-        private System.Windows.Forms.Button CaliButton;
+        private System.Windows.Forms.Button StopPlayButton;
         private System.Windows.Forms.Label TimeTakenToPlayLabel;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.GroupBox groupBox1;

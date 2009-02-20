@@ -17,6 +17,7 @@ namespace RB2DrumBot
         bool is_playing = false;
 		string fpath;
         double length_of_song;
+		double time_taken;
 		DevEvent[] dev_event = new DevEvent[3000];
         int event_length;		
         int bot_status;
@@ -103,23 +104,6 @@ namespace RB2DrumBot
                     PortStatusLabel.Text = "Port Status: Error";
                 }
             }
-
-            if (bot_busy)
-            {
-                PlayButton.Enabled = false;
-                LoadFileButton.Enabled = false;
-                FileListBox.Enabled = false;
-            }
-            else
-            {
-                PlayButton.Enabled = true;
-                LoadFileButton.Enabled = true;
-                FileListBox.Enabled = true;
-            }
-
-            SongLengthLabel.Text = Convert.ToString(length_of_song);
-
-            PercentAdjLabel.Text = Convert.ToString(percent_adj * 100);
         }
 
         private void FolderBrowseButton_Click(object sender, EventArgs e)
@@ -169,6 +153,17 @@ namespace RB2DrumBot
 	            SerPort.Write(b, 0, 5);
 			}
         }
+		
+		private void StopPlayButton_Click(object sender, EventArgs e)
+		{
+			if (SerPort.IsOpen)
+			{
+				bot_busy = true;
+	            byte[] b = new byte[1];
+	            b[0] = 3;
+	            SerPort.Write(b, 0, 5);
+			}
+		}
 
         private void PortChecker_Tick(object sender, EventArgs e)
         {
@@ -220,6 +215,12 @@ namespace RB2DrumBot
         {
 
         }
+		
+		private void SerPort_Event(object sender, EventArgs e)
+        {
+			EventArgs ee = new EventArgs();
+			PortChecker.OnTick(ee);
+        }
 
         private void ScaleBar_Scroll(object sender, EventArgs e)
         {
@@ -252,11 +253,16 @@ namespace RB2DrumBot
                 ListOfNotes.Rows[i].Height = minimum_row_height + Convert.ToInt32(Math.Round(((double)(dev_event[i].delay + dev_event[i].delay_autoadj + dev_event[i].delay_manualadj) * height_scale)));
                 manual_lock = false;
             }
+			
+			PercentAdjBar.Value = 10000;
+			percent_adj = (double)PercentAdjBar.Value / (double)10000;
+			PercentAdjLabel.Text = Convert.ToString(percent_adj * 100);
         }
 
         private void PercentAdjBar_Scroll(object sender, EventArgs e)
         {
             percent_adj = (double)PercentAdjBar.Value / (double)10000;
+			PercentAdjLabel.Text = Convert.ToString(percent_adj * 100);
         }
     }
 }

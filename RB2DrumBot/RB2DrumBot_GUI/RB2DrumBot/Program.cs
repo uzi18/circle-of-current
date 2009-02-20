@@ -1023,6 +1023,7 @@ namespace RB2DrumBot
         {
             fpath = folder_path + "\\" + FileListBox.Items[FileListBox.SelectedIndex] + "\\";
             length_of_song = MidiToDrumChart(fpath + FileListBox.Items[FileListBox.SelectedIndex] + ".mid", 12000000d);
+			SongLengthLabel.Text = Convert.ToString(length_of_song);
 
             int i;
 
@@ -1157,6 +1158,7 @@ namespace RB2DrumBot
 		
 		int f_ptr;
 		bool bot_busy;
+		bool bot_do_not_disturb;
 		
 		void BotCtrl()
 		{
@@ -1166,6 +1168,7 @@ namespace RB2DrumBot
 			else if (bot_status == 1)
 			{
 				bot_busy = false;
+				bot_do_not_disturb = false;
 				
 				SongStatusLabel.Text = "Robot Wants File Name";
 				
@@ -1190,6 +1193,7 @@ namespace RB2DrumBot
 			}
 			else if (bot_status == 2)
 			{
+				bot_do_not_disturb = true;
 				bot_busy = true;
 				byte[] b = new byte[2];
 				b[0] = event_length % 256;
@@ -1205,6 +1209,7 @@ namespace RB2DrumBot
 				SongStatusLabel.Text = "Robot is Loading New Chart";
 				
 				bot_busy = true;
+				bot_do_not_disturb = true;
 				
 				if (SerPort.BytesToWrite < 8)
 	            {
@@ -1235,8 +1240,9 @@ namespace RB2DrumBot
 			else if (bot_status == 4)
 			{
 				bot_busy = false;
+				bot_do_not_disturb = false;
 				
-				SongStatusLabel.Text = "Robot is Finished";
+				SongStatusLabel.Text = "Robot is Finished Loading";
 				
 				bot_status = 0;
 			}
@@ -1248,6 +1254,27 @@ namespace RB2DrumBot
 				
 				bot_status = 0;
 			}
+			else if (bot_status == 6)
+			{
+				bot_busy = true;
+				
+				SongStatusLabel.Text = "Robot is Finished Playing";
+				
+				bot_status = 0;
+			}
+			else if (bot_status == 7)
+			{
+				stop_watch.Reset();
+				stop_watch.Start();
+				bot_status = 0;
+			}
+			else if (bot_status == 8)
+			{
+				stop_watch.Stop();
+				time_taken = (double)stop_watch.ElapsedMilliseconds / (double)1000;
+				TimeTakenLabel.Text = Convert.ToString(time_taken);
+				bot_status = 0;
+			}
 			else if (bot_status == 128)
 			{
 				SongStatusLabel.Text = "File Missing on Disk";
@@ -1256,6 +1283,28 @@ namespace RB2DrumBot
 			else if (bot_status == 255)
 			{
 				SongStatusLabel.Text = "Disk Error on Robot";
+			}
+			
+			if (bot_busy)
+            {
+                PlayButton.Enabled = false;
+                LoadFileButton.Enabled = false;
+                FileListBox.Enabled = false;
+            }
+            else
+            {
+                PlayButton.Enabled = true;
+                LoadFileButton.Enabled = true;
+                FileListBox.Enabled = true;
+            }
+			
+			if(bot_do_not_disturb)
+			{
+				StopPlayButton.Enabled = false;
+			}
+			else
+			{
+				StopPlayButton.Enabled = true;
 			}
 		}
     }
