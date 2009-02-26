@@ -20,7 +20,7 @@ Frame will be built with 3/8" aluminum tubing, platform will be polycarbonate
 
 2410-9 brushless motors ([http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=6549 link]) and `SuperSimple` 18A ESCs ([http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=6456 link])
 
-[http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=4175 This] will be used, perhaps aid the secondary MCU to warn the pilot. The actual battery voltage can also be monitored with the AVR's internal ADC. We would rather not have the BEC cut power to the motors for obvious reasons.
+[http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=4175 This battery monitor] will be used, perhaps aid the secondary MCU to warn the pilot. The actual battery voltage can also be monitored with the AVR's internal ADC. We would rather not have the BEC cut power to the motors for obvious reasons.
 
 == Notes ==
 
