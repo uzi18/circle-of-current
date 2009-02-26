@@ -2,39 +2,41 @@
 
 == Decisions ==
 
-  * The 10 bit ADC in AVRs may not be enough, will use 12 bit ADCs with good sample rate from TI, either a single channel ADC with multiplexer ([http://focus.ti.com/docs/prod/folders/print/ads7822.html ADS7822U] and [http://search.digikey.com/scripts/DkSearch/dksus.dll?Detail&name=296-9225-5-ND CD74HC4067]) or an 8 channel ADC ([http://focus.ti.com/docs/prod/folders/print/tlv2548.html#samples TLV2548IDW]).
+The 10 bit ADC in AVRs may not be enough, will use 12 bit ADCs with good sample rate from TI, either a single channel ADC with multiplexer ([http://focus.ti.com/docs/prod/folders/print/ads7822.html ADS7822U] and [http://search.digikey.com/scripts/DkSearch/dksus.dll?Detail&name=296-9225-5-ND CD74HC4067]) or an 8 channel ADC ([http://focus.ti.com/docs/prod/folders/print/tlv2548.html#samples TLV2548IDW]).
 
-  * IDG300 gyros will be used for pitch and roll because of it's profile and it's low noise characteristics. ([http://www.sparkfun.com/commerce/product_info.php?products_id=698 link])
+IDG300 gyros will be used for pitch and roll because of it's profile and it's low noise characteristics. ([http://www.sparkfun.com/commerce/product_info.php?products_id=698 link])
 
-  * LISY300AL gyro for yaw ([http://www.sparkfun.com/commerce/product_info.php?products_id=8955 link])
+LISY300AL gyro for yaw ([http://www.sparkfun.com/commerce/product_info.php?products_id=8955 link])
 
-  * MMA7260Q for accelerometer ([http://www.sparkfun.com/commerce/product_info.php?products_id=252 link])
+MMA7260Q for accelerometer ([http://www.sparkfun.com/commerce/product_info.php?products_id=252 link])
 
-  * 2200 mAH 3S1P (11.1V) 20C lithium polymer battery, this calculates to a maximum of 9.1A continuous current draw ([http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=6306&Product_Name=ZIPPY_Flightmax_2200mAh_3S1P_20C link])
+2200 mAH 3S1P (11.1V) 20C lithium polymer battery, this calculates to a maximum of 9.1A continuous current draw ([http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=6306&Product_Name=ZIPPY_Flightmax_2200mAh_3S1P_20C link])
 
-  * The microcontrollers on the ESCs are ATmega8, I2C firmware may be used, but the original firmware is under lock and cannot be backed up, therefor we will not attempt to use I2C.
+The microcontrollers on the ESCs are ATmega8, I2C firmware may be used, but the original firmware is under lock and cannot be backed up, therefor we will not attempt to use I2C.
 
-  * The a servo controller built with an ATtiny2313 will be used, it will have 0.5 microsecond resolution and pulses at over 100 Hz.
+The a servo controller built with an ATtiny2313 will be used, it will have 0.5 microsecond resolution and pulses at over 100 Hz.
 
-  * Frame will be built with 3/8" aluminum tubing, platform will be polycarbonate
+Frame will be built with 3/8" aluminum tubing, platform will be polycarbonate
 
-  * 2410-9 brushless motors ([http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=6549 link]) and `SuperSimple` 18A ESCs ([http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=6456 link])
+2410-9 brushless motors ([http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=6549 link]) and `SuperSimple` 18A ESCs ([http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=6456 link])
+
+[http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=4175 This] will be used, perhaps aid the secondary MCU to warn the pilot. The actual battery voltage can also be monitored with the AVR's internal ADC. We would rather not have the BEC cut power to the motors for obvious reasons.
 
 == Notes ==
 
-  * Looking at the chart on the quadrotor topic on RC Groups, a 30 ounce (850 grams) craft on a 2100 mAH battery will fly for 14.3 minutes, which equates to 8.8A average current draw, which is within limits of our battery. We are building our craft using nearly identical motors and propellers, this is our benchmark.
+Looking at the chart on the quadrotor topic on RC Groups, a 30 ounce (850 grams) craft on a 2100 mAH battery will fly for 14.3 minutes, which equates to 8.8A average current draw, which is within limits of our battery. We are building our craft using nearly identical motors and propellers, this is our benchmark.
 
-  * Lower center of gravity means lower angular acceleration from the motors, dangling a mass perpendicular to the craft below the center of gravity will help stabilize pitch and yaw.
+Lower center of gravity means lower angular acceleration from the motors, dangling a mass perpendicular to the craft below the center of gravity will help stabilize pitch and yaw.
 
-  * Three power supplies are needed: 9V for the camera, 5V for the MCU, 3.3V for the sensors. Simple level shifting will be used to interface the ADC with the MCU. The 5V supply may come from the BEC on the ESCs.
+Three power supplies are needed: 9V for the camera, 5V for the MCU, 3.3V for the sensors. Simple level shifting will be used to interface the ADC with the MCU. The 5V supply may come from the BEC on the ESCs.
 
-  * If the flight controller code can fit on an ATmega168, then an ATmega168 should be used, but it will take input from another ATmega644P. If the code won't fit, then the ATmega644P will be used. There must be a system to check battery status and controller status that is separate from the flight system, as the flight system needs to run really really fast.
+If the flight controller code can fit on an ATmega168, then an ATmega168 should be used, but it will take input from another ATmega644P. If the code won't fit, then the ATmega644P will be used. There must be a system to check battery status and controller status that is separate from the flight system, as the flight system needs to run really really fast.
 
-  * All chips will run on one 20 MHz clock. Either daisy chained or shared.
+All chips will run on one 20 MHz clock. Either daisy chained or shared.
 
-  * Auto-landing and minimum altitude should be done with an ultrasonic sensor.
+Auto-landing and minimum altitude should be done with an ultrasonic sensor.
 
-  * A scrolling light bar will be added to indicate forward direction.
+A scrolling light bar will be added to indicate forward direction.
 
 == Notable Sources ==
 
