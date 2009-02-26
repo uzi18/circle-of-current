@@ -1,0 +1,40 @@
+<ASSEMBLER_INFO>
+ <VERSION>2.1.17</VERSION>
+ <DEVICE>ATtiny2313</DEVICE>
+ <WORKING_DIR>C:\Documents and Settings\Administrator\My Documents\Projects\hs_4ch_servo_controller</WORKING_DIR>
+ <INCLUDE_PATH>
+  <DIR>C:\Program Files\Atmel\AVR Tools\AvrAssembler2\Appnotes</DIR>
+ </INCLUDE_PATH>
+ <SOURCE_FILE>C:\Documents and Settings\Administrator\My Documents\Projects\hs_4ch_servo_controller\hs_4ch_servo_controller.asm</SOURCE_FILE>
+ <INCLUDED_FILES>
+  <FILE>C:\Documents and Settings\Administrator\My Documents\Projects\hs_4ch_servo_controller\tn2313def.inc</FILE>
+ </INCLUDED_FILES>
+ <OBJECT_FILES>
+  <FILE>C:\Documents and Settings\Administrator\My Documents\Projects\hs_4ch_servo_controller\hs_4ch_servo_controller.obj</FILE>
+ </OBJECT_FILES>
+ <HEX_FILES>
+  <FILE>C:\Documents and Settings\Administrator\My Documents\Projects\hs_4ch_servo_controller\hs_4ch_servo_controller.hex</FILE>
+ </HEX_FILES>
+ <OUTPUT_FILES>
+  <FILE>C:\Documents and Settings\Administrator\My Documents\Projects\hs_4ch_servo_controller\hs_4ch_servo_controller.map</FILE>
+ </OUTPUT_FILES>
+ <LABELS>
+  <start_point><FILE>C:\Documents and Settings\Administrator\My Documents\Projects\hs_4ch_servo_controller\hs_4ch_servo_controller.asm</FILE><LINE>83</LINE></start_point>
+  <set_timer_ch0><FILE>C:\Documents and Settings\Administrator\My Documents\Projects\hs_4ch_servo_controller\hs_4ch_servo_controller.asm</FILE><LINE>185</LINE></set_timer_ch0>
+  <set_timer_ch1><FILE>C:\Documents and Settings\Administrator\My Documents\Projects\hs_4ch_servo_controller\hs_4ch_servo_controller.asm</FILE><LINE>201</LINE></set_timer_ch1>
+  <set_timer_ch2><FILE>C:\Documents and Settings\Administrator\My Documents\Projects\hs_4ch_servo_controller\hs_4ch_servo_controller.asm</FILE><LINE>217</LINE></set_timer_ch2>
+  <set_timer_ch3><FILE>C:\Documents and Settings\Administrator\My Documents\Projects\hs_4ch_servo_controller\hs_4ch_servo_controller.asm</FILE><LINE>233</LINE></set_timer_ch3>
+  <loop_begin><FILE>C:\Documents and Settings\Administrator\My Documents\Projects\hs_4ch_servo_controller\hs_4ch_servo_controller.asm</FILE><LINE>141</LINE></loop_begin>
+  <status_1><FILE>C:\Documents and Settings\Administrator\My Documents\Projects\hs_4ch_servo_controller\hs_4ch_servo_controller.asm</FILE><LINE>148</LINE></status_1>
+  <status_0><FILE>C:\Documents and Settings\Administrator\My Documents\Projects\hs_4ch_servo_controller\hs_4ch_servo_controller.asm</FILE><LINE>150</LINE></status_0>
+  <wait_for_byte><FILE>C:\Documents and Settings\Administrator\My Documents\Projects\hs_4ch_servo_controller\hs_4ch_servo_controller.asm</FILE><LINE>153</LINE></wait_for_byte>
+  <set_ch0><FILE>C:\Documents and Settings\Administrator\My Documents\Projects\hs_4ch_servo_controller\hs_4ch_servo_controller.asm</FILE><LINE>174</LINE></set_ch0>
+  <set_ch1><FILE>C:\Documents and Settings\Administrator\My Documents\Projects\hs_4ch_servo_controller\hs_4ch_servo_controller.asm</FILE><LINE>191</LINE></set_ch1>
+  <set_ch2><FILE>C:\Documents and Settings\Administrator\My Documents\Projects\hs_4ch_servo_controller\hs_4ch_servo_controller.asm</FILE><LINE>207</LINE></set_ch2>
+  <set_ch3><FILE>C:\Documents and Settings\Administrator\My Documents\Projects\hs_4ch_servo_controller\hs_4ch_servo_controller.asm</FILE><LINE>223</LINE></set_ch3>
+  <set_ch0_l><FILE>C:\Documents and Settings\Administrator\My Documents\Projects\hs_4ch_servo_controller\hs_4ch_servo_controller.asm</FILE><LINE>178</LINE></set_ch0_l>
+  <set_ch1_l><FILE>C:\Documents and Settings\Administrator\My Documents\Projects\hs_4ch_servo_controller\hs_4ch_servo_controller.asm</FILE><LINE>195</LINE></set_ch1_l>
+  <set_ch2_l><FILE>C:\Documents and Settings\Administrator\My Documents\Projects\hs_4ch_servo_controller\hs_4ch_servo_controller.asm</FILE><LINE>211</LINE></set_ch2_l>
+  <set_ch3_l><FILE>C:\Documents and Settings\Administrator\My Documents\Projects\hs_4ch_servo_controller\hs_4ch_servo_controller.asm</FILE><LINE>227</LINE></set_ch3_l>
+ </LABELS>
+</ASSEMBLER_INFO>
