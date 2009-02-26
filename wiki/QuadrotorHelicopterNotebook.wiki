@@ -35,5 +35,3 @@
 * Auto-landing and minimum altitude should be done with an ultrasonic sensor.
 
 * A scrolling light bar will be added to indicate forward direction.
-
-*
