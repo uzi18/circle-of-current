@@ -42,6 +42,8 @@ A scrolling light bar will be added to indicate forward direction.
 
 Torque will want the X frame to want to "scissor", I hope polycarbonate can brace against this well, or else sheet aluminum will be used. The force is likely small as the blades are not heavy.
 
+Use two O-rings on the propellers, because of [http://www.rcgroups.com/forums/showpost.php?p=9681777&postcount=1456 this]
+
 == Notable Sources ==
 
 [http://www.rcgroups.com/forums/showthread.php?t=768115 RC Groups thread]
