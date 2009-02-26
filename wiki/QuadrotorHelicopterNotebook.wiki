@@ -22,6 +22,8 @@ Frame will be built with 3/8" aluminum tubing, platform will be polycarbonate
 
 [http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=4175 This battery monitor] will be used, perhaps aid the secondary MCU to warn the pilot. The actual battery voltage can also be monitored with the AVR's internal ADC. We would rather not have the BEC cut power to the motors for obvious reasons.
 
+[http://www.tech-mp.com/accessories.php These EPP1045 propellers (10" diameter X 4.5 pitch)] will be used
+
 == Notes ==
 
 Looking at the chart on the quadrotor topic on RC Groups, a 30 ounce (850 grams) craft on a 2100 mAH battery will fly for 14.3 minutes, which equates to 8.8A average current draw, which is within limits of our battery. We are building our craft using nearly identical motors and propellers, this is our benchmark.
@@ -37,6 +39,8 @@ All chips will run on one 20 MHz clock. Either daisy chained or shared.
 Auto-landing and minimum altitude should be done with an ultrasonic sensor.
 
 A scrolling light bar will be added to indicate forward direction.
+
+Torque will want the X frame to want to "scissor", I hope polycarbonate can brace against this well, or else sheet aluminum will be used. The force is likely small as the blades are not heavy.
 
 == Notable Sources ==
 
