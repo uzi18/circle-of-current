@@ -6,7 +6,7 @@
 
 //#define serial //comment to not use serial
 
-#define remoteControlled //comment to read data from pins instead of over serial port
+//#define remoteControlled //comment to read data from pins instead of over serial port
 
 #ifdef remoteControlled
 	#ifndef serial
@@ -97,15 +97,23 @@ int main(){
 	wiimote_gen_key();
 	
 
-	while (1){
 		memory[0x00]=0xC0 | 32;
 		memory[0x01]=0xC0 | 32;
 		memory[0x02]=0x00;
 		memory[0x03]=0x00;
 		memory[0x04]=0xFF;
+		memory[0x05]=0xFF;
+	while (1){
 		#ifdef remoteControlled
 			memory[0x05] = serRx();
-			if (bit_is_set(memory[0x05],1)){
+			//*
+			
+			serTx (memory [0x04]);
+			//*/
+		#else
+			memory[0x05]=PIND;
+		#endif
+		if (bit_is_set(memory[0x05],1)){
 				memory[0x04] |= 1<<6;
 			}
 			else{
@@ -113,9 +121,5 @@ int main(){
 				
 			}
 			memory[0x05] |= (1<<1);
-			serTx (memory [0x04]);
-		#else
-			memory[0x05]=PIND;
-		#endif
 	}
 }
