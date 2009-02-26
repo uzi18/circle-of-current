@@ -51,3 +51,7 @@ Use two O-rings on the propellers, because of [http://www.rcgroups.com/forums/sh
 [http://diydrones.ning.com/profiles/blogs/supersimple-escs-and Quix's blog post about SuperSimple ESC programming]
 
 [http://www.rcgroups.com/forums/showpost.php?p=9107167&postcount=633 Dimensions for 2410 motor mount]
+
+Aluminum examples:
+[http://www.rcgroups.com/forums/showpost.php?p=8740938&postcount=226]
+[http://www.rcgroups.com/forums/showpost.php?p=9081658&postcount=610]
