@@ -4,6 +4,17 @@
 #define ID1 0x01
 #define ID2 0x03
 
+//#define serial //comment to not use serial
+
+#define remoteControlled //comment to read data from pins instead of over serial port
+
+#ifdef remoteControlled
+	#ifndef serial
+		#define serial
+	#endif
+#endif
+
+
 #define bufferSize 16
 #include <avr/io.h>
 
@@ -36,6 +47,20 @@ volatile uint8_t generate = 0;
 #include "cryptoFunctions.h"
 #include "TWI.h"
 
+#ifdef serial
+
+void serTx(unsigned char data)
+	{
+		loop_until_bit_is_set(UCSR0A, UDRE0); // wait while previous tx is finished
+		UDR0 = data; // tx
+	}
+uint8_t serRx (){
+	while(!(UCSR0A & (1<<RXC0)));
+	return UDR0;
+}
+
+#endif
+
 void setupTwi(){	//Setup TWI
 	//PORTC = 0xFF;	//Enable all pull ups
 	PRR &= 0xFF^1<<PRTWI;//Set PRTWI bit in power reduction register to 0
@@ -46,6 +71,12 @@ void setupTwi(){	//Setup TWI
 
 int main(){
 	sei();
+	#ifdef serial
+		UCSR0B |= (1 << RXEN0) | (1 << TXEN0);
+		UCSR0C |= (1 << UCSZ00) | (1 << UCSZ01);
+		UBRR0L = BAUD_PRESCALE; 
+		UBRR0H = (BAUD_PRESCALE >> 8);
+	#endif
 	setupTwi();
 	MCUCR &= 0xFF^(1<<PUD);
 	DDRD = 0x00;
@@ -72,6 +103,19 @@ int main(){
 		memory[0x02]=0x00;
 		memory[0x03]=0x00;
 		memory[0x04]=0xFF;
-		memory[0x05]=PIND;
+		#ifdef remoteControlled
+			memory[0x05] = serRx();
+			if (bit_is_set(memory[0x05],1)){
+				memory[0x04] |= 1<<6;
+			}
+			else{
+				memory[0x04] &= 0xFF ^ (1<<6);
+				
+			}
+			memory[0x05] |= (1<<1);
+			serTx (memory [0x04]);
+		#else
+			memory[0x05]=PIND;
+		#endif
 	}
 }
