@@ -2,13 +2,13 @@
 
 == Decisions ==
 
-  * The 10 bit ADC in AVRs may not be enough, will use 12 bit ADCs with good sample rate from TI, either single channel with multiplexer or 8 channel.
+  * The 10 bit ADC in AVRs may not be enough, will use 12 bit ADCs with good sample rate from TI, either a single channel ADC with multiplexer ([http://focus.ti.com/docs/prod/folders/print/ads7822.html ADS7822U] and [http://search.digikey.com/scripts/DkSearch/dksus.dll?Detail&name=296-9225-5-ND CD74HC4067]) or an 8 channel ADC ([http://focus.ti.com/docs/prod/folders/print/tlv2548.html#samples TLV2548IDW]).
 
-  * IDG300 gyros will be used for pitch and roll because of it's profile and it's low noise characteristics.
+  * IDG300 gyros will be used for pitch and roll because of it's profile and it's low noise characteristics. ([http://www.sparkfun.com/commerce/product_info.php?products_id=698 link])
 
-  * LISY300AL gyro for yaw
+  * LISY300AL gyro for yaw ([http://www.sparkfun.com/commerce/product_info.php?products_id=8955 link])
 
-  * MMA7260Q for accelerometer
+  * MMA7260Q for accelerometer ([http://www.sparkfun.com/commerce/product_info.php?products_id=252 link])
 
   * 2200 mAH 3S1P 20C lithium polymer battery, this calculates to a maximum of 9.1A continuous current draw ([http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=6306&Product_Name=ZIPPY_Flightmax_2200mAh_3S1P_20C link])
 
