@@ -12,8 +12,9 @@
 ; 64 : 19200 at 20 mhz
 
 ; center value of servos
-.equ CENTER_H = high(100)
-.equ CENTER_L = low(100)
+.equ CENTER_H = high(12000 - 11)
+.equ CENTER_L = low(12000 - 11)
+; 12000 for 1500 microseconds at 8 MHz
 
 ; define default number of channels
 .equ starting_max_chan = 8
@@ -35,7 +36,8 @@
 .def zero = r18 ; always stores 0 to quickly clear a IO
 .def temp_1 = r19 ; temporary working register
 .def temp_2 = r20
-.def cnt = r21 ; temporary counter
+.def temp_SREG = r21
+.def cnt = r22 ; temporary counter
 
 ; flash origin point
 .cseg
@@ -48,31 +50,36 @@ nop ; INT0
 nop ; INT1
 nop ; TIMER1 CAPT
 ; timer 1 compare A interrupt is here
+rjmp interrupt_routine; timer 1 compare A interrupt is here
 
-; next pin
-out CH_PORT, next_mask ; apply mask
+interrupt_routine:
+
+in temp_SREG, SREG ; save status register
+cli ; disable interrupt
+
+out CH_PORT, next_mask ; next pin, apply mask
 
 ; clear timer
-out TCNT1L, zero
 out TCNT1H, zero
+out TCNT1L, zero
 
 ; set SRAM read location
-ldi XH, 0
-mov XL, chan
-lsl XL
+ldi YH, 0
+mov YL, chan
+lsl YL
 ldi temp_2, SRAM_START
-adc XL, temp_2 ; offset start point
+adc YL, temp_2 ; offset start point
 
 ; read MSB then LSB
-ld temp_2, X+
+ld temp_2, Y+
 out OCR1AH, temp_2
-ld temp_2, X
+ld temp_2, Y
 out OCR1AL, temp_2
 
 ; next channel, then mod with max channel in SRAM
 inc chan
-ldi XL, 16 + SRAM_START
-ld temp_2, X
+ldi YL, 16 + SRAM_START
+ld temp_2, y
 cp chan, temp_2
 ;sbic SREG, SREG_Z ; commented out because SREG can't be accessed with SBIC
 brne chan_not_eq_temp_2
@@ -90,14 +97,12 @@ dec cnt
 rjmp for_loop_1
 break_for_loop_1:
 
-; return from interrupt
-reti
+out SREG, temp_SREG ; restore status register
+reti; return from interrupt
 
-; starting point
-start_point:
+start_point: ; starting point
 
-; always zero
-ldi zero, 0
+ldi zero, 0 ; always zero
 
 ; initialize stack pointer
 ldi temp_1, RAMEND
@@ -159,14 +164,11 @@ out TCCR1B, temp_1
 ; port as output
 ldi temp_1, 0xFF
 out CH_DDR, temp_1
-
 sbi STATUS_DDR, STATUS_PIN
 
-; enable interrupt globally
-sei
+sei ; enable interrupt globally
 
-; main loop
-loop_begin:
+loop_begin: ; main loop
 
 ; toggle status pin
 sbis STATUS_PORT, STATUS_PIN
@@ -182,15 +184,13 @@ wait_for_byte_cmd:
 sbis UCSRA, RXC
 rjmp wait_for_byte_cmd
 
-; read in byte
-in temp_1, UDR
+in temp_1, UDR ; read in byte
 
 ; no channel selected, quit
 cpi temp_1, 0
 breq loop_begin
 
-; make index start at 0
-dec temp_1
+dec temp_1 ; make index start at 0
 
 ; set SRAM location to index
 mov XL, temp_1
@@ -203,22 +203,17 @@ wait_for_byte_h:
 sbis UCSRA, RXC
 rjmp wait_for_byte_h
 
-; read in byte
-in temp_1, UDR
+in temp_1, UDR ; read in byte
 
-; store (MSB) value in SRAM then increment pointer
-ST X+, temp_1
+ST X+, temp_1 ; store (MSB) value in SRAM then increment pointer
 
 ; wait for a byte to be received
 wait_for_byte_l:
 sbis UCSRA, RXC
 rjmp wait_for_byte_l
 
-; read in byte
-in temp_1, UDR
+in temp_1, UDR ; read in byte
 
-; store value in SRAM (LSB)
-ST X, temp_1
+ST X, temp_1 ; store value in SRAM (LSB)
 
-; loop
-rjmp loop_begin
+rjmp loop_begin ; loop

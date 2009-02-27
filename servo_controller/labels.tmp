@@ -1,35 +1,36 @@
 <ASSEMBLER_INFO>
- <VERSION>2.1.30</VERSION>
+ <VERSION>2.1.17</VERSION>
  <DEVICE>ATtiny2313</DEVICE>
- <WORKING_DIR>C:\Documents and Settings\fzhao\My Documents\project\servo_controller</WORKING_DIR>
+ <WORKING_DIR>C:\Documents and Settings\Administrator\My Documents\Projects\servo_controller</WORKING_DIR>
  <INCLUDE_PATH>
   <DIR>C:\Program Files\Atmel\AVR Tools\AvrAssembler2\Appnotes</DIR>
  </INCLUDE_PATH>
- <SOURCE_FILE>C:\Documents and Settings\fzhao\My Documents\project\servo_controller\servo_controller.asm</SOURCE_FILE>
+ <SOURCE_FILE>C:\Documents and Settings\Administrator\My Documents\Projects\servo_controller\servo_controller.asm</SOURCE_FILE>
  <INCLUDED_FILES>
-  <FILE>C:\Documents and Settings\fzhao\My Documents\project\servo_controller\tn2313def.inc</FILE>
+  <FILE>C:\Documents and Settings\Administrator\My Documents\Projects\servo_controller\tn2313def.inc</FILE>
  </INCLUDED_FILES>
  <OBJECT_FILES>
-  <FILE>C:\Documents and Settings\fzhao\My Documents\project\servo_controller\servo_controller.obj</FILE>
+  <FILE>C:\Documents and Settings\Administrator\My Documents\Projects\servo_controller\servo_controller.obj</FILE>
  </OBJECT_FILES>
  <HEX_FILES>
-  <FILE>C:\Documents and Settings\fzhao\My Documents\project\servo_controller\servo_controller.hex</FILE>
+  <FILE>C:\Documents and Settings\Administrator\My Documents\Projects\servo_controller\servo_controller.hex</FILE>
  </HEX_FILES>
  <OUTPUT_FILES>
-  <FILE>C:\Documents and Settings\fzhao\My Documents\project\servo_controller\servo_controller.map</FILE>
+  <FILE>C:\Documents and Settings\Administrator\My Documents\Projects\servo_controller\servo_controller.map</FILE>
  </OUTPUT_FILES>
  <LABELS>
-  <start_point><FILE>C:\Documents and Settings\fzhao\My Documents\project\servo_controller\servo_controller.asm</FILE><LINE>103</LINE></start_point>
-  <chan_not_eq_temp_2><FILE>C:\Documents and Settings\fzhao\My Documents\project\servo_controller\servo_controller.asm</FILE><LINE>86</LINE></chan_not_eq_temp_2>
-  <for_loop_1><FILE>C:\Documents and Settings\fzhao\My Documents\project\servo_controller\servo_controller.asm</FILE><LINE>91</LINE></for_loop_1>
-  <break_for_loop_1><FILE>C:\Documents and Settings\fzhao\My Documents\project\servo_controller\servo_controller.asm</FILE><LINE>97</LINE></break_for_loop_1>
-  <for_loop_2><FILE>C:\Documents and Settings\fzhao\My Documents\project\servo_controller\servo_controller.asm</FILE><LINE>126</LINE></for_loop_2>
-  <break_for_loop_2><FILE>C:\Documents and Settings\fzhao\My Documents\project\servo_controller\servo_controller.asm</FILE><LINE>135</LINE></break_for_loop_2>
-  <loop_begin><FILE>C:\Documents and Settings\fzhao\My Documents\project\servo_controller\servo_controller.asm</FILE><LINE>175</LINE></loop_begin>
-  <status_1><FILE>C:\Documents and Settings\fzhao\My Documents\project\servo_controller\servo_controller.asm</FILE><LINE>182</LINE></status_1>
-  <status_0><FILE>C:\Documents and Settings\fzhao\My Documents\project\servo_controller\servo_controller.asm</FILE><LINE>184</LINE></status_0>
-  <wait_for_byte_cmd><FILE>C:\Documents and Settings\fzhao\My Documents\project\servo_controller\servo_controller.asm</FILE><LINE>187</LINE></wait_for_byte_cmd>
-  <wait_for_byte_h><FILE>C:\Documents and Settings\fzhao\My Documents\project\servo_controller\servo_controller.asm</FILE><LINE>208</LINE></wait_for_byte_h>
-  <wait_for_byte_l><FILE>C:\Documents and Settings\fzhao\My Documents\project\servo_controller\servo_controller.asm</FILE><LINE>219</LINE></wait_for_byte_l>
+  <start_point><FILE>C:\Documents and Settings\Administrator\My Documents\Projects\servo_controller\servo_controller.asm</FILE><LINE>103</LINE></start_point>
+  <interrupt_routine><FILE>C:\Documents and Settings\Administrator\My Documents\Projects\servo_controller\servo_controller.asm</FILE><LINE>55</LINE></interrupt_routine>
+  <chan_not_eq_temp_2><FILE>C:\Documents and Settings\Administrator\My Documents\Projects\servo_controller\servo_controller.asm</FILE><LINE>87</LINE></chan_not_eq_temp_2>
+  <for_loop_1><FILE>C:\Documents and Settings\Administrator\My Documents\Projects\servo_controller\servo_controller.asm</FILE><LINE>92</LINE></for_loop_1>
+  <break_for_loop_1><FILE>C:\Documents and Settings\Administrator\My Documents\Projects\servo_controller\servo_controller.asm</FILE><LINE>98</LINE></break_for_loop_1>
+  <for_loop_2><FILE>C:\Documents and Settings\Administrator\My Documents\Projects\servo_controller\servo_controller.asm</FILE><LINE>125</LINE></for_loop_2>
+  <break_for_loop_2><FILE>C:\Documents and Settings\Administrator\My Documents\Projects\servo_controller\servo_controller.asm</FILE><LINE>134</LINE></break_for_loop_2>
+  <loop_begin><FILE>C:\Documents and Settings\Administrator\My Documents\Projects\servo_controller\servo_controller.asm</FILE><LINE>171</LINE></loop_begin>
+  <status_1><FILE>C:\Documents and Settings\Administrator\My Documents\Projects\servo_controller\servo_controller.asm</FILE><LINE>178</LINE></status_1>
+  <status_0><FILE>C:\Documents and Settings\Administrator\My Documents\Projects\servo_controller\servo_controller.asm</FILE><LINE>180</LINE></status_0>
+  <wait_for_byte_cmd><FILE>C:\Documents and Settings\Administrator\My Documents\Projects\servo_controller\servo_controller.asm</FILE><LINE>183</LINE></wait_for_byte_cmd>
+  <wait_for_byte_h><FILE>C:\Documents and Settings\Administrator\My Documents\Projects\servo_controller\servo_controller.asm</FILE><LINE>202</LINE></wait_for_byte_h>
+  <wait_for_byte_l><FILE>C:\Documents and Settings\Administrator\My Documents\Projects\servo_controller\servo_controller.asm</FILE><LINE>211</LINE></wait_for_byte_l>
  </LABELS>
 </ASSEMBLER_INFO>
