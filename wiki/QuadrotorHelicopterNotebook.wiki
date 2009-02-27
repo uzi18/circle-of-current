@@ -32,9 +32,11 @@ Lower center of gravity means lower angular acceleration from the motors, dangli
 
 Three power supplies are needed: 9V for the camera, 5V for the MCU, 3.3V for the sensors. Simple level shifting will be used to interface the ADC with the MCU. The 5V supply may come from the BEC on the ESCs.
 
-If the flight controller code can fit on an ATmega168, then an ATmega168 should be used, but it will take input from another ATmega644P. If the code won't fit, then the ATmega644P will be used. There must be a system to check battery status and controller status that is separate from the flight system, as the flight system needs to run really really fast.
+If the flight controller code can fit on an ATmega168, then an ATmega168 should be used, but it will take input from another ATmega644P. If the code won't fit, then the ATmega644P will be used. There must be a system to check battery status and controller status that is separate from the flight system, as the flight system needs to run really really fast. The flight system will likely be controlled by UART or TWI because the SPI interface is reserved for the ADC.
 
-All chips will run on one 20 MHz clock. Either daisy chained or shared.
+A free 8 bit timer with a frequency of 20 MHz divided by 1024 can control servos for the camera and other stuff.
+
+All chips will run on one 20 MHz clock. Either daisy chained or shared. This way, UART communication can be super fast.
 
 Auto-landing and minimum altitude should be done with an ultrasonic sensor.
 
@@ -53,9 +55,14 @@ Use two O-rings on the propellers, because of [http://www.rcgroups.com/forums/sh
 [http://www.rcgroups.com/forums/showpost.php?p=9107167&postcount=633 Dimensions for 2410 motor mount]
 
 Aluminum examples:
-[http://www.rcgroups.com/forums/showpost.php?p=8740938&postcount=226]
-[http://www.rcgroups.com/forums/showpost.php?p=9081658&postcount=610]
-[http://www.rcgroups.com/forums/showthread.php?t=811550]
-[http://www.rcgroups.com/forums/attachment.php?attachmentid=2022829]
+  * [http://www.rcgroups.com/forums/showpost.php?p=8740938&postcount=226]
+  * [http://www.rcgroups.com/forums/showpost.php?p=9081658&postcount=610]
+  * [http://www.rcgroups.com/forums/showthread.php?t=811550]
+  * [http://www.rcgroups.com/forums/attachment.php?attachmentid=2022829]
+
+
 
 [http://www.rcgroups.com/forums/showthread.php?t=209187 Info on li-po batteries]
+
+
+[http://www.rcgroups.com/forums/showthread.php?t=1005930 More props]
