@@ -1,0 +1,874 @@
+
+c_servo_controller.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         000004da  00000000  00000000  00000074  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .bss          0000001d  00800060  000004da  0000054e  2**0
+                  ALLOC
+  2 .debug_aranges 00000020  00000000  00000000  0000054e  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  3 .debug_pubnames 0000003e  00000000  00000000  0000056e  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  4 .debug_info   000003d3  00000000  00000000  000005ac  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_abbrev 0000015e  00000000  00000000  0000097f  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_line   000003c3  00000000  00000000  00000add  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_frame  00000050  00000000  00000000  00000ea0  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_str    00000130  00000000  00000000  00000ef0  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_loc    00000202  00000000  00000000  00001020  2**0
+                  CONTENTS, READONLY, DEBUGGING
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	12 c0       	rjmp	.+36     	; 0x26 <__ctors_end>
+   2:	2a c0       	rjmp	.+84     	; 0x58 <__bad_interrupt>
+   4:	29 c0       	rjmp	.+82     	; 0x58 <__bad_interrupt>
+   6:	28 c0       	rjmp	.+80     	; 0x58 <__bad_interrupt>
+   8:	28 c0       	rjmp	.+80     	; 0x5a <__vector_4>
+   a:	26 c0       	rjmp	.+76     	; 0x58 <__bad_interrupt>
+   c:	25 c0       	rjmp	.+74     	; 0x58 <__bad_interrupt>
+   e:	24 c0       	rjmp	.+72     	; 0x58 <__bad_interrupt>
+  10:	23 c0       	rjmp	.+70     	; 0x58 <__bad_interrupt>
+  12:	22 c0       	rjmp	.+68     	; 0x58 <__bad_interrupt>
+  14:	21 c0       	rjmp	.+66     	; 0x58 <__bad_interrupt>
+  16:	20 c0       	rjmp	.+64     	; 0x58 <__bad_interrupt>
+  18:	1f c0       	rjmp	.+62     	; 0x58 <__bad_interrupt>
+  1a:	1e c0       	rjmp	.+60     	; 0x58 <__bad_interrupt>
+  1c:	1d c0       	rjmp	.+58     	; 0x58 <__bad_interrupt>
+  1e:	1c c0       	rjmp	.+56     	; 0x58 <__bad_interrupt>
+  20:	1b c0       	rjmp	.+54     	; 0x58 <__bad_interrupt>
+  22:	1a c0       	rjmp	.+52     	; 0x58 <__bad_interrupt>
+  24:	19 c0       	rjmp	.+50     	; 0x58 <__bad_interrupt>
+
+00000026 <__ctors_end>:
+  26:	11 24       	eor	r1, r1
+  28:	1f be       	out	0x3f, r1	; 63
+  2a:	cf ed       	ldi	r28, 0xDF	; 223
+  2c:	cd bf       	out	0x3d, r28	; 61
+
+0000002e <__do_copy_data>:
+  2e:	10 e0       	ldi	r17, 0x00	; 0
+  30:	a0 e6       	ldi	r26, 0x60	; 96
+  32:	b0 e0       	ldi	r27, 0x00	; 0
+  34:	ea ed       	ldi	r30, 0xDA	; 218
+  36:	f4 e0       	ldi	r31, 0x04	; 4
+  38:	02 c0       	rjmp	.+4      	; 0x3e <.do_copy_data_start>
+
+0000003a <.do_copy_data_loop>:
+  3a:	05 90       	lpm	r0, Z+
+  3c:	0d 92       	st	X+, r0
+
+0000003e <.do_copy_data_start>:
+  3e:	a0 36       	cpi	r26, 0x60	; 96
+  40:	b1 07       	cpc	r27, r17
+  42:	d9 f7       	brne	.-10     	; 0x3a <.do_copy_data_loop>
+
+00000044 <__do_clear_bss>:
+  44:	10 e0       	ldi	r17, 0x00	; 0
+  46:	a0 e6       	ldi	r26, 0x60	; 96
+  48:	b0 e0       	ldi	r27, 0x00	; 0
+  4a:	01 c0       	rjmp	.+2      	; 0x4e <.do_clear_bss_start>
+
+0000004c <.do_clear_bss_loop>:
+  4c:	1d 92       	st	X+, r1
+
+0000004e <.do_clear_bss_start>:
+  4e:	ad 37       	cpi	r26, 0x7D	; 125
+  50:	b1 07       	cpc	r27, r17
+  52:	e1 f7       	brne	.-8      	; 0x4c <.do_clear_bss_loop>
+  54:	04 d1       	rcall	.+520    	; 0x25e <main>
+  56:	3f c2       	rjmp	.+1150   	; 0x4d6 <_exit>
+
+00000058 <__bad_interrupt>:
+  58:	d3 cf       	rjmp	.-90     	; 0x0 <__vectors>
+
+0000005a <__vector_4>:
+static volatile uint8_t next_mask; // pin mask
+static volatile uint8_t chan; // current channel
+static volatile uint32_t sum; // sum of time since start of period
+
+ISR(TIMER1_COMPA_vect) // timer 1 output compare A interrupt
+{
+  5a:	1f 92       	push	r1
+  5c:	0f 92       	push	r0
+  5e:	0f b6       	in	r0, 0x3f	; 63
+  60:	0f 92       	push	r0
+  62:	11 24       	eor	r1, r1
+  64:	2f 93       	push	r18
+  66:	3f 93       	push	r19
+  68:	4f 93       	push	r20
+  6a:	5f 93       	push	r21
+  6c:	8f 93       	push	r24
+  6e:	9f 93       	push	r25
+  70:	af 93       	push	r26
+  72:	bf 93       	push	r27
+  74:	ef 93       	push	r30
+  76:	ff 93       	push	r31
+	out_port = next_mask; // new channel output
+  78:	80 91 77 00 	lds	r24, 0x0077
+  7c:	88 bb       	out	0x18, r24	; 24
+	TCNT1 = 0; // reset timer
+  7e:	1d bc       	out	0x2d, r1	; 45
+  80:	1c bc       	out	0x2c, r1	; 44
+	OCR1A = ticks[chan] - offset; // set new alarm
+  82:	e0 91 78 00 	lds	r30, 0x0078
+  86:	f0 e0       	ldi	r31, 0x00	; 0
+  88:	ee 0f       	add	r30, r30
+  8a:	ff 1f       	adc	r31, r31
+  8c:	e0 5a       	subi	r30, 0xA0	; 160
+  8e:	ff 4f       	sbci	r31, 0xFF	; 255
+  90:	80 81       	ld	r24, Z
+  92:	91 81       	ldd	r25, Z+1	; 0x01
+  94:	89 97       	sbiw	r24, 0x29	; 41
+  96:	9b bd       	out	0x2b, r25	; 43
+  98:	8a bd       	out	0x2a, r24	; 42
+	sum += ticks[chan]; // sum is elapsed time for current period
+  9a:	20 91 79 00 	lds	r18, 0x0079
+  9e:	30 91 7a 00 	lds	r19, 0x007A
+  a2:	40 91 7b 00 	lds	r20, 0x007B
+  a6:	50 91 7c 00 	lds	r21, 0x007C
+  aa:	e0 91 78 00 	lds	r30, 0x0078
+  ae:	f0 e0       	ldi	r31, 0x00	; 0
+  b0:	ee 0f       	add	r30, r30
+  b2:	ff 1f       	adc	r31, r31
+  b4:	e0 5a       	subi	r30, 0xA0	; 160
+  b6:	ff 4f       	sbci	r31, 0xFF	; 255
+  b8:	80 81       	ld	r24, Z
+  ba:	91 81       	ldd	r25, Z+1	; 0x01
+  bc:	a0 e0       	ldi	r26, 0x00	; 0
+  be:	b0 e0       	ldi	r27, 0x00	; 0
+  c0:	82 0f       	add	r24, r18
+  c2:	93 1f       	adc	r25, r19
+  c4:	a4 1f       	adc	r26, r20
+  c6:	b5 1f       	adc	r27, r21
+  c8:	80 93 79 00 	sts	0x0079, r24
+  cc:	90 93 7a 00 	sts	0x007A, r25
+  d0:	a0 93 7b 00 	sts	0x007B, r26
+  d4:	b0 93 7c 00 	sts	0x007C, r27
+	do
+	{
+		chan++; // next channel
+  d8:	80 91 78 00 	lds	r24, 0x0078
+  dc:	8f 5f       	subi	r24, 0xFF	; 255
+  de:	80 93 78 00 	sts	0x0078, r24
+	}
+	while(bit_is_clear(chan_en, chan) && chan < 8); // if disabled, increment again, exit if final channel
+  e2:	80 91 72 00 	lds	r24, 0x0072
+  e6:	20 91 78 00 	lds	r18, 0x0078
+  ea:	90 e0       	ldi	r25, 0x00	; 0
+  ec:	02 c0       	rjmp	.+4      	; 0xf2 <__stack+0x13>
+  ee:	95 95       	asr	r25
+  f0:	87 95       	ror	r24
+  f2:	2a 95       	dec	r18
+  f4:	e2 f7       	brpl	.-8      	; 0xee <__stack+0xf>
+  f6:	80 fd       	sbrc	r24, 0
+  f8:	04 c0       	rjmp	.+8      	; 0x102 <__stack+0x23>
+  fa:	80 91 78 00 	lds	r24, 0x0078
+  fe:	88 30       	cpi	r24, 0x08	; 8
+ 100:	58 f3       	brcs	.-42     	; 0xd8 <__vector_4+0x7e>
+	if(chan == 8) // final channel
+ 102:	80 91 78 00 	lds	r24, 0x0078
+ 106:	88 30       	cpi	r24, 0x08	; 8
+ 108:	09 f0       	breq	.+2      	; 0x10c <__stack+0x2d>
+ 10a:	42 c0       	rjmp	.+132    	; 0x190 <__stack+0xb1>
+	{
+		next_mask = 0; // pins off on next interrupt
+ 10c:	10 92 77 00 	sts	0x0077, r1
+		if(period_ticks > sum) // if time left over
+ 110:	20 91 73 00 	lds	r18, 0x0073
+ 114:	30 91 74 00 	lds	r19, 0x0074
+ 118:	40 91 75 00 	lds	r20, 0x0075
+ 11c:	50 91 76 00 	lds	r21, 0x0076
+ 120:	80 91 79 00 	lds	r24, 0x0079
+ 124:	90 91 7a 00 	lds	r25, 0x007A
+ 128:	a0 91 7b 00 	lds	r26, 0x007B
+ 12c:	b0 91 7c 00 	lds	r27, 0x007C
+ 130:	82 17       	cp	r24, r18
+ 132:	93 07       	cpc	r25, r19
+ 134:	a4 07       	cpc	r26, r20
+ 136:	b5 07       	cpc	r27, r21
+ 138:	40 f5       	brcc	.+80     	; 0x18a <__stack+0xab>
+		{
+			uint32_t diff = period_ticks - sum; // calculate remainder
+ 13a:	20 91 73 00 	lds	r18, 0x0073
+ 13e:	30 91 74 00 	lds	r19, 0x0074
+ 142:	40 91 75 00 	lds	r20, 0x0075
+ 146:	50 91 76 00 	lds	r21, 0x0076
+ 14a:	80 91 79 00 	lds	r24, 0x0079
+ 14e:	90 91 7a 00 	lds	r25, 0x007A
+ 152:	a0 91 7b 00 	lds	r26, 0x007B
+ 156:	b0 91 7c 00 	lds	r27, 0x007C
+ 15a:	28 1b       	sub	r18, r24
+ 15c:	39 0b       	sbc	r19, r25
+ 15e:	4a 0b       	sbc	r20, r26
+ 160:	5b 0b       	sbc	r21, r27
+			if(diff > 0xFFFF)
+ 162:	20 30       	cpi	r18, 0x00	; 0
+ 164:	80 e0       	ldi	r24, 0x00	; 0
+ 166:	38 07       	cpc	r19, r24
+ 168:	81 e0       	ldi	r24, 0x01	; 1
+ 16a:	48 07       	cpc	r20, r24
+ 16c:	80 e0       	ldi	r24, 0x00	; 0
+ 16e:	58 07       	cpc	r21, r24
+ 170:	38 f0       	brcs	.+14     	; 0x180 <__stack+0xa1>
+			{
+				// if too much, then try as long as possible
+				ticks[8] = 0xFFFF;
+ 172:	8f ef       	ldi	r24, 0xFF	; 255
+ 174:	9f ef       	ldi	r25, 0xFF	; 255
+ 176:	90 93 71 00 	sts	0x0071, r25
+ 17a:	80 93 70 00 	sts	0x0070, r24
+ 17e:	37 c0       	rjmp	.+110    	; 0x1ee <__stack+0x10f>
+			}
+			else
+			{
+				// set delay period
+				ticks[8] = diff;
+ 180:	30 93 71 00 	sts	0x0071, r19
+ 184:	20 93 70 00 	sts	0x0070, r18
+ 188:	32 c0       	rjmp	.+100    	; 0x1ee <__stack+0x10f>
+			}
+			return;
+		}
+		else
+		{
+			chan = 9; // no delay needed
+ 18a:	89 e0       	ldi	r24, 0x09	; 9
+ 18c:	80 93 78 00 	sts	0x0078, r24
+		}
+	}
+	if(chan == 9) // if all channels done
+ 190:	80 91 78 00 	lds	r24, 0x0078
+ 194:	89 30       	cpi	r24, 0x09	; 9
+ 196:	01 f5       	brne	.+64     	; 0x1d8 <__stack+0xf9>
+	{
+		chan = 0; // start from first channel
+ 198:	10 92 78 00 	sts	0x0078, r1
+		sum = 0; // reset period counter
+ 19c:	10 92 79 00 	sts	0x0079, r1
+ 1a0:	10 92 7a 00 	sts	0x007A, r1
+ 1a4:	10 92 7b 00 	sts	0x007B, r1
+ 1a8:	10 92 7c 00 	sts	0x007C, r1
+ 1ac:	05 c0       	rjmp	.+10     	; 0x1b8 <__stack+0xd9>
+		while(bit_is_clear(chan_en, chan) && chan < 8)
+		{
+			chan++; // next channel until enabled or end of all channels
+ 1ae:	80 91 78 00 	lds	r24, 0x0078
+ 1b2:	8f 5f       	subi	r24, 0xFF	; 255
+ 1b4:	80 93 78 00 	sts	0x0078, r24
+	}
+	if(chan == 9) // if all channels done
+	{
+		chan = 0; // start from first channel
+		sum = 0; // reset period counter
+		while(bit_is_clear(chan_en, chan) && chan < 8)
+ 1b8:	80 91 72 00 	lds	r24, 0x0072
+ 1bc:	20 91 78 00 	lds	r18, 0x0078
+ 1c0:	90 e0       	ldi	r25, 0x00	; 0
+ 1c2:	02 c0       	rjmp	.+4      	; 0x1c8 <__stack+0xe9>
+ 1c4:	95 95       	asr	r25
+ 1c6:	87 95       	ror	r24
+ 1c8:	2a 95       	dec	r18
+ 1ca:	e2 f7       	brpl	.-8      	; 0x1c4 <__stack+0xe5>
+ 1cc:	80 fd       	sbrc	r24, 0
+ 1ce:	04 c0       	rjmp	.+8      	; 0x1d8 <__stack+0xf9>
+ 1d0:	80 91 78 00 	lds	r24, 0x0078
+ 1d4:	88 30       	cpi	r24, 0x08	; 8
+ 1d6:	58 f3       	brcs	.-42     	; 0x1ae <__stack+0xcf>
+		{
+			chan++; // next channel until enabled or end of all channels
+		}
+	}
+	next_mask = _BV(chan); // prepare next pin mask
+ 1d8:	20 91 78 00 	lds	r18, 0x0078
+ 1dc:	81 e0       	ldi	r24, 0x01	; 1
+ 1de:	90 e0       	ldi	r25, 0x00	; 0
+ 1e0:	02 c0       	rjmp	.+4      	; 0x1e6 <__stack+0x107>
+ 1e2:	88 0f       	add	r24, r24
+ 1e4:	99 1f       	adc	r25, r25
+ 1e6:	2a 95       	dec	r18
+ 1e8:	e2 f7       	brpl	.-8      	; 0x1e2 <__stack+0x103>
+ 1ea:	80 93 77 00 	sts	0x0077, r24
+	return;
+}
+ 1ee:	ff 91       	pop	r31
+ 1f0:	ef 91       	pop	r30
+ 1f2:	bf 91       	pop	r27
+ 1f4:	af 91       	pop	r26
+ 1f6:	9f 91       	pop	r25
+ 1f8:	8f 91       	pop	r24
+ 1fa:	5f 91       	pop	r21
+ 1fc:	4f 91       	pop	r20
+ 1fe:	3f 91       	pop	r19
+ 200:	2f 91       	pop	r18
+ 202:	0f 90       	pop	r0
+ 204:	0f be       	out	0x3f, r0	; 63
+ 206:	0f 90       	pop	r0
+ 208:	1f 90       	pop	r1
+ 20a:	18 95       	reti
+
+0000020c <rx>:
+
+// waits for then returns a serial byte
+uint8_t rx()
+{
+ 20c:	5f 9b       	sbis	0x0b, 7	; 11
+ 20e:	fe cf       	rjmp	.-4      	; 0x20c <rx>
+	loop_until_bit_is_set(UCSRA, RXC);
+	uint8_t d = UDR;
+ 210:	8c b1       	in	r24, 0x0c	; 12
+	return d;
+}
+ 212:	08 95       	ret
+
+00000214 <round100>:
+
+#ifdef AUTOBAUDRATEDETECT
+// round to the nearest hundreds
+uint32_t round100(uint32_t tr)
+{
+ 214:	ef 92       	push	r14
+ 216:	ff 92       	push	r15
+ 218:	0f 93       	push	r16
+ 21a:	1f 93       	push	r17
+ 21c:	7b 01       	movw	r14, r22
+ 21e:	8c 01       	movw	r16, r24
+	uint32_t tens = tr % 100;
+ 220:	24 e6       	ldi	r18, 0x64	; 100
+ 222:	30 e0       	ldi	r19, 0x00	; 0
+ 224:	40 e0       	ldi	r20, 0x00	; 0
+ 226:	50 e0       	ldi	r21, 0x00	; 0
+ 228:	34 d1       	rcall	.+616    	; 0x492 <__udivmodsi4>
+ 22a:	9b 01       	movw	r18, r22
+ 22c:	ac 01       	movw	r20, r24
+	if(tens >= 50)
+ 22e:	22 33       	cpi	r18, 0x32	; 50
+ 230:	31 05       	cpc	r19, r1
+ 232:	41 05       	cpc	r20, r1
+ 234:	51 05       	cpc	r21, r1
+ 236:	40 f0       	brcs	.+16     	; 0x248 <round100+0x34>
+	{
+		tr += 100 - tens;
+ 238:	84 e6       	ldi	r24, 0x64	; 100
+ 23a:	90 e0       	ldi	r25, 0x00	; 0
+ 23c:	a0 e0       	ldi	r26, 0x00	; 0
+ 23e:	b0 e0       	ldi	r27, 0x00	; 0
+ 240:	e8 0e       	add	r14, r24
+ 242:	f9 1e       	adc	r15, r25
+ 244:	0a 1f       	adc	r16, r26
+ 246:	1b 1f       	adc	r17, r27
+	}
+	else
+	{
+		tr -= tens;
+ 248:	e2 1a       	sub	r14, r18
+ 24a:	f3 0a       	sbc	r15, r19
+ 24c:	04 0b       	sbc	r16, r20
+ 24e:	15 0b       	sbc	r17, r21
+	}
+	return tr;
+}
+ 250:	b7 01       	movw	r22, r14
+ 252:	c8 01       	movw	r24, r16
+ 254:	1f 91       	pop	r17
+ 256:	0f 91       	pop	r16
+ 258:	ff 90       	pop	r15
+ 25a:	ef 90       	pop	r14
+ 25c:	08 95       	ret
+
+0000025e <main>:
+#endif
+
+int main()
+{
+ 25e:	0f 93       	push	r16
+ 260:	1f 93       	push	r17
+ 262:	cf 93       	push	r28
+ 264:	df 93       	push	r29
+	uint8_t stop_flag;
+
+	out_ddr = 0xFF; // channels as output
+ 266:	8f ef       	ldi	r24, 0xFF	; 255
+ 268:	87 bb       	out	0x17, r24	; 23
+	out_port = 0; // all off
+ 26a:	18 ba       	out	0x18, r1	; 24
+
+	#ifdef AUTOBAUDRATEDETECT
+
+	TCCR1B = 0b00000001; // start timer, clock div 1
+ 26c:	81 e0       	ldi	r24, 0x01	; 1
+ 26e:	8e bd       	out	0x2e, r24	; 46
+
+	// capture time of first falling edge
+	loop_until_bit_is_set(TIFR, ICF1);
+ 270:	08 b6       	in	r0, 0x38	; 56
+ 272:	03 fe       	sbrs	r0, 3
+ 274:	fd cf       	rjmp	.-6      	; 0x270 <main+0x12>
+	uint32_t tc1 = ICR1;
+ 276:	24 b5       	in	r18, 0x24	; 36
+ 278:	35 b5       	in	r19, 0x25	; 37
+	TIFR |= _BV(ICF1);
+ 27a:	88 b7       	in	r24, 0x38	; 56
+ 27c:	88 60       	ori	r24, 0x08	; 8
+ 27e:	88 bf       	out	0x38, r24	; 56
+
+	// capture time of second falling edge
+	loop_until_bit_is_set(TIFR, ICF1);
+ 280:	08 b6       	in	r0, 0x38	; 56
+ 282:	03 fe       	sbrs	r0, 3
+ 284:	fd cf       	rjmp	.-6      	; 0x280 <main+0x22>
+	uint32_t tc2 = ICR1;
+ 286:	64 b5       	in	r22, 0x24	; 36
+ 288:	75 b5       	in	r23, 0x25	; 37
+
+	// calculate difference in time
+	uint32_t auto_baud = ((tc2 | 0x10000) - tc1) & 0xFFFF;
+ 28a:	80 e0       	ldi	r24, 0x00	; 0
+ 28c:	90 e0       	ldi	r25, 0x00	; 0
+ 28e:	81 60       	ori	r24, 0x01	; 1
+ 290:	40 e0       	ldi	r20, 0x00	; 0
+ 292:	50 e0       	ldi	r21, 0x00	; 0
+ 294:	62 1b       	sub	r22, r18
+ 296:	73 0b       	sbc	r23, r19
+ 298:	84 0b       	sbc	r24, r20
+ 29a:	95 0b       	sbc	r25, r21
+ 29c:	80 70       	andi	r24, 0x00	; 0
+ 29e:	90 70       	andi	r25, 0x00	; 0
+
+	auto_baud *= 100; // multiply by 100 so that the number can be divided then rounded
+	auto_baud = round100(auto_baud / 10); // 10 is because there's 10 bit widths between falling edges
+ 2a0:	24 e6       	ldi	r18, 0x64	; 100
+ 2a2:	30 e0       	ldi	r19, 0x00	; 0
+ 2a4:	40 e0       	ldi	r20, 0x00	; 0
+ 2a6:	50 e0       	ldi	r21, 0x00	; 0
+ 2a8:	db d0       	rcall	.+438    	; 0x460 <__mulsi3>
+ 2aa:	2a e0       	ldi	r18, 0x0A	; 10
+ 2ac:	30 e0       	ldi	r19, 0x00	; 0
+ 2ae:	40 e0       	ldi	r20, 0x00	; 0
+ 2b0:	50 e0       	ldi	r21, 0x00	; 0
+ 2b2:	ef d0       	rcall	.+478    	; 0x492 <__udivmodsi4>
+ 2b4:	ca 01       	movw	r24, r20
+ 2b6:	b9 01       	movw	r22, r18
+ 2b8:	ad df       	rcall	.-166    	; 0x214 <round100>
+	auto_baud = round100(auto_baud / 16);
+ 2ba:	e4 e0       	ldi	r30, 0x04	; 4
+ 2bc:	96 95       	lsr	r25
+ 2be:	87 95       	ror	r24
+ 2c0:	77 95       	ror	r23
+ 2c2:	67 95       	ror	r22
+ 2c4:	ea 95       	dec	r30
+ 2c6:	d1 f7       	brne	.-12     	; 0x2bc <main+0x5e>
+ 2c8:	a5 df       	rcall	.-182    	; 0x214 <round100>
+	auto_baud = (auto_baud / 100) - 1; // un-multiply, then subtract 1
+ 2ca:	24 e6       	ldi	r18, 0x64	; 100
+ 2cc:	30 e0       	ldi	r19, 0x00	; 0
+ 2ce:	40 e0       	ldi	r20, 0x00	; 0
+ 2d0:	50 e0       	ldi	r21, 0x00	; 0
+ 2d2:	df d0       	rcall	.+446    	; 0x492 <__udivmodsi4>
+ 2d4:	c9 01       	movw	r24, r18
+ 2d6:	da 01       	movw	r26, r20
+ 2d8:	01 97       	sbiw	r24, 0x01	; 1
+ 2da:	a1 09       	sbc	r26, r1
+ 2dc:	b1 09       	sbc	r27, r1
+
+	// apply to baud rate register
+	UBRRH = (auto_baud & 0xFF00) >> 8; 
+ 2de:	92 b9       	out	0x02, r25	; 2
+	UBRRL = auto_baud;
+ 2e0:	89 b9       	out	0x09, r24	; 9
+	UBRRH = (BAUD_RATE_REG & 0xFF00) >> 8;
+	UBRRL = BAUD_RATE_REG;
+
+	#endif
+
+	UCSRB = _BV(RXEN); // enable serial port
+ 2e2:	80 e1       	ldi	r24, 0x10	; 16
+ 2e4:	8a b9       	out	0x0a, r24	; 10
+
+	// reset variables and set defaults
+	chan = 0;
+ 2e6:	10 92 78 00 	sts	0x0078, r1
+	next_mask = 0;
+ 2ea:	10 92 77 00 	sts	0x0077, r1
+	sum = 0;
+ 2ee:	10 92 79 00 	sts	0x0079, r1
+ 2f2:	10 92 7a 00 	sts	0x007A, r1
+ 2f6:	10 92 7b 00 	sts	0x007B, r1
+ 2fa:	10 92 7c 00 	sts	0x007C, r1
+	stop_flag = 1;
+	period_ticks = default_period;
+ 2fe:	80 e0       	ldi	r24, 0x00	; 0
+ 300:	91 e7       	ldi	r25, 0x71	; 113
+ 302:	a0 e0       	ldi	r26, 0x00	; 0
+ 304:	b0 e0       	ldi	r27, 0x00	; 0
+ 306:	80 93 73 00 	sts	0x0073, r24
+ 30a:	90 93 74 00 	sts	0x0074, r25
+ 30e:	a0 93 75 00 	sts	0x0075, r26
+ 312:	b0 93 76 00 	sts	0x0076, r27
+	chan_en = 0;
+ 316:	10 92 72 00 	sts	0x0072, r1
+	ticks[0] = default_ticks; ticks[1] = default_ticks; ticks[2] = default_ticks; ticks[3] = default_ticks; ticks[4] = default_ticks; ticks[5] = default_ticks; ticks[6] = default_ticks; ticks[7] = default_ticks;
+ 31a:	80 ee       	ldi	r24, 0xE0	; 224
+ 31c:	9e e2       	ldi	r25, 0x2E	; 46
+ 31e:	90 93 61 00 	sts	0x0061, r25
+ 322:	80 93 60 00 	sts	0x0060, r24
+ 326:	90 93 63 00 	sts	0x0063, r25
+ 32a:	80 93 62 00 	sts	0x0062, r24
+ 32e:	90 93 65 00 	sts	0x0065, r25
+ 332:	80 93 64 00 	sts	0x0064, r24
+ 336:	90 93 67 00 	sts	0x0067, r25
+ 33a:	80 93 66 00 	sts	0x0066, r24
+ 33e:	90 93 69 00 	sts	0x0069, r25
+ 342:	80 93 68 00 	sts	0x0068, r24
+ 346:	90 93 6b 00 	sts	0x006B, r25
+ 34a:	80 93 6a 00 	sts	0x006A, r24
+ 34e:	90 93 6d 00 	sts	0x006D, r25
+ 352:	80 93 6c 00 	sts	0x006C, r24
+ 356:	90 93 6f 00 	sts	0x006F, r25
+ 35a:	80 93 6e 00 	sts	0x006E, r24
+ 35e:	71 e0       	ldi	r23, 0x01	; 1
+							chan = i % 8;
+						}
+					}
+					// get ready to start pulsing
+					out_port = 0;
+					OCR1A = 0x8000;
+ 360:	c0 e0       	ldi	r28, 0x00	; 0
+ 362:	d0 e8       	ldi	r29, 0x80	; 128
+					TIMSK = _BV(OCIE1A);
+ 364:	00 e4       	ldi	r16, 0x40	; 64
+					TCCR1B = 0b00000001;
+ 366:	11 e0       	ldi	r17, 0x01	; 1
+}
+
+// waits for then returns a serial byte
+uint8_t rx()
+{
+	loop_until_bit_is_set(UCSRA, RXC);
+ 368:	5f 9b       	sbis	0x0b, 7	; 11
+ 36a:	fe cf       	rjmp	.-4      	; 0x368 <main+0x10a>
+	uint8_t d = UDR;
+ 36c:	ec b1       	in	r30, 0x0c	; 12
+
+	while(1)
+	{
+		uint8_t d = rx(); // command byte
+
+		if(d == 9) // enable/disable channels
+ 36e:	e9 30       	cpi	r30, 0x09	; 9
+ 370:	71 f5       	brne	.+92     	; 0x3ce <main+0x170>
+}
+
+// waits for then returns a serial byte
+uint8_t rx()
+{
+	loop_until_bit_is_set(UCSRA, RXC);
+ 372:	5f 9b       	sbis	0x0b, 7	; 11
+ 374:	fe cf       	rjmp	.-4      	; 0x372 <main+0x114>
+	uint8_t d = UDR;
+ 376:	8c b1       	in	r24, 0x0c	; 12
+	{
+		uint8_t d = rx(); // command byte
+
+		if(d == 9) // enable/disable channels
+		{
+			chan_en = rx();
+ 378:	80 93 72 00 	sts	0x0072, r24
+			if(chan_en == 0) // all off
+ 37c:	80 91 72 00 	lds	r24, 0x0072
+ 380:	88 23       	and	r24, r24
+ 382:	21 f4       	brne	.+8      	; 0x38c <main+0x12e>
+			{
+				stop_flag = 1; // has been stopped
+				cli(); // no more timer interrupts
+ 384:	f8 94       	cli
+				out_port = 0; // all channels off
+ 386:	18 ba       	out	0x18, r1	; 24
+ 388:	71 e0       	ldi	r23, 0x01	; 1
+ 38a:	ee cf       	rjmp	.-36     	; 0x368 <main+0x10a>
+			}
+			else // at least one channel
+			{
+				if(stop_flag != 0) // previously stopped
+ 38c:	77 23       	and	r23, r23
+ 38e:	61 f3       	breq	.-40     	; 0x368 <main+0x10a>
+				{
+					// reset channel counter
+					for(uint8_t i = chan; i < 16; i++)
+ 390:	30 91 78 00 	lds	r19, 0x0078
+ 394:	10 c0       	rjmp	.+32     	; 0x3b6 <main+0x158>
+					{
+						if(bit_is_set(chan_en, i % 8))
+ 396:	80 91 72 00 	lds	r24, 0x0072
+ 39a:	90 e0       	ldi	r25, 0x00	; 0
+ 39c:	23 2f       	mov	r18, r19
+ 39e:	27 70       	andi	r18, 0x07	; 7
+ 3a0:	02 2e       	mov	r0, r18
+ 3a2:	02 c0       	rjmp	.+4      	; 0x3a8 <main+0x14a>
+ 3a4:	95 95       	asr	r25
+ 3a6:	87 95       	ror	r24
+ 3a8:	0a 94       	dec	r0
+ 3aa:	e2 f7       	brpl	.-8      	; 0x3a4 <main+0x146>
+ 3ac:	80 ff       	sbrs	r24, 0
+ 3ae:	02 c0       	rjmp	.+4      	; 0x3b4 <main+0x156>
+						{
+							chan = i % 8;
+ 3b0:	20 93 78 00 	sts	0x0078, r18
+			else // at least one channel
+			{
+				if(stop_flag != 0) // previously stopped
+				{
+					// reset channel counter
+					for(uint8_t i = chan; i < 16; i++)
+ 3b4:	3f 5f       	subi	r19, 0xFF	; 255
+ 3b6:	30 31       	cpi	r19, 0x10	; 16
+ 3b8:	70 f3       	brcs	.-36     	; 0x396 <main+0x138>
+						{
+							chan = i % 8;
+						}
+					}
+					// get ready to start pulsing
+					out_port = 0;
+ 3ba:	18 ba       	out	0x18, r1	; 24
+					OCR1A = 0x8000;
+ 3bc:	db bd       	out	0x2b, r29	; 43
+ 3be:	ca bd       	out	0x2a, r28	; 42
+					TIMSK = _BV(OCIE1A);
+ 3c0:	09 bf       	out	0x39, r16	; 57
+					TCCR1B = 0b00000001;
+ 3c2:	1e bd       	out	0x2e, r17	; 46
+					TCNT1 = 0;
+ 3c4:	1d bc       	out	0x2d, r1	; 45
+ 3c6:	1c bc       	out	0x2c, r1	; 44
+					sei(); // enable interrupt
+ 3c8:	78 94       	sei
+ 3ca:	70 e0       	ldi	r23, 0x00	; 0
+ 3cc:	cd cf       	rjmp	.-102    	; 0x368 <main+0x10a>
+				}
+				stop_flag = 0; // not stopped anymore
+			}
+		}
+		else if(d == 10) // set period length
+ 3ce:	ea 30       	cpi	r30, 0x0A	; 10
+ 3d0:	81 f5       	brne	.+96     	; 0x432 <main+0x1d4>
+}
+
+// waits for then returns a serial byte
+uint8_t rx()
+{
+	loop_until_bit_is_set(UCSRA, RXC);
+ 3d2:	5f 9b       	sbis	0x0b, 7	; 11
+ 3d4:	fe cf       	rjmp	.-4      	; 0x3d2 <main+0x174>
+	uint8_t d = UDR;
+ 3d6:	8c b1       	in	r24, 0x0c	; 12
+}
+
+// waits for then returns a serial byte
+uint8_t rx()
+{
+	loop_until_bit_is_set(UCSRA, RXC);
+ 3d8:	5f 9b       	sbis	0x0b, 7	; 11
+ 3da:	fe cf       	rjmp	.-4      	; 0x3d8 <main+0x17a>
+	uint8_t d = UDR;
+ 3dc:	6c b1       	in	r22, 0x0c	; 12
+}
+
+// waits for then returns a serial byte
+uint8_t rx()
+{
+	loop_until_bit_is_set(UCSRA, RXC);
+ 3de:	5f 9b       	sbis	0x0b, 7	; 11
+ 3e0:	fe cf       	rjmp	.-4      	; 0x3de <main+0x180>
+	uint8_t d = UDR;
+ 3e2:	3c b1       	in	r19, 0x0c	; 12
+}
+
+// waits for then returns a serial byte
+uint8_t rx()
+{
+	loop_until_bit_is_set(UCSRA, RXC);
+ 3e4:	5f 9b       	sbis	0x0b, 7	; 11
+ 3e6:	fe cf       	rjmp	.-4      	; 0x3e4 <main+0x186>
+	uint8_t d = UDR;
+ 3e8:	2c b1       	in	r18, 0x0c	; 12
+			uint8_t _16_23 = rx();
+			uint8_t _8_15 = rx();
+			uint8_t _0_7 = rx();
+
+			// calculate into 32 bit integer
+			uint32_t res = _24_31;
+ 3ea:	90 e0       	ldi	r25, 0x00	; 0
+ 3ec:	a0 e0       	ldi	r26, 0x00	; 0
+ 3ee:	b0 e0       	ldi	r27, 0x00	; 0
+			res <<= 8;
+ 3f0:	ba 2f       	mov	r27, r26
+ 3f2:	a9 2f       	mov	r26, r25
+ 3f4:	98 2f       	mov	r25, r24
+ 3f6:	88 27       	eor	r24, r24
+			res += _16_23;
+ 3f8:	86 0f       	add	r24, r22
+ 3fa:	91 1d       	adc	r25, r1
+ 3fc:	a1 1d       	adc	r26, r1
+ 3fe:	b1 1d       	adc	r27, r1
+			res <<= 8;
+ 400:	ba 2f       	mov	r27, r26
+ 402:	a9 2f       	mov	r26, r25
+ 404:	98 2f       	mov	r25, r24
+ 406:	88 27       	eor	r24, r24
+			res += _8_15;
+ 408:	83 0f       	add	r24, r19
+ 40a:	91 1d       	adc	r25, r1
+ 40c:	a1 1d       	adc	r26, r1
+ 40e:	b1 1d       	adc	r27, r1
+			res <<= 8;
+ 410:	ba 2f       	mov	r27, r26
+ 412:	a9 2f       	mov	r26, r25
+ 414:	98 2f       	mov	r25, r24
+ 416:	88 27       	eor	r24, r24
+			res += _0_7;
+ 418:	82 0f       	add	r24, r18
+ 41a:	91 1d       	adc	r25, r1
+ 41c:	a1 1d       	adc	r26, r1
+ 41e:	b1 1d       	adc	r27, r1
+
+			// set period length
+			period_ticks = res;
+ 420:	80 93 73 00 	sts	0x0073, r24
+ 424:	90 93 74 00 	sts	0x0074, r25
+ 428:	a0 93 75 00 	sts	0x0075, r26
+ 42c:	b0 93 76 00 	sts	0x0076, r27
+ 430:	9b cf       	rjmp	.-202    	; 0x368 <main+0x10a>
+		}
+		else if(d <= 8) // set channel pulse width
+ 432:	e9 30       	cpi	r30, 0x09	; 9
+ 434:	08 f0       	brcs	.+2      	; 0x438 <main+0x1da>
+ 436:	98 cf       	rjmp	.-208    	; 0x368 <main+0x10a>
+}
+
+// waits for then returns a serial byte
+uint8_t rx()
+{
+	loop_until_bit_is_set(UCSRA, RXC);
+ 438:	5f 9b       	sbis	0x0b, 7	; 11
+ 43a:	fe cf       	rjmp	.-4      	; 0x438 <main+0x1da>
+	uint8_t d = UDR;
+ 43c:	9c b1       	in	r25, 0x0c	; 12
+}
+
+// waits for then returns a serial byte
+uint8_t rx()
+{
+	loop_until_bit_is_set(UCSRA, RXC);
+ 43e:	5f 9b       	sbis	0x0b, 7	; 11
+ 440:	fe cf       	rjmp	.-4      	; 0x43e <main+0x1e0>
+	uint8_t d = UDR;
+ 442:	8c b1       	in	r24, 0x0c	; 12
+			uint8_t h = rx(); // read high byte
+			uint8_t l = rx(); // read low byte
+
+			// combine bytes into 16 bit integer
+			uint16_t t = h;
+			t <<= 8;
+ 444:	59 2f       	mov	r21, r25
+ 446:	40 e0       	ldi	r20, 0x00	; 0
+			t += l;
+ 448:	9a 01       	movw	r18, r20
+ 44a:	28 0f       	add	r18, r24
+ 44c:	31 1d       	adc	r19, r1
+ 44e:	c9 01       	movw	r24, r18
+
+			// set width
+			ticks[d - 1] = t;
+ 450:	f0 e0       	ldi	r31, 0x00	; 0
+ 452:	ee 0f       	add	r30, r30
+ 454:	ff 1f       	adc	r31, r31
+ 456:	e2 5a       	subi	r30, 0xA2	; 162
+ 458:	ff 4f       	sbci	r31, 0xFF	; 255
+ 45a:	91 83       	std	Z+1, r25	; 0x01
+ 45c:	80 83       	st	Z, r24
+ 45e:	84 cf       	rjmp	.-248    	; 0x368 <main+0x10a>
+
+00000460 <__mulsi3>:
+ 460:	ff 27       	eor	r31, r31
+ 462:	ee 27       	eor	r30, r30
+ 464:	bb 27       	eor	r27, r27
+ 466:	aa 27       	eor	r26, r26
+
+00000468 <__mulsi3_loop>:
+ 468:	60 ff       	sbrs	r22, 0
+ 46a:	04 c0       	rjmp	.+8      	; 0x474 <__mulsi3_skip1>
+ 46c:	a2 0f       	add	r26, r18
+ 46e:	b3 1f       	adc	r27, r19
+ 470:	e4 1f       	adc	r30, r20
+ 472:	f5 1f       	adc	r31, r21
+
+00000474 <__mulsi3_skip1>:
+ 474:	22 0f       	add	r18, r18
+ 476:	33 1f       	adc	r19, r19
+ 478:	44 1f       	adc	r20, r20
+ 47a:	55 1f       	adc	r21, r21
+ 47c:	96 95       	lsr	r25
+ 47e:	87 95       	ror	r24
+ 480:	77 95       	ror	r23
+ 482:	67 95       	ror	r22
+ 484:	89 f7       	brne	.-30     	; 0x468 <__mulsi3_loop>
+ 486:	00 97       	sbiw	r24, 0x00	; 0
+ 488:	76 07       	cpc	r23, r22
+ 48a:	71 f7       	brne	.-36     	; 0x468 <__mulsi3_loop>
+
+0000048c <__mulsi3_exit>:
+ 48c:	cf 01       	movw	r24, r30
+ 48e:	bd 01       	movw	r22, r26
+ 490:	08 95       	ret
+
+00000492 <__udivmodsi4>:
+ 492:	a1 e2       	ldi	r26, 0x21	; 33
+ 494:	1a 2e       	mov	r1, r26
+ 496:	aa 1b       	sub	r26, r26
+ 498:	bb 1b       	sub	r27, r27
+ 49a:	fd 01       	movw	r30, r26
+ 49c:	0d c0       	rjmp	.+26     	; 0x4b8 <__udivmodsi4_ep>
+
+0000049e <__udivmodsi4_loop>:
+ 49e:	aa 1f       	adc	r26, r26
+ 4a0:	bb 1f       	adc	r27, r27
+ 4a2:	ee 1f       	adc	r30, r30
+ 4a4:	ff 1f       	adc	r31, r31
+ 4a6:	a2 17       	cp	r26, r18
+ 4a8:	b3 07       	cpc	r27, r19
+ 4aa:	e4 07       	cpc	r30, r20
+ 4ac:	f5 07       	cpc	r31, r21
+ 4ae:	20 f0       	brcs	.+8      	; 0x4b8 <__udivmodsi4_ep>
+ 4b0:	a2 1b       	sub	r26, r18
+ 4b2:	b3 0b       	sbc	r27, r19
+ 4b4:	e4 0b       	sbc	r30, r20
+ 4b6:	f5 0b       	sbc	r31, r21
+
+000004b8 <__udivmodsi4_ep>:
+ 4b8:	66 1f       	adc	r22, r22
+ 4ba:	77 1f       	adc	r23, r23
+ 4bc:	88 1f       	adc	r24, r24
+ 4be:	99 1f       	adc	r25, r25
+ 4c0:	1a 94       	dec	r1
+ 4c2:	69 f7       	brne	.-38     	; 0x49e <__udivmodsi4_loop>
+ 4c4:	60 95       	com	r22
+ 4c6:	70 95       	com	r23
+ 4c8:	80 95       	com	r24
+ 4ca:	90 95       	com	r25
+ 4cc:	9b 01       	movw	r18, r22
+ 4ce:	ac 01       	movw	r20, r24
+ 4d0:	bd 01       	movw	r22, r26
+ 4d2:	cf 01       	movw	r24, r30
+ 4d4:	08 95       	ret
+
+000004d6 <_exit>:
+ 4d6:	f8 94       	cli
+
+000004d8 <__stop_program>:
+ 4d8:	ff cf       	rjmp	.-2      	; 0x4d8 <__stop_program>
