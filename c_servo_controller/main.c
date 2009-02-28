@@ -223,7 +223,7 @@ int main()
 			// set period length
 			period_ticks = res;
 		}
-		else if(d <= 8) // set channel pulse width
+		else if(d <= 8 &&  d != 0) // set channel pulse width
 		{
 			uint8_t h = rx(); // read high byte
 			uint8_t l = rx(); // read low byte
