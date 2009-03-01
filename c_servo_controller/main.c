@@ -1,10 +1,11 @@
-#include <inttypes.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-#define AUTOBAUDRATEDETECT // switch to enable or disable automatic baud rate detection upon compile
+//#define SIMULATE
 
-#define offset 41 // found using simulator
+#ifndef SIMULATE
+#define AUTOBAUDRATEDETECT // switch to enable or disable automatic baud rate detection upon compile
+#endif
 
 // below are default settings, edit them if needed
 
@@ -37,18 +38,19 @@
 #define out_ddr DDRB
 
 // global variables
-static volatile uint16_t ticks[9]; // widths for each channel
-static volatile uint8_t chan_en; // channel enabled bit mask
-static volatile uint32_t period_ticks; // period length
-static volatile uint8_t next_mask; // pin mask
-static volatile uint8_t chan; // current channel
-static volatile uint32_t sum; // sum of time since start of period
+static volatile unsigned int ticks[10]; // widths for each channel
+static volatile unsigned char chan_en; // channel enabled bit mask
+static volatile unsigned long period_ticks; // period length
+static volatile unsigned char next_mask; // pin mask
+static volatile unsigned char chan; // current channel
+static volatile unsigned long sum; // sum of time since start of period
+static volatile unsigned long ovf_needed; // overflows needed, used for long periods
 
 ISR(TIMER1_COMPA_vect) // timer 1 output compare A interrupt
 {
 	out_port = next_mask; // new channel output
-	TCNT1 = 0; // reset timer
-	OCR1A = ticks[chan] - offset; // set new alarm
+	unsigned long t = (OCR1A + ticks[chan]) & 0xFFFF; // calculate next alarm considering overflow
+	OCR1A = t; // set next alarm
 	sum += ticks[chan]; // sum is elapsed time for current period
 	do
 	{
@@ -60,31 +62,38 @@ ISR(TIMER1_COMPA_vect) // timer 1 output compare A interrupt
 		next_mask = 0; // pins off on next interrupt
 		if(period_ticks > sum) // if time left over
 		{
-			uint32_t diff = period_ticks - sum; // calculate remainder
-			if(diff > 0xFFFF)
-			{
-				// if too much, then try as long as possible
-				ticks[8] = 0xFFFF;
-			}
-			else
-			{
-				// set delay period
-				ticks[8] = diff;
-			}
+			unsigned long diff = period_ticks - sum; // calculate remainder
+			t = diff & 0xFFFF; // calculate remainder
+			ticks[8] = 0; // use 0 to cause overflow
+			ticks[9] = t; // store remainder
+			ovf_needed = (diff & 0xFFFF0000) >> 16; // calculate overflow
 			return;
 		}
 		else
 		{
 			chan = 9; // no delay needed
+			ovf_needed = 0;
 		}
 	}
 	if(chan == 9) // if all channels done
 	{
-		chan = 0; // start from first channel
-		sum = 0; // reset period counter
-		while(bit_is_clear(chan_en, chan) && chan < 8)
+		if(ovf_needed == 0) // no overflows needed
 		{
-			chan++; // next channel until enabled or end of all channels
+			chan = 0; // start from first channel
+			sum = 0; // reset period counter
+			while(bit_is_clear(chan_en, chan) && chan < 8)
+			{
+				chan++; // next channel until enabled or end of all channels
+			}
+		}
+		else // overflows needed
+		{
+			chan = 8; // make next interrupt on overflow
+			ovf_needed--; // one less needed
+			if(ovf_needed == 0) // won't be needed on next
+			{
+				ticks[8] = ticks[9]; // load remainder
+			}
 		}
 	}
 	next_mask = _BV(chan); // prepare next pin mask
@@ -92,18 +101,18 @@ ISR(TIMER1_COMPA_vect) // timer 1 output compare A interrupt
 }
 
 // waits for then returns a serial byte
-uint8_t rx()
+unsigned char rx()
 {
 	loop_until_bit_is_set(UCSRA, RXC);
-	uint8_t d = UDR;
+	unsigned char d = UDR;
 	return d;
 }
 
 #ifdef AUTOBAUDRATEDETECT
 // round to the nearest hundreds
-uint32_t round100(uint32_t tr)
+unsigned long round100(unsigned long tr)
 {
-	uint32_t tens = tr % 100;
+	unsigned long tens = tr % 100;
 	if(tens >= 50)
 	{
 		tr += 100 - tens;
@@ -118,7 +127,7 @@ uint32_t round100(uint32_t tr)
 
 int main()
 {
-	uint8_t stop_flag;
+	unsigned char stop_flag;
 
 	out_ddr = 0xFF; // channels as output
 	out_port = 0; // all off
@@ -129,15 +138,15 @@ int main()
 
 	// capture time of first falling edge
 	loop_until_bit_is_set(TIFR, ICF1);
-	uint32_t tc1 = ICR1;
+	unsigned long tc1 = ICR1;
 	TIFR |= _BV(ICF1);
 
 	// capture time of second falling edge
 	loop_until_bit_is_set(TIFR, ICF1);
-	uint32_t tc2 = ICR1;
+	unsigned long tc2 = ICR1;
 
 	// calculate difference in time
-	uint32_t auto_baud = ((tc2 | 0x10000) - tc1) & 0xFFFF;
+	unsigned long auto_baud = ((tc2 | 0x10000) - tc1) & 0xFFFF;
 
 	auto_baud *= 100; // multiply by 100 so that the number can be divided then rounded
 	auto_baud = round100(auto_baud / 10); // 10 is because there's 10 bit widths between falling edges
@@ -167,9 +176,24 @@ int main()
 	chan_en = 0;
 	ticks[0] = default_ticks; ticks[1] = default_ticks; ticks[2] = default_ticks; ticks[3] = default_ticks; ticks[4] = default_ticks; ticks[5] = default_ticks; ticks[6] = default_ticks; ticks[7] = default_ticks;
 
+	#ifdef SIMULATE
+
+	stop_flag = 0;
+	chan_en = 0xFF;
+
+	// get ready to start pulsing
+	out_port = 0;
+	OCR1A = 0x8000;
+	TIMSK = _BV(OCIE1A);
+	TCCR1B = 0b00000001;
+	TCNT1 = 0;
+	sei(); // enable interrupt
+
+	#endif
+
 	while(1)
 	{
-		uint8_t d = rx(); // command byte
+		unsigned char d = rx(); // command byte
 
 		if(d == 9) // enable/disable channels
 		{
@@ -185,7 +209,7 @@ int main()
 				if(stop_flag != 0) // previously stopped
 				{
 					// reset channel counter
-					for(uint8_t i = chan; i < 16; i++)
+					for(unsigned char i = chan; i < 16; i++)
 					{
 						if(bit_is_set(chan_en, i % 8))
 						{
@@ -206,13 +230,13 @@ int main()
 		else if(d == 10) // set period length
 		{
 			// read in 4 bytes
-			uint8_t _24_31 = rx();
-			uint8_t _16_23 = rx();
-			uint8_t _8_15 = rx();
-			uint8_t _0_7 = rx();
+			unsigned char _24_31 = rx();
+			unsigned char _16_23 = rx();
+			unsigned char _8_15 = rx();
+			unsigned char _0_7 = rx();
 
 			// calculate into 32 bit integer
-			uint32_t res = _24_31;
+			unsigned long res = _24_31;
 			res <<= 8;
 			res += _16_23;
 			res <<= 8;
@@ -225,11 +249,11 @@ int main()
 		}
 		else if(d <= 8 &&  d != 0) // set channel pulse width
 		{
-			uint8_t h = rx(); // read high byte
-			uint8_t l = rx(); // read low byte
+			unsigned char h = rx(); // read high byte
+			unsigned char l = rx(); // read low byte
 
 			// combine bytes into 16 bit integer
-			uint16_t t = h;
+			unsigned int t = h;
 			t <<= 8;
 			t += l;
 
