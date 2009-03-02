@@ -36,7 +36,7 @@ If the flight controller code can fit on an ATmega168, then an ATmega168 should 
 
 A free 8 bit timer with a frequency of 20 MHz divided by 1024 can control servos for the camera and other stuff.
 
-All chips will run on one 20 MHz clock. Either daisy chained or shared. This way, UART communication can be super fast.
+All chips will run on one 20 MHz clock. Either daisy chained or shared. This way, UART communication can be super fast, the servo controller can have greater accuracy.
 
 Auto-landing and minimum altitude should be done with an ultrasonic sensor.
 
@@ -45,6 +45,10 @@ A scrolling light bar will be added to indicate forward direction.
 Torque will want the X frame to want to "scissor", I hope polycarbonate can brace against this well, or else sheet aluminum will be used. The force is likely small as the blades are not heavy.
 
 Use two O-rings on the propellers, because of [http://www.rcgroups.com/forums/showpost.php?p=9681777&postcount=1456 this]
+
+The two radio choices are now the VEX radio or a pair of serial data radios. The VEX radio cannot be modified to send serial data, but it has more range. The serial data radios are bigger and heavier and has less range, but provides more data flexibility. The VEX transmitter can be modified to interface with a computer or Nunchuks with a DAC controlled by an AVR.
+
+It sounds like a low pass filter with a cutoff at about 30-40 Hz should be used on all sensor outputs.
 
 == Notable Sources ==
 
