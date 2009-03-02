@@ -70,3 +70,6 @@ Aluminum examples:
 
 
 [http://www.rcgroups.com/forums/showthread.php?t=1005930 More props]
+
+
+[http://mikroquad.com/bin/view/Main/WebHome MikroQuad, built on the Arduino]
