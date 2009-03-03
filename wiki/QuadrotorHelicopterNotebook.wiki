@@ -2,13 +2,12 @@
 
 == Decisions ==
 
-The 10 bit ADC in AVRs may not be enough, will use 12 bit ADCs with good sample rate from TI, either a single channel ADC with multiplexer ([http://focus.ti.com/docs/prod/folders/print/ads7822.html ADS7822U] and [http://search.digikey.com/scripts/DkSearch/dksus.dll?Detail&name=296-9225-5-ND CD74HC4067]) or an 8 channel ADC ([http://focus.ti.com/docs/prod/folders/print/tlv2548.html#samples TLV2548IDW]).
+[http://www.walkera.com.hk/walkera-dragonfly-ufo-4-spare-parts-ufo4z16-pcb-receiver-p-2064.html Walkera UFO board] purchased (backordered), should include three ENC-03J gyros and a 3 axis [http://www.freescale.com/webapp/sps/site/prod_summary.jsp?code=MMA7260QT&fsrch=1 MMA7260 accelerometer]. Pictures of board:
+[http://www.rcgroups.com/forums/showthread.php?p=11232259#post11232259 RC Groups Post 1]
+[http://www.rcgroups.com/forums/showthread.php?p=11238320#post11238320 RC Groups Post 2]
+[http://ckado.com/UFO-004-Z-16-B-pcb_product_1805_fr.html Some European Store (confirms that sensors are included)]
 
-IDG300 gyros will be used for pitch and roll because of it's profile and it's low noise characteristics. ([http://www.sparkfun.com/commerce/product_info.php?products_id=698 link])
-
-LISY300AL gyro for yaw ([http://www.sparkfun.com/commerce/product_info.php?products_id=8955 link])
-
-MMA7260Q for accelerometer ([http://www.sparkfun.com/commerce/product_info.php?products_id=252 link])
+It looks like the ATmega168 will be capable of stabilizing the quadrotor helicopter with its built in ADC, judging by the success of the Walkera UFO and the MikroQuad project.
 
 2200 mAH 3S1P (11.1V) 20C lithium polymer battery, this calculates to a maximum of 9.1A continuous current draw ([http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=6306&Product_Name=ZIPPY_Flightmax_2200mAh_3S1P_20C link])
 
@@ -23,6 +22,17 @@ Frame will be built with 3/8" aluminum tubing, platform will be polycarbonate
 [http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=4175 This battery monitor] will be used, perhaps aid the secondary MCU to warn the pilot. The actual battery voltage can also be monitored with the AVR's internal ADC. We would rather not have the BEC cut power to the motors for obvious reasons.
 
 [http://www.tech-mp.com/accessories.php These EPP1045 propellers (10" diameter X 4.5 pitch)] will be used
+
+
+== Old Void Decisions ==
+
+The 10 bit ADC in AVRs may not be enough, will use 12 bit ADCs with good sample rate from TI, either a single channel ADC with multiplexer ([http://focus.ti.com/docs/prod/folders/print/ads7822.html ADS7822U] and [http://search.digikey.com/scripts/DkSearch/dksus.dll?Detail&name=296-9225-5-ND CD74HC4067]) or an 8 channel ADC ([http://focus.ti.com/docs/prod/folders/print/tlv2548.html#samples TLV2548IDW]).
+
+IDG300 gyros will be used for pitch and roll because of it's profile and it's low noise characteristics. ([http://www.sparkfun.com/commerce/product_info.php?products_id=698 link])
+
+LISY300AL gyro for yaw ([http://www.sparkfun.com/commerce/product_info.php?products_id=8955 link])
+
+MMA7260Q for accelerometer ([http://www.sparkfun.com/commerce/product_info.php?products_id=252 link])
 
 == Notes ==
 
