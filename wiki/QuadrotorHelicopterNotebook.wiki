@@ -7,7 +7,7 @@
 [http://www.rcgroups.com/forums/showthread.php?p=11238320#post11238320 RC Groups Post 2]
 [http://ckado.com/UFO-004-Z-16-B-pcb_product_1805_fr.html Some European Store (confirms that sensors are included)]
 
-It looks like the ATmega168 will be capable of stabilizing the quadrotor helicopter with its built in ADC, judging by the success of the Walkera UFO and the MikroQuad project.
+It looks like the ATmega168 will be capable of stabilizing the quadrotor helicopter with its built in ADC, judging by the success of the Walkera UFO and the `MikroQuad` project.
 
 2200 mAH 3S1P (11.1V) 20C lithium polymer battery, this calculates to a maximum of 9.1A continuous current draw ([http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=6306&Product_Name=ZIPPY_Flightmax_2200mAh_3S1P_20C link])
 
