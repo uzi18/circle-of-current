@@ -61,6 +61,8 @@ The two radio choices are now the VEX radio or a pair of serial data radios. The
 
 It sounds like a low pass filter with a cutoff at about 30-40 Hz should be used on all sensor outputs.
 
+Research into differential amplifiers, shouldn't be hard to make a circuit that takes one range to to a wider one with an offset.
+
 == Notable Sources ==
 
 [http://www.rcgroups.com/forums/showthread.php?t=768115 RC Groups thread]
