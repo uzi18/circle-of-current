@@ -5,6 +5,7 @@
 [http://www.walkera.com.hk/walkera-dragonfly-ufo-4-spare-parts-ufo4z16-pcb-receiver-p-2064.html Walkera UFO board] purchased (backordered), should include three ENC-03J gyros and a 3 axis [http://www.freescale.com/webapp/sps/site/prod_summary.jsp?code=MMA7260QT&fsrch=1 MMA7260 accelerometer]. Pictures of board:
 [http://www.rcgroups.com/forums/showthread.php?p=11232259#post11232259 RC Groups Post 1]
 [http://www.rcgroups.com/forums/showthread.php?p=11238320#post11238320 RC Groups Post 2]
+[http://www.rcgroups.com/forums/showthread.php?p=9987793#post9987793 RC Groups Post 3]
 [http://ckado.com/UFO-004-Z-16-B-pcb_product_1805_fr.html Some European Store (confirms that sensors are included)]
 
 It looks like the ATmega168 will be capable of stabilizing the quadrotor helicopter with its built in ADC, judging by the success of the Walkera UFO and the `MikroQuad` project.
