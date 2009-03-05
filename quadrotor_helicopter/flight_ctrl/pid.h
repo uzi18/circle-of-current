@@ -17,17 +17,7 @@ signed long PID_mv(PID_data * pid, signed long current, signed long target)
 	}
 	signed long mv_ = (pid->constants.kp * err) + (pid->constants.ki * pid->err_sum) + (pid->constants.kd * delta_err);
 	pid->err_last = err;
-	signed long mv = mv_ / PID_const_multiplier;
-	signed long _mv = mv * PID_const_multiplier;
-	signed long diff = mv_ - _mv;
-	if(diff >= PID_const_multiplier / 2)
-	{
-		mv++;
-	}
-	else if(-diff >= PID_const_multiplier / 2)
-	{
-		mv--;
-	}
+	signed long mv = scale(mv_, 1, PID_const_multiplier);
 
 	return mv;
 }

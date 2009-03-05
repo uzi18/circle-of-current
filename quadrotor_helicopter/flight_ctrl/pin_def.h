@@ -9,9 +9,9 @@
 #define r_motor_pin 3
 #define aux_servo_pin 4
 
-#define roll_chan 0
-#define pitch_chan 1
-#define yaw_chan 2
+#define roll_sens_chan 0
+#define pitch_sens_chan 1
+#define yaw_sens_chan 2
 #define fb_accel_chan 3
 #define lr_accel_chan 4
 #define ud_accel_chan 5
