@@ -29,4 +29,5 @@ void timer_1_ovf(ppm_data * pd)
 	{
 		pd->tx_good = 0;
 	}
+	timer1_ovf_cnt++;
 }

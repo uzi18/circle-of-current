@@ -40,14 +40,7 @@ void sens_data_calc_avg(sens_history * h)
 			cnt++;
 		}
 	}
-	unsigned long sum_ = sum;
-	sum = sum_ / cnt;
-	unsigned long _sum = sum_ * cnt;
-	if(sum_ - _sum >= cnt / 2)
-	{
-		sum++;
-	}
-	h->avg = sum;
+	h->avg = scale(sum, 1, cnt);
 	h->centered_avg = h->avg - h->centering_offset;
 	h->cnt = 0;
 }

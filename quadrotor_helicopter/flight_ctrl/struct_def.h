@@ -3,8 +3,8 @@
 
 typedef struct _ppm_data
 {
-	signed long chan_width[6];
-	signed long chan_offset[6];
+	signed long chan_width[8];
+	signed long chan_offset[8];
 	unsigned char chan_cnt;
 	unsigned long last_capt;
 	unsigned char tx_good;
@@ -70,9 +70,68 @@ typedef struct mot_speed_
 
 typedef struct servo_ctrl_
 {
-	unsigned int servo_ticks[6];
-	unsigned char safe_to_update_servo_array;
-	unsigned char servo_new_period_started;
+	unsigned long servo_ticks[8];
+	unsigned char period_finished;
+	unsigned char ready_to_restart;
 } servo_ctrl;
+
+typedef struct calibration_
+{
+	signed long f_mot_adj;
+	signed long b_mot_adj;
+	signed long l_mot_adj;
+	signed long r_mot_adj;
+	signed long f_mot_scale;
+	signed long b_mot_scale;
+	signed long l_mot_scale;
+	signed long r_mot_scale;
+
+	signed long yaw_center_offset;
+	signed long pitch_center_offset;
+	signed long roll_center_offset;
+
+	signed long fb_accel_center_offset;
+	signed long lr_accel_center_offset;
+	signed long ud_accel_center_offset;
+
+	signed long yaw_scale;
+	signed long roll_pitch_scale;
+
+	signed long fb_lr_accel_scale;
+	signed long ud_accel_scale;
+
+	signed long ppm_chan_offset[8];
+
+	signed long yaw_pid_kp;
+	signed long yaw_pid_ki;
+	signed long yaw_pid_kd;
+	signed long yaw_pid_err_low_thresh;
+	signed long yaw_pid_delta_err_low_thresh;
+
+	signed long roll_pitch_a_pid_kp;
+	signed long roll_pitch_a_pid_ki;
+	signed long roll_pitch_a_pid_kd;
+	signed long roll_pitch_a_pid_err_low_thresh;
+	signed long roll_pitch_a_pid_delta_err_low_thresh;
+
+	signed long roll_pitch_b_pid_kp;
+	signed long roll_pitch_b_pid_ki;
+	signed long roll_pitch_b_pid_kd;
+	signed long roll_pitch_b_pid_err_low_thresh;
+	signed long roll_pitch_b_pid_delta_err_low_thresh;
+
+	signed long servo_pulse_scale;
+	signed long servo_pulse_stop;
+	signed long servo_period_delay;
+	
+	signed long throttle_scale;
+	signed long spin_scale;
+	signed long move_scale;
+
+	signed long yaw_sens_hist_len;
+	signed long roll_pitch_sens_hist_len;
+	signed long vert_accel_hist_len;
+	signed long hori_accel_hist_len;
+} calibration;
 
 #endif

@@ -1,7 +1,7 @@
 #include "main.h"
 
 static ppm_data vex_data;
-static sens_history sens_data[6];
+static sens_history sens_data[8];
 static mot_speed motor_speed;
 static mot_cali motor_cali;
 static heli_action copter_action;
@@ -12,7 +12,9 @@ static PID_data pitch_pid_b;
 static PID_data roll_pid_a;
 static PID_data roll_pid_b;
 static volatile unsigned char tx_good;
-static unsigned char op_mode;
+static volatile unsigned char op_mode;
+static calibration main_cali;
+static volatile unsigned long timer1_ovf_cnt;
 
 #include "main_headers.h"
 
@@ -35,75 +37,97 @@ void low_priority_interrupts()
 	}
 }
 
-void hardware_init()
+void apply_calibration(calibration c)
 {
-	// initialize port
-
-	servo_port &= 0xFF ^ (_BV(f_motor_pin) | _BV(b_motor_pin) | _BV(l_motor_pin) | _BV(r_motor_pin) | _BV(aux_servo_pin));
-	servo_ddr |= _BV(f_motor_pin) | _BV(b_motor_pin) | _BV(l_motor_pin) | _BV(r_motor_pin) | _BV(aux_servo_pin);
-
-	input_capt_port &= 0xFF ^ _BV(input_capt_pin);
-	input_capt_ddr &= 0xFF ^ _BV(input_capt_pin);
-
-	// initalize ADC
-
-	ADMUX &= 0xFF ^ (_BV(REFS1) | _BV(REFS0) | _BV(ADLAR));
-	ADCSRA |= _BV(ADEN) | _BV(ADSC) | _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0);
-
-	// initialize timer
-
-	TIMSK1 = _BV(OCIE1A);
-	TCCR1B = 0b00000001 | _BV(ICES1);
-
-	sei();
+	
 }
 
-void software_init()
+void start_next_servo_pwm_period()
 {
-	for(unsigned char i = 0; i < 6; i++)
+	unsigned long sum_ticks = servo_data.servo_ticks[0] + servo_data.servo_ticks[1] + servo_data.servo_ticks[2] + servo_data.servo_ticks[3] + servo_data.servo_ticks[4];
+
+	while(servo_data.ready_to_restart == 0)
 	{
-		sens_data[i].cnt = 0;
-		servo_data.servo_ticks[i] = width_500;
+		low_priority_interrupts();
 	}
-	tx_good = 0;
-	servo_data.servo_new_period_started = 0;
-	servo_data.safe_to_update_servo_array = 0;
+
+	unsigned int OCR1A_t = 0;
+
+	if(sum_ticks < main_cali.servo_period_delay)
+	{
+		if(main_cali.servo_period_delay - sum_ticks <= 0xFFFF)
+		{
+			OCR1A_t = main_cali.servo_period_delay - sum_ticks;
+		}
+		else
+		{
+			OCR1A_t = 0xFFFF;
+		}
+	}
+
+	if(OCR1A_t < 64)
+	{
+		OCR1A_t = 64;
+	}
+
+	if(bit_is_set(TIFR1, OCF1A))
+	{
+		TIFR1 |= _BV(OCF1A);
+	}
+
+	servo_data.period_finished = 0;
+	servo_data.ready_to_restart = 0;
+
+	OCR1A = TCNT1 + OCR1A_t;
+	TIMSK1 |= _BV(OCIE1A);
 }
 
 int main()
 {
 	hardware_init();
 	software_init();
-	load_calibration(0);
+
+	load_calibration(&main_cali, 0);
+
+	op_mode = FLY_MODE;
 
 	while(1)
 	{
 		low_priority_interrupts();
-		if(op_mode == 1)
+		if(op_mode == FLY_MODE)
 		{
-			if(servo_data.servo_new_period_started != 0)
+			if(servo_data.period_finished != 0)
 			{			
 				sens_data_proc();
+
+				ppm_data ctrl_data = vex_data;
+
+				if(vex_data.tx_good == 0)
+				{
+					for(unsigned char i = 0; i < 8; i++)
+					{
+						ctrl_data.chan_width[i] = 0;
+					}
+				}
 
 				signed long target;
 				signed long current;
 
-				target = scale(vex_data.chan_width[yaw_ppm_chan], 100, 100);
-				current = scale(sens_data[yaw_sens_chan].centered_avg, 100. 100);
+				target = scale(ctrl_data.chan_width[yaw_ppm_chan], main_cali.spin_scale, spin_scale_multiplier);
+				current = scale(sens_data[yaw_sens_chan].centered_avg, main_cali.yaw_scale, yaw_scale_multiplier);
 
 				copter_action.yaw = PID_mv(&yaw_pid, current, target);
-
-				while(servo_data.safe_to_update_servo_array == 0)
-				{
-					low_priority_interrupts();
-				}
-
+				
+				mot_set(&motor_speed, &motor_cali, &copter_action);
 				mot_apply(&motor_speed, &motor_cali);
 
-				servo_data.servo_new_period_started = 0;
+				start_next_servo_pwm_period();
 			}
 		}
-		else if(op_mode == 2)
+		else if(op_mode == POWER_OFF_MODE)
+		{
+		}
+		else if(op_mode == OTHER_MODE)
 		{
 		}
 	}
