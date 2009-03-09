@@ -37,10 +37,12 @@
 static volatile unsigned long ovf_cnt; // overflow counter
 static volatile unsigned char chan_cnt; // channel counter
 static volatile unsigned char mask_cnt; // used to determin next pin
-static volatile unsigned int chan_width[6]; // stores pulse width in clock ticks
+static volatile unsigned int chan_width[8]; // stores pulse width in clock ticks
+static volatile unsigned int chan_width_temp[8];
 static volatile unsigned int last_capt; // time of last capture, used to find difference
 static volatile unsigned char data_ready; // 1 if data is good, 0 if transmitter is off
 static volatile unsigned char next_mask; // next port mask to apply
+static volatile unsigned char busy_flag;
 
 // input capture interrupt vector
 ISR(TIMER1_CAPT_vect)
@@ -75,8 +77,13 @@ ISR(TIMER1_CAPT_vect)
 	else // if pulse is shorter than 3ms, then it's a servo pulse
 	{
 		chan_width[chan_cnt] = t; // store time
+		if(busy_flag == 0)
+		{
+			chan_width_temp[0] = chan_width[0]; chan_width_temp[1] = chan_width[1]; chan_width_temp[2] = chan_width[2]; chan_width_temp[3] = chan_width[3];
+			chan_width_temp[4] = chan_width[4]; chan_width_temp[5] = chan_width[5]; chan_width_temp[6] = chan_width[6]; chan_width_temp[7] = chan_width[7];
+		}
 		chan_cnt++; // next channel
-		if(chan_cnt == 6) // last channel, data is now good, reset to first pin
+		if(chan_cnt >= 6) // last channel, data is now good, reset to first pin
 		{
 			data_ready = 1;
 			mask_cnt = 0;
@@ -142,13 +149,15 @@ int main()
 			in_port &= 0xFF ^ _BV(LED_A_pin);
 		}
 
+		busy_flag = 0;
 		if(bit_is_set(UCSRA, RXC)) // if command received
 		{
 			unsigned char ch = UDR;
 			if(ch != 0) // if not null command
 			{
 				UDR = data_ready; // send status
-				unsigned int t = chan_width[ch - 1]; // fetch from array
+				busy_flag = 1;
+				unsigned int t = chan_width_temp[ch - 1]; // fetch from array
 				unsigned char h = (t & 0xFF00) >> 8; // get high byte
 				unsigned char l = t & 0xFF; // get low byte
 				loop_until_bit_is_set(UCSRA, TXC); // wait for finish
