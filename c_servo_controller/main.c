@@ -39,8 +39,11 @@
 
 // global variables
 static volatile unsigned int ticks[10]; // widths for each channel
+static volatile unsigned int ticks_temp[10];
+static volatile unsigned char busy_flag; // for safe 32 bit operation during interrupt
 static volatile unsigned char chan_en; // channel enabled bit mask
 static volatile unsigned long period_ticks; // period length
+static volatile unsigned long period_ticks_temp; // period length
 static volatile unsigned char next_mask; // pin mask
 static volatile unsigned char chan; // current channel
 static volatile unsigned long sum; // sum of time since start of period
@@ -52,6 +55,13 @@ ISR(TIMER1_COMPA_vect) // timer 1 output compare A interrupt
 	unsigned long t = (OCR1A + ticks[chan]) & 0xFFFF; // calculate next alarm considering overflow
 	OCR1A = t; // set next alarm
 	sum += ticks[chan]; // sum is elapsed time for current period
+
+	if(busy_flag == 0)
+	{
+		// grab when not being written to
+		ticks[chan] = ticks_temp[chan]; 
+	}
+
 	do
 	{
 		chan++; // next channel
@@ -60,6 +70,13 @@ ISR(TIMER1_COMPA_vect) // timer 1 output compare A interrupt
 	if(chan == 8) // final channel
 	{
 		next_mask = 0; // pins off on next interrupt
+
+		if(busy_flag == 0)
+		{
+			// grab when not being written to
+			period_ticks = period_ticks_temp;
+		}
+
 		if(period_ticks > sum) // if time left over
 		{
 			unsigned long diff = period_ticks - sum; // calculate remainder
@@ -193,7 +210,11 @@ int main()
 
 	while(1)
 	{
+		busy_flag = 0; // not busy
+
 		unsigned char d = rx(); // command byte
+
+		busy_flag = 1; // char received, now busy
 
 		if(d == 9) // enable/disable channels
 		{
@@ -245,7 +266,7 @@ int main()
 			res += _0_7;
 
 			// set period length
-			period_ticks = res;
+			period_ticks_temp = res;
 		}
 		else if(d <= 8 &&  d != 0) // set channel pulse width
 		{
@@ -258,7 +279,7 @@ int main()
 			t += l;
 
 			// set width
-			ticks[d - 1] = t;
+			ticks_temp[d - 1] = t;
 		}
 	}
 
