@@ -13,7 +13,7 @@ void timer_1_input_capture(ppm_data * pd)
 	}
 	else // if pulse is shorter than 3ms, then it's a servo pulse
 	{
-		pd->chan_width[pd->chan_cnt] = t - (width_500 * 3) + pd->chan_offset[pd->chan_cnt]; // store time
+		pd->chan_width[pd->chan_cnt] = t - (width_500 * 3) - pd->chan_offset[pd->chan_cnt]; // store time
 		pd->chan_cnt++; // next channel
 		if(pd->chan_cnt == 6) // last channel, data is now good, reset to first pin
 		{

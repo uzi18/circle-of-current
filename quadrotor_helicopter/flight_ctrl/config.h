@@ -6,9 +6,11 @@
 #define PID_const_multiplier 100
 #define mot_scale_multiplier 100
 #define yaw_scale_multiplier 100
-#define pitch_roll_scale_multiplier 100
+#define roll_pitch_scale_multiplier 100
+#define fb_lr_accel_scale_multiplier 100
 #define throttle_scale_multiplier 100
 #define spin_scale_multiplier 100
+#define motor_scale_multiplier 100
 #define move_scale_multiplier 100
 
 #define f_mot_chan 1
@@ -20,6 +22,7 @@
 #define roll_ppm_chan 0
 #define pitch_ppm_chan 1
 #define yaw_ppm_chan 2
+#define throttle_ppm_chan 3
 
 #define f_mot_adj_default 0
 #define b_mot_adj_default 0
@@ -30,6 +33,8 @@
 #define b_mot_scale_default 0
 #define l_mot_scale_default 0
 #define r_mot_scale_default 0
+
+#define hover_throttle_default 0
 
 #define yaw_center_offset_default 0
 #define pitch_center_offset_default 0
@@ -91,5 +96,6 @@
 #define servo_pulse_scale_addr (roll_pitch_b_pid_kp_addr + 4 * 5)
 #define throttle_scale_addr (servo_pulse_scale_addr + 4 * 2)
 #define yaw_sens_hist_len_addr (throttle_scale_addr + 4 * 3)
+#define hover_throttle_addr (yaw_sens_hist_len_addr + 4 * 4)
 
 #endif 

@@ -47,8 +47,9 @@ void sens_data_calc_avg(sens_history * h)
 
 void sens_data_proc()
 {
-	for(unsigned char i = 0; i < 6; i++)
+	for(unsigned char i = 0; i < 8; i++)
 	{
+		low_priority_interrupts();
 		sens_data_calc_avg(&sens_data[i]);
 	}
 }

@@ -31,15 +31,6 @@ void low_priority_interrupts()
 		timer_1_ovf(&vex_data);
 		TIFR1 |= _BV(TOV1);
 	}
-	if(bit_is_clear(ADCSRA, ADSC))
-	{
-		sens_read_adc();
-	}
-}
-
-void apply_calibration(calibration c)
-{
-	
 }
 
 void start_next_servo_pwm_period()
@@ -49,6 +40,10 @@ void start_next_servo_pwm_period()
 	while(servo_data.ready_to_restart == 0)
 	{
 		low_priority_interrupts();
+		if(bit_is_clear(ADCSRA, ADSC))
+		{
+			sens_read_adc();
+		}
 	}
 
 	unsigned int OCR1A_t = 0;
@@ -87,13 +82,21 @@ int main()
 	hardware_init();
 	software_init();
 
+	default_calibration(&main_cali);
+	calibrate_sensors(&main_cali);
+	calibrate_controller(&main_cali);
+	save_calibration(main_cali, 0);
 	load_calibration(&main_cali, 0);
-
-	op_mode = FLY_MODE;
+	apply_calibration(main_cali);
 
 	while(1)
 	{
 		low_priority_interrupts();
+		if(bit_is_clear(ADCSRA, ADSC))
+		{
+			sens_read_adc();
+		}
+
 		if(op_mode == FLY_MODE)
 		{
 			if(servo_data.period_finished != 0)
@@ -110,6 +113,8 @@ int main()
 					}
 				}
 
+				low_priority_interrupts();
+
 				signed long target;
 				signed long current;
 
@@ -117,6 +122,26 @@ int main()
 				current = scale(sens_data[yaw_sens_chan].centered_avg, main_cali.yaw_scale, yaw_scale_multiplier);
 
 				copter_action.yaw = PID_mv(&yaw_pid, current, target);
+
+				target = scale(ctrl_data.chan_width[roll_ppm_chan], main_cali.move_scale, move_scale_multiplier);
+				current = scale(sens_data[lr_accel_chan].centered_avg, main_cali.fb_lr_accel_scale, fb_lr_accel_scale_multiplier);
+
+				target = PID_mv(&roll_pid_a, current, target);
+				current = scale(sens_data[roll_sens_chan].centered_avg, main_cali.roll_pitch_scale, roll_pitch_scale_multiplier);
+
+				copter_action.roll = PID_mv(&roll_pid_b, current, target);				
+					
+				low_priority_interrupts();
+
+				target = scale(ctrl_data.chan_width[pitch_ppm_chan], main_cali.move_scale, move_scale_multiplier);
+				current = scale(sens_data[fb_accel_chan].centered_avg, main_cali.fb_lr_accel_scale, fb_lr_accel_scale_multiplier);
+
+				target = PID_mv(&pitch_pid_a, current, target);
+				current = scale(sens_data[pitch_sens_chan].centered_avg, main_cali.roll_pitch_scale, roll_pitch_scale_multiplier);
+
+				copter_action.pitch = PID_mv(&pitch_pid_b, current, target);				
+
+				copter_action.col = main_cali.hover_throttle + scale(ctrl_data.chan_width[throttle_ppm_chan], main_cali.throttle_scale, throttle_scale_multiplier);
 				
 				mot_set(&motor_speed, &motor_cali, &copter_action);
 				mot_apply(&motor_speed, &motor_cali);

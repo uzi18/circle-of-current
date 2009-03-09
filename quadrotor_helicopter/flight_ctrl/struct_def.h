@@ -49,7 +49,6 @@ typedef struct mot_cali_
 	signed long r_mot_scale;
 	signed long servo_pulse_scale;
 	signed long servo_stop;
-	signed long scale_multiplier;
 } mot_cali;
 
 typedef struct heli_action_
@@ -127,6 +126,7 @@ typedef struct calibration_
 	signed long throttle_scale;
 	signed long spin_scale;
 	signed long move_scale;
+	signed long hover_throttle;
 
 	signed long yaw_sens_hist_len;
 	signed long roll_pitch_sens_hist_len;
