@@ -41,6 +41,7 @@
 static volatile unsigned int ticks[10]; // widths for each channel
 static volatile unsigned int ticks_temp[10];
 static volatile unsigned char busy_flag; // for safe 32 bit operation during interrupt
+static volatile unsigned char change_flag;
 static volatile unsigned char chan_en; // channel enabled bit mask
 static volatile unsigned long period_ticks; // period length
 static volatile unsigned long period_ticks_temp; // period length
@@ -59,7 +60,14 @@ ISR(TIMER1_COMPA_vect) // timer 1 output compare A interrupt
 	if(busy_flag == 0)
 	{
 		// grab when not being written to
-		ticks[chan] = ticks_temp[chan]; 
+		if(change_flag != 0)
+		{
+			// grab when there's been a change
+			ticks[0] = ticks_temp[0]; ticks[1] = ticks_temp[1]; ticks[2] = ticks_temp[2]; ticks[3] = ticks_temp[3];
+			ticks[4] = ticks_temp[4]; ticks[5] = ticks_temp[5]; ticks[6] = ticks_temp[6]; ticks[7] = ticks_temp[7];
+			period_ticks = period_ticks_temp;
+			change_flag = 0;
+		}
 	}
 
 	do
@@ -70,12 +78,6 @@ ISR(TIMER1_COMPA_vect) // timer 1 output compare A interrupt
 	if(chan == 8) // final channel
 	{
 		next_mask = 0; // pins off on next interrupt
-
-		if(busy_flag == 0)
-		{
-			// grab when not being written to
-			period_ticks = period_ticks_temp;
-		}
 
 		if(period_ticks > sum) // if time left over
 		{
@@ -192,6 +194,7 @@ int main()
 	period_ticks = default_period;
 	chan_en = 0;
 	ticks[0] = default_ticks; ticks[1] = default_ticks; ticks[2] = default_ticks; ticks[3] = default_ticks; ticks[4] = default_ticks; ticks[5] = default_ticks; ticks[6] = default_ticks; ticks[7] = default_ticks;
+	change_flag = 1;
 
 	#ifdef SIMULATE
 
@@ -267,6 +270,8 @@ int main()
 
 			// set period length
 			period_ticks_temp = res;
+
+			change_flag = 1; // there's been a change
 		}
 		else if(d <= 8 &&  d != 0) // set channel pulse width
 		{
@@ -280,6 +285,8 @@ int main()
 
 			// set width
 			ticks_temp[d - 1] = t;
+
+			change_flag = 1; // there's been a change
 		}
 	}
 
