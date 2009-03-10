@@ -35,10 +35,10 @@ namespace BaseConverter
             this.notifyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.onToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.offToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
+            this.copy2StripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dec2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.hex2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.bin2toolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.InputBox = new System.Windows.Forms.TextBox();
             this.DetectedLabel = new System.Windows.Forms.Label();
@@ -76,7 +76,7 @@ namespace BaseConverter
             // 
             this.RightClickMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.notifyToolStripMenuItem,
-            this.toolStripMenuItem1,
+            this.copy2StripMenuItem,
             this.quitToolStripMenuItem});
             this.RightClickMenu.Name = "RightClickMenu";
             this.RightClickMenu.Size = new System.Drawing.Size(153, 92);
@@ -94,47 +94,47 @@ namespace BaseConverter
             // onToolStripMenuItem
             // 
             this.onToolStripMenuItem.Name = "onToolStripMenuItem";
-            this.onToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.onToolStripMenuItem.Size = new System.Drawing.Size(88, 22);
             this.onToolStripMenuItem.Text = "On";
             this.onToolStripMenuItem.Click += new System.EventHandler(this.onToolStripMenuItem_Click);
             // 
             // offToolStripMenuItem
             // 
             this.offToolStripMenuItem.Name = "offToolStripMenuItem";
-            this.offToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.offToolStripMenuItem.Size = new System.Drawing.Size(88, 22);
             this.offToolStripMenuItem.Text = "Off";
             this.offToolStripMenuItem.Click += new System.EventHandler(this.offToolStripMenuItem_Click);
             // 
-            // toolStripMenuItem1
+            // copy2StripMenuItem
             // 
-            this.toolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItem2,
-            this.toolStripMenuItem3,
-            this.toolStripMenuItem4});
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
-            this.toolStripMenuItem1.Text = "Copy";
+            this.copy2StripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.dec2ToolStripMenuItem,
+            this.hex2ToolStripMenuItem,
+            this.bin2toolStripMenuItem});
+            this.copy2StripMenuItem.Name = "copy2StripMenuItem";
+            this.copy2StripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.copy2StripMenuItem.Text = "Copy";
             // 
-            // toolStripMenuItem2
+            // dec2ToolStripMenuItem
             // 
-            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(152, 22);
-            this.toolStripMenuItem2.Text = "Decimal";
-            this.toolStripMenuItem2.Click += new System.EventHandler(this.decimalToolStripMenuItem_Click);
+            this.dec2ToolStripMenuItem.Name = "dec2ToolStripMenuItem";
+            this.dec2ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.dec2ToolStripMenuItem.Text = "Decimal";
+            this.dec2ToolStripMenuItem.Click += new System.EventHandler(this.decimalToolStripMenuItem_Click);
             // 
-            // toolStripMenuItem3
+            // hex2ToolStripMenuItem
             // 
-            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(152, 22);
-            this.toolStripMenuItem3.Text = "Hex";
-            this.toolStripMenuItem3.Click += new System.EventHandler(this.hexToolStripMenuItem_Click);
+            this.hex2ToolStripMenuItem.Name = "hex2ToolStripMenuItem";
+            this.hex2ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.hex2ToolStripMenuItem.Text = "Hex";
+            this.hex2ToolStripMenuItem.Click += new System.EventHandler(this.hexToolStripMenuItem_Click);
             // 
-            // toolStripMenuItem4
+            // bin2toolStripMenuItem
             // 
-            this.toolStripMenuItem4.Name = "toolStripMenuItem4";
-            this.toolStripMenuItem4.Size = new System.Drawing.Size(152, 22);
-            this.toolStripMenuItem4.Text = "Binary";
-            this.toolStripMenuItem4.Click += new System.EventHandler(this.binaryToolStripMenuItem_Click);
+            this.bin2toolStripMenuItem.Name = "bin2toolStripMenuItem";
+            this.bin2toolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.bin2toolStripMenuItem.Text = "Binary";
+            this.bin2toolStripMenuItem.Click += new System.EventHandler(this.binaryToolStripMenuItem_Click);
             // 
             // quitToolStripMenuItem
             // 
@@ -355,10 +355,10 @@ namespace BaseConverter
         private System.Windows.Forms.ToolStripMenuItem decimalToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem hexToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem binaryToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem3;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem4;
+        private System.Windows.Forms.ToolStripMenuItem copy2StripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem dec2ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem hex2ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem bin2toolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem notifyToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem onToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem offToolStripMenuItem;

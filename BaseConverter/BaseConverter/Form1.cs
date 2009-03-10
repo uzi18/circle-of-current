@@ -64,7 +64,9 @@ namespace BaseConverter
                 }
             }
 
-            if (s.IndexOf("0x") == 0)
+            s = s.Trim();
+
+            if (s.IndexOf("0x") == 0 || s.IndexOf("0X") == 0)
             {
                 try
                 {
