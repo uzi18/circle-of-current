@@ -38,12 +38,6 @@ namespace BaseConverter
             }
         }
 
-        private void NotifyIcon_DoubleClick(object sender, EventArgs e)
-        {
-            Show();
-            WindowState = FormWindowState.Normal;
-        }
-
         string old_clipboard = "";
 
         private void ProcessTimer_Tick(object sender, EventArgs e)
@@ -93,7 +87,7 @@ namespace BaseConverter
                 {
                     try
                     {
-                        r = Convert.ToInt32(s.Substring(2), 16);
+                        r = Convert.ToInt32(s, 16);
                         DetectedLabel.Text = "Hexadecimal";
                     }
                     catch
@@ -156,11 +150,17 @@ namespace BaseConverter
                 }
                 InputBox.Text = s;
             }
-        }
 
-        private void NotiIcon_Click(object sender, EventArgs e)
-        {
-            NotiIcon.ShowBalloonTip(2000);
+            if (EnableNoti.Checked)
+            {
+                onToolStripMenuItem.Enabled = false;
+                offToolStripMenuItem.Enabled = true;
+            }
+            else
+            {
+                offToolStripMenuItem.Enabled = false;
+                onToolStripMenuItem.Enabled = true;
+            }
         }
 
         private void HideButton_Click(object sender, EventArgs e)
@@ -168,25 +168,52 @@ namespace BaseConverter
             WindowState = FormWindowState.Minimized;
         }
 
-        private void DecLabel_Click(object sender, EventArgs e)
-        {
-            Clipboard.SetText(DecLabel.Text);
-        }
-
-        private void HexLabel_Click(object sender, EventArgs e)
-        {
-            Clipboard.SetText(HexLabel.Text);
-        }
-
-        private void BinLabel_Click(object sender, EventArgs e)
-        {
-            Clipboard.SetText(BinLabel.Text);
-        }
-
         private void KillButton_Click(object sender, EventArgs e)
         {
             NotiIcon.Visible = false;
             Process.GetCurrentProcess().Kill();
+        }
+
+        private void NotiIcon_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Right)
+            {
+                NotiIcon.ShowBalloonTip(2000);
+            }
+        }
+
+        private void decimalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Clipboard.SetText(DecLabel.Text);
+            old_clipboard = DecLabel.Text;
+        }
+
+        private void hexToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Clipboard.SetText(HexLabel.Text);
+            old_clipboard = HexLabel.Text;
+        }
+
+        private void binaryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Clipboard.SetText(BinLabel.Text);
+            old_clipboard = BinLabel.Text;
+        }
+
+        private void NotiIcon_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            Show();
+            WindowState = FormWindowState.Normal;
+        }
+
+        private void offToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            EnableNoti.Checked = false;
+        }
+
+        private void onToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            EnableNoti.Checked = true;
         }
     }
 }
