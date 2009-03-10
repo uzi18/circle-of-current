@@ -26,7 +26,7 @@ void sens_data_calc_avg(sens_history * h)
 	}
 	if(h->cnt > h->sens_history_length)
 	{
-		for(unsigned char i = (h->sens_history_length / 2) + h->cnt; i < h->sens_history_length + h->cnt; i++)
+		for(unsigned char i = h->cnt - (h->sens_history_length / 2); i < h->cnt; i++)
 		{
 			sum += h->res[i % h->sens_history_length];
 			cnt++;

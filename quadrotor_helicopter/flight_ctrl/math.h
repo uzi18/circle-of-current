@@ -1,14 +1,14 @@
-signed long scale(signed long in, signed long per, signed long multiplier)
+signed long scale(signed long in, signed long numer, signed long denom)
 {	
-	signed long t_ = in * per;
-	signed long t = t_ / multiplier;
-	signed long _t = t * multiplier;
-	signed long diff = t_ - _t;
-	if(diff >= multiplier / 2)
+	volatile signed long t_ = in * numer;
+	volatile signed long t = t_ / denom;
+	volatile signed long _t = t * denom;
+	volatile signed long diff = t_ - _t;
+	if(diff >= denom / 2 && denom * denom != 1)
 	{
 		t++;
 	}
-	else if(-diff >= multiplier / 2)
+	else if(-diff >= denom / 2 && denom * denom != 1)
 	{
 		t--;
 	}
