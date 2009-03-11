@@ -19,6 +19,8 @@
 
 #endif
 
+#define width_500 ((F_CPU * 5) / 10000) //  calculates ticks for 0.5ms
+
 // pin and port renaming
 
 #define in_port PORTD
@@ -65,14 +67,13 @@ ISR(TIMER1_CAPT_vect)
 	last_capt = ICR1;
 
 	// if pulse is longer than 3ms, then it's a sync pulse
-	#if (F_CPU == 20000000)
-	if(t > 60000)
+	if(t > width_500 * 6)
 	{
-	#elif (F_CPU == 8000000)
-	if(t > 24000)
-	{
-	#endif
 		chan_cnt = 0;
+		if(data_ready == 0)
+		{
+			data_ready = 1;
+		}
 	}
 	else // if pulse is shorter than 3ms, then it's a servo pulse
 	{
@@ -83,9 +84,9 @@ ISR(TIMER1_CAPT_vect)
 			chan_width_temp[4] = chan_width[4]; chan_width_temp[5] = chan_width[5]; chan_width_temp[6] = chan_width[6]; chan_width_temp[7] = chan_width[7];
 		}
 		chan_cnt++; // next channel
-		if(chan_cnt >= 6) // last channel, data is now good, reset to first pin
+		if(chan_cnt >= 4 && data_ready != 0) // last channel, data is now good, reset to first pin
 		{
-			data_ready = 1;
+			data_ready = 2;
 			mask_cnt = 0;
 		}
 	}
@@ -96,7 +97,7 @@ ISR(TIMER1_CAPT_vect)
 ISR(TIMER1_OVF_vect)
 {
 	ovf_cnt++;
-	if(ovf_cnt >= 4) // if too many, then transmitter is missing
+	if(ovf_cnt >= 7) // if too many, then transmitter is missing
 	{
 		data_ready = 0;
 	}
@@ -136,7 +137,7 @@ int main()
 
 	while(1)
 	{
-		if(data_ready != 0)
+		if(data_ready == 2)
 		{
 			// enable output if data is good, light LED
 			out_ddr = 0xFF;
