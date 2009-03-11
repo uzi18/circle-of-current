@@ -1,23 +1,8 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-#if (F_CPU == 8000000)
-
-#define BR_REG 12 // default for 38400 baud at 8 MHz
-
-#elif (F_CPU == 20000000)
-
-#define BR_REG 64 // default for 19200 baud at 20 MHz
-
-#elif (F_CPU != NULL)
-
-#define BR_REG 12 // default for 38400 baud at 8 MHz
-
-#else
-
-#error "Please set a clock frequency"
-
-#endif
+#define BAUD 9600 // define baud rate here
+#include <util/setbaud.h>
 
 #define width_500 ((F_CPU * 5) / 10000) //  calculates ticks for 0.5ms
 
@@ -124,8 +109,8 @@ int main()
 
 	// initialize serial port
 
-	UBRRH = (BR_REG & 0xFF00) >> 8; // set baud rate
-	UBRRL = BR_REG & 0xFF;
+	UBRRH = UBRRH_VALUE; // set baud rate
+	UBRRL = UBRRL_VALUE;
 	UCSRB = _BV(RXEN) | _BV(TXEN); // enable port
 
 	// initialize timer
