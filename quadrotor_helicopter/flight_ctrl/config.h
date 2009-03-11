@@ -6,6 +6,7 @@
 #error "weird, width_500 is not = 10000"
 #endif
 #define sens_history_max_length 15
+#define capt_history_length 16
 #define PID_const_multiplier 100
 #define mot_scale_multiplier 100
 #define yaw_scale_multiplier 100
@@ -22,10 +23,10 @@
 #define r_mot_chan 4
 #define aux_servo_chan 5
 
-#define roll_ppm_chan 0
-#define pitch_ppm_chan 1
-#define yaw_ppm_chan 2
-#define throttle_ppm_chan 3
+#define roll_ppm_chan_default 0
+#define pitch_ppm_chan_default 1
+#define yaw_ppm_chan_default 2
+#define throttle_ppm_chan_default 3
 
 #define f_mot_adj_default 0
 #define b_mot_adj_default 0
@@ -75,7 +76,7 @@
 
 #define servo_pulse_scale_default 100
 #define servo_pulse_stop_default width_500
-#define servo_period_delay_default 0xFFFFFFFF
+#define servo_period_delay_default (width_500 * 20)
 
 #define throttle_scale_default 100
 #define spin_scale_default 100
@@ -99,6 +100,7 @@
 #define servo_pulse_scale_addr (roll_pitch_b_pid_kp_addr + 4 * 5)
 #define throttle_scale_addr (servo_pulse_scale_addr + 4 * 2)
 #define yaw_sens_hist_len_addr (throttle_scale_addr + 4 * 3)
-#define hover_throttle_addr (yaw_sens_hist_len_addr + 4 * 4)
+#define hover_throttle_addr (yaw_sens_hist_len_addr + 1 * 4)
+#define yaw_ppm_chan_addr (hover_throttle_addr + 4 * 1)
 
 #endif 

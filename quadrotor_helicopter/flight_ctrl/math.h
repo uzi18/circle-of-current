@@ -4,13 +4,22 @@ signed long scale(signed long in, signed long numer, signed long denom)
 	volatile signed long t = t_ / denom;
 	volatile signed long _t = t * denom;
 	volatile signed long diff = t_ - _t;
-	if(diff >= denom / 2 && denom * denom != 1)
+	if(denom * denom != 1)
 	{
-		t++;
-	}
-	else if(-diff >= denom / 2 && denom * denom != 1)
-	{
-		t--;
+		volatile signed long one = 1;
+		if(denom < 0 && numer >= 0)
+		{
+			one = -1;
+		}
+
+		if(diff >= denom / 2)
+		{
+			t += one;
+		}
+		else if(-diff >= denom / 2)
+		{
+			t -= one;
+		}
 	}
 	return t;
 }

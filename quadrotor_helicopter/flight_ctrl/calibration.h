@@ -8,6 +8,16 @@ void eeprom_write_dword_(unsigned long addr, unsigned long data)
 	eeprom_write_dword(addr, data);
 }
 
+unsigned char eeprom_read_byte_(unsigned long addr)
+{
+	return eeprom_read_byte(addr);
+}
+
+void eeprom_write_byte_(unsigned long addr, unsigned char data)
+{
+	eeprom_write_byte(addr, data);
+}
+
 void load_calibration(calibration * c, unsigned long a)
 {
 	c->f_mot_adj = eeprom_read_dword_(a + f_mot_adj_addr + (4 * 0));
@@ -64,12 +74,17 @@ void load_calibration(calibration * c, unsigned long a)
 	c->spin_scale = eeprom_read_dword_(a + throttle_scale_addr + (4 * 1));
 	c->move_scale = eeprom_read_dword_(a + throttle_scale_addr + (4 * 2));
 
-	c->yaw_sens_hist_len = eeprom_read_dword_(a + yaw_sens_hist_len_addr + (4 * 0));
-	c->roll_pitch_sens_hist_len = eeprom_read_dword_(a + yaw_sens_hist_len_addr + (4 * 1));
-	c->vert_accel_hist_len = eeprom_read_dword_(a + yaw_sens_hist_len_addr + (4 * 2));
-	c->hori_accel_hist_len = eeprom_read_dword_(a + yaw_sens_hist_len_addr + (4 * 3));
+	c->yaw_sens_hist_len = eeprom_read_byte_(a + yaw_sens_hist_len_addr + (1 * 0));
+	c->roll_pitch_sens_hist_len = eeprom_read_byte_(a + yaw_sens_hist_len_addr + (1 * 1));
+	c->vert_accel_hist_len = eeprom_read_byte_(a + yaw_sens_hist_len_addr + (1 * 2));
+	c->hori_accel_hist_len = eeprom_read_byte_(a + yaw_sens_hist_len_addr + (1 * 3));
 
 	c->hover_throttle = eeprom_read_dword_(a + hover_throttle_addr + (4 * 0));
+
+	c->yaw_ppm_chan = eeprom_read_byte_(a + yaw_ppm_chan_addr + (1 * 0));
+	c->roll_ppm_chan = eeprom_read_byte_(a + yaw_ppm_chan_addr + (1 * 1));
+	c->pitch_ppm_chan = eeprom_read_byte_(a + yaw_ppm_chan_addr + (1 * 2));
+	c->throttle_ppm_chan = eeprom_read_byte_(a + yaw_ppm_chan_addr + (1 * 3));
 }
 
 void save_calibration(calibration c, unsigned long a)
@@ -129,12 +144,17 @@ void save_calibration(calibration c, unsigned long a)
 	eeprom_write_dword_(a + throttle_scale_addr + (4 * 1), c.spin_scale);
 	eeprom_write_dword_(a + throttle_scale_addr + (4 * 3), c.move_scale);
 
-	eeprom_write_dword_(a + yaw_sens_hist_len_addr + (4 * 0), c.yaw_sens_hist_len);
-	eeprom_write_dword_(a + yaw_sens_hist_len_addr + (4 * 1), c.roll_pitch_sens_hist_len);
-	eeprom_write_dword_(a + yaw_sens_hist_len_addr + (4 * 2), c.vert_accel_hist_len);
-	eeprom_write_dword_(a + yaw_sens_hist_len_addr + (4 * 3), c.hori_accel_hist_len);
+	eeprom_write_byte_(a + yaw_sens_hist_len_addr + (1 * 0), c.yaw_sens_hist_len);
+	eeprom_write_byte_(a + yaw_sens_hist_len_addr + (1 * 1), c.roll_pitch_sens_hist_len);
+	eeprom_write_byte_(a + yaw_sens_hist_len_addr + (1 * 2), c.vert_accel_hist_len);
+	eeprom_write_byte_(a + yaw_sens_hist_len_addr + (1 * 3), c.hori_accel_hist_len);
 
 	eeprom_write_dword_(a + hover_throttle_addr + (4 * 3), c.hover_throttle);
+
+	eeprom_write_byte_(a + yaw_ppm_chan_addr + (1 * 0), c.yaw_ppm_chan);
+	eeprom_write_byte_(a + yaw_ppm_chan_addr + (1 * 1), c.roll_ppm_chan);
+	eeprom_write_byte_(a + yaw_ppm_chan_addr + (1 * 2), c.pitch_ppm_chan);
+	eeprom_write_byte_(a + yaw_ppm_chan_addr + (1 * 3), c.throttle_ppm_chan);
 }
 
 void default_calibration(calibration * c)
@@ -200,6 +220,11 @@ void default_calibration(calibration * c)
 	c->hori_accel_hist_len = hori_accel_hist_len_default;
 
 	c->hover_throttle = hover_throttle_default;
+
+	c->yaw_ppm_chan = yaw_ppm_chan_default;
+	c->throttle_ppm_chan = throttle_ppm_chan_default;
+	c->roll_ppm_chan = roll_ppm_chan_default;
+	c->pitch_ppm_chan = pitch_ppm_chan_default;
 }
 
 void calibrate_sensors(calibration * c)
@@ -235,38 +260,28 @@ void calibrate_sensors(calibration * c)
 
 void calibrate_controller(calibration * c)
 {
-	ppm_data pd;
 	signed long sum[8];
 	unsigned long cnt;
 	for(unsigned char i = 0; i < 8; i++)
 	{
-		pd.chan_offset[i] = 0;
+		vex_data.chan_offset[i] = 0;
 		sum[i] = 0;
 	}
 	for(cnt = 0; cnt < 10; cnt++)
 	{
-		while(pd.tx_good == 0)
+		vex_data.tx_good = 0;
+		while(vex_data.tx_good != 2);
+		if(cnt != 0)
 		{
-			if(bit_is_set(TIFR1, ICF1))
+			for(unsigned char i = 0; i < 8; i++)
 			{
-				timer_1_input_capture(&pd);
-				TIFR1 |= _BV(ICF1);
+				sum[i] += vex_data.chan_width[i];
 			}
-			if(bit_is_set(TIFR1, TOV1))
-			{
-				timer_1_ovf(&pd);
-				TIFR1 |= _BV(TOV1);
-			}
-		}
-		pd.tx_good = 0;
-		for(unsigned char i = 0; i < 8; i++)
-		{
-			sum[i] += pd.chan_width[i];
 		}
 	}
 	for(unsigned char i = 0; i < 8; i++)
 	{
-		c->ppm_chan_offset[i] = scale(sum[i], 1, cnt);
+		c->ppm_chan_offset[i] = scale(sum[i], 1, cnt - 1);
 	}
 }
 
@@ -293,13 +308,13 @@ void apply_calibration(calibration c)
 	sens_data[lr_accel_chan].centering_offset = c.lr_accel_center_offset;
 	sens_data[ud_accel_chan].centering_offset = c.ud_accel_center_offset;
 
-	sens_data[yaw_sens_chan].sens_history_length = c.yaw_sens_hist_len;
-	sens_data[roll_sens_chan].sens_history_length = c.roll_pitch_sens_hist_len;
-	sens_data[pitch_sens_chan].sens_history_length = c.roll_pitch_sens_hist_len;
+	sens_data[yaw_sens_chan].sens_history_length = constrain(c.yaw_sens_hist_len, 1, sens_history_max_length);
+	sens_data[roll_sens_chan].sens_history_length = constrain(c.roll_pitch_sens_hist_len, 1, sens_history_max_length);
+	sens_data[pitch_sens_chan].sens_history_length = constrain(c.roll_pitch_sens_hist_len, 1, sens_history_max_length);
 
-	sens_data[fb_accel_chan].sens_history_length = c.hori_accel_hist_len;
-	sens_data[lr_accel_chan].sens_history_length = c.hori_accel_hist_len;
-	sens_data[ud_accel_chan].sens_history_length = c.vert_accel_hist_len;
+	sens_data[fb_accel_chan].sens_history_length = constrain(c.hori_accel_hist_len, 1, sens_history_max_length);
+	sens_data[lr_accel_chan].sens_history_length = constrain(c.hori_accel_hist_len, 1, sens_history_max_length);
+	sens_data[ud_accel_chan].sens_history_length = constrain(c.vert_accel_hist_len, 1, sens_history_max_length);
 
 	yaw_pid.constants.kp = c.yaw_pid_kp;
 	yaw_pid.constants.ki = c.yaw_pid_ki;
@@ -335,5 +350,12 @@ void apply_calibration(calibration c)
 	{
 		vex_data.chan_offset[i] = c.ppm_chan_offset;
 	}
+
+	vex_data.yaw_ppm_chan = c.yaw_ppm_chan;
+	vex_data.roll_ppm_chan = c.roll_ppm_chan;
+	vex_data.pitch_ppm_chan = c.pitch_ppm_chan;
+	vex_data.throttle_ppm_chan = c.throttle_ppm_chan;
+
+	servo_data.servo_period_delay = c.servo_period_delay;
 }
 

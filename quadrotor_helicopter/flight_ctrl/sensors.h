@@ -6,13 +6,13 @@ void sens_data_add(sens_history * h, unsigned int adc_res)
 	h->cnt++;
 }
 
-void sens_read_adc()
+ISR(ADC_vect)
 {
+	ADC_chan_cnt %= 8;
 	sens_data_add(&sens_data[ADC_chan_cnt], ADC);
 	ADC_chan_cnt++;
-	ADC_chan_cnt %= 6;
 	ADMUX = (ADMUX & 0b11100000) | ADC_chan_cnt;
-	ADCSRA = _BV(ADEN) | _BV(ADSC) | _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0);
+	ADCSRA |= _BV(ADEN) | _BV(ADSC) | _BV(ADIE) | _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0);
 }
 
 void sens_data_calc_avg(sens_history * h)
@@ -47,9 +47,10 @@ void sens_data_calc_avg(sens_history * h)
 
 void sens_data_proc()
 {
+	ADCSRA &= 0xFF ^ _BV(ADIE);
 	for(unsigned char i = 0; i < 8; i++)
 	{
-		low_priority_interrupts();
 		sens_data_calc_avg(&sens_data[i]);
 	}
+	ADCSRA |= _BV(ADIE);
 }

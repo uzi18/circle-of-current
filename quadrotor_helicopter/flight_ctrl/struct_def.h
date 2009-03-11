@@ -9,6 +9,10 @@ typedef struct _ppm_data
 	unsigned long last_capt;
 	unsigned char tx_good;
 	unsigned long ovf_cnt;
+	unsigned char yaw_ppm_chan;
+	unsigned char roll_ppm_chan;
+	unsigned char pitch_ppm_chan;
+	unsigned char throttle_ppm_chan;
 } ppm_data;
 
 typedef struct sens_history_
@@ -71,10 +75,9 @@ typedef struct mot_speed_
 typedef struct servo_ctrl_
 {
 	unsigned long servo_ticks[8];
-	unsigned char period_finished;
 	unsigned char ready_to_restart;
-	unsigned char next_mask;
 	unsigned char chan;
+	unsigned char servo_period_delay;
 } servo_ctrl;
 
 typedef struct calibration_
@@ -131,10 +134,14 @@ typedef struct calibration_
 	signed long move_scale;
 	signed long hover_throttle;
 
-	signed long yaw_sens_hist_len;
-	signed long roll_pitch_sens_hist_len;
-	signed long vert_accel_hist_len;
-	signed long hori_accel_hist_len;
-} calibration;
+	unsigned char yaw_sens_hist_len;
+	unsigned char roll_pitch_sens_hist_len;
+	unsigned char vert_accel_hist_len;
+	unsigned char hori_accel_hist_len;
 
+	unsigned char yaw_ppm_chan;
+	unsigned char roll_ppm_chan;
+	unsigned char pitch_ppm_chan;
+	unsigned char throttle_ppm_chan;
+} calibration;
 #endif

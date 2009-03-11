@@ -1,8 +1,11 @@
 #ifndef pin_def_h
 #define pin_def_h
 
-#define servo_port PORTC
-#define servo_ddr DDRC
+#define servo_port PORTD
+#define servo_ddr DDRD
+#define servo_shift_pin 5
+#define servo_input_pin 2
+#define servo_reset_pin 3
 #define f_motor_pin 0
 #define b_motor_pin 1
 #define l_motor_pin 2
