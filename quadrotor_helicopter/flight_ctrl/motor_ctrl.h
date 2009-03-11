@@ -1,9 +1,9 @@
 void servo_set(servo_ctrl * sc, signed long f, signed long b, signed long l, signed long r)
 {
-	sc->servo_ticks[f_mot_chan] = f;
-	sc->servo_ticks[b_mot_chan] = b;
-	sc->servo_ticks[l_mot_chan] = l;
-	sc->servo_ticks[r_mot_chan] = r;
+	sc->servo_ticks[f_mot_chan - 1] = f;
+	sc->servo_ticks[b_mot_chan - 1] = b;
+	sc->servo_ticks[l_mot_chan - 1] = l;
+	sc->servo_ticks[r_mot_chan - 1] = r;
 }
 
 void mot_apply(mot_speed * ms, mot_cali * mc)

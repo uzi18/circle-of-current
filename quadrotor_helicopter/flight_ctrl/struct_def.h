@@ -19,6 +19,7 @@ typedef struct sens_history_
 	unsigned long avg;
 	signed long centered_avg;
 	signed long centering_offset;
+	signed long noise;
 } sens_history;
 
 typedef struct PID_const_
@@ -72,6 +73,8 @@ typedef struct servo_ctrl_
 	unsigned long servo_ticks[8];
 	unsigned char period_finished;
 	unsigned char ready_to_restart;
+	unsigned char next_mask;
+	unsigned char chan;
 } servo_ctrl;
 
 typedef struct calibration_

@@ -8,14 +8,20 @@ void hardware_init()
 	input_capt_port &= 0xFF ^ _BV(input_capt_pin);
 	input_capt_ddr &= 0xFF ^ _BV(input_capt_pin);
 
+	LED_init();
+
+	ser_init();
+
 	// initalize ADC
 
 	ADMUX &= 0xFF ^ (_BV(REFS1) | _BV(REFS0) | _BV(ADLAR));
 	ADCSRA |= _BV(ADEN) | _BV(ADSC) | _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0);
 
-	// enable interrupts
+	// initialize timer
 
-	TIMSK1 |= _BV(OCIE1A);
+	TCCR1B |= _BV(ICNC1) | _BV(ICES1) | _BV(CS10);
+
+	// enable interrupts
 
 	sei();
 }
@@ -28,11 +34,13 @@ void software_init()
 		servo_data.servo_ticks[i] = width_500;
 	}
 	servo_data.servo_ticks[5] = 0x10000;
-	tx_good = 0;
+	vex_data.tx_good = 0;
 	servo_data.period_finished = 1;
 	servo_data.ready_to_restart = 1;
+	servo_data.next_mask = (servo_port & (0xFF ^ (_BV(f_motor_pin) | _BV(b_motor_pin) | _BV(l_motor_pin) | _BV(r_motor_pin) | _BV(aux_servo_pin)))) | _BV(f_motor_pin);
+	servo_data.chan = 0;
 
 	timer1_ovf_cnt = 0;
 
-	op_mode = FLY_MODE;
+	op_mode = TEST_MODE_A;
 }

@@ -11,7 +11,6 @@ static PID_data pitch_pid_a;
 static PID_data pitch_pid_b;
 static PID_data roll_pid_a;
 static PID_data roll_pid_b;
-static volatile unsigned char tx_good;
 static volatile unsigned char op_mode;
 static calibration main_cali;
 static volatile unsigned long timer1_ovf_cnt;
@@ -73,7 +72,9 @@ void start_next_servo_pwm_period()
 	servo_data.period_finished = 0;
 	servo_data.ready_to_restart = 0;
 
-	OCR1A = TCNT1 + OCR1A_t;
+	unsigned int tt = TCNT1;
+
+	OCR1A = tt + OCR1A_t;
 	TIMSK1 |= _BV(OCIE1A);
 }
 
@@ -83,11 +84,19 @@ int main()
 	software_init();
 
 	default_calibration(&main_cali);
-	calibrate_sensors(&main_cali);
-	calibrate_controller(&main_cali);
-	save_calibration(main_cali, 0);
-	load_calibration(&main_cali, 0);
+	//calibrate_sensors(&main_cali);
+	//calibrate_controller(&main_cali);
+	//save_calibration(main_cali, 0);
+	//load_calibration(&main_cali, 0);
 	apply_calibration(main_cali);
+
+	LED_1_off();
+	LED_2_off();
+
+	_delay_ms(1);
+
+	LED_1_on();
+	LED_2_on();
 
 	while(1)
 	{
@@ -105,7 +114,7 @@ int main()
 
 				ppm_data ctrl_data = vex_data;
 
-				if(vex_data.tx_good == 0)
+				if(vex_data.tx_good != 2)
 				{
 					for(unsigned char i = 0; i < 8; i++)
 					{
@@ -154,6 +163,50 @@ int main()
 		}
 		else if(op_mode == OTHER_MODE)
 		{
+		}
+		else if(op_mode == TEST_MODE_A)
+		{
+			if(servo_data.period_finished != 0)
+			{
+				sens_data_proc();
+
+				if(vex_data.tx_good == 2)
+				{
+					LED_1_on();
+				}
+				else
+				{
+					LED_1_off();
+				}
+
+				copter_action.yaw = width_500 / 4;
+				copter_action.roll = width_500 / 4;
+				copter_action.pitch = width_500 / 4;
+				copter_action.col = width_500 *  + vex_data.chan_width[0];
+
+				mot_set(&motor_speed, &motor_cali, &copter_action);
+				mot_apply(&motor_speed, &motor_cali);
+
+				start_next_servo_pwm_period();
+			}
+		}
+		else if(op_mode == TEST_MODE_B)
+		{
+			for(unsigned char i = 0; i < 8; i++)
+			{
+				low_priority_interrupts();
+				if(bit_is_clear(ADCSRA, ADSC))
+				{
+					sens_read_adc();
+				}
+				sens_data_calc_avg(&sens_data[i]);
+				unsigned int a = sens_data[i].avg;
+				unsigned char l = a & 0x7F;
+				unsigned int h_ = ((a - l) >> 7) | (i << 4) | 0x80;
+				unsigned char h = (unsigned char)h_;
+				ser_tx(h); ser_tx(l);
+			}
+			ser_rx_wait();
 		}
 	}
 	return 0;

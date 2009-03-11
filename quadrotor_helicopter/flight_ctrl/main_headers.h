@@ -4,4 +4,6 @@
 #include "motor_ctrl.h"
 #include "servo_pwm.h"
 #include "calibration.h"
+#include "led.h"
+#include "ser.h"
 #include "init.h"

@@ -74,8 +74,8 @@
 #define roll_pitch_b_pid_delta_err_low_thresh_default 0
 
 #define servo_pulse_scale_default 100
-#define servo_pulse_stop_default 100
-#define servo_period_delay_default 100
+#define servo_pulse_stop_default width_500
+#define servo_period_delay_default 0xFFFFFFFF
 
 #define throttle_scale_default 100
 #define spin_scale_default 100
