@@ -26,14 +26,20 @@ void start_next_servo_pwm_period()
 	unsigned int tt = TCNT1;
 
 	OCR1A = tt + 128;
+	OCR1B = tt + 256;
 
 	if(bit_is_set(TIFR1, OCF1A))
 	{
 		TIFR1 |= _BV(OCF1A);
 	}
 
+	if(bit_is_set(TIFR1, OCF1B))
+	{
+		TIFR1 |= _BV(OCF1B);
+	}
+
 	TCCR1A |= _BV(COM1A0) | _BV(COM1A1);
-	TIMSK1 |= _BV(OCIE1A);
+	TIMSK1 |= _BV(OCIE1B);
 }
 
 int main()
@@ -131,13 +137,14 @@ int main()
 					LED_1_off();
 				}
 
-				copter_action.yaw = 0;
-				copter_action.roll = 0;
-				copter_action.pitch = 0;
-				copter_action.col = width_500;
-
-				mot_set(&motor_speed, &motor_cali, &copter_action);
-				mot_apply(&motor_speed, &motor_cali);
+				servo_set
+				(
+					&servo_data,
+					vex_data.chan_width[0] + width_500 * 3,
+					vex_data.chan_width[1] + width_500 * 3,
+					vex_data.chan_width[2] + width_500 * 3,
+					vex_data.chan_width[3] + width_500 * 3
+				);
 			}
 			else if(op_mode == TEST_MODE_B)
 			{
