@@ -1,7 +1,7 @@
 #include "main.h"
 
-ppm_data vex_data;
-sens_history sens_data[8];
+volatile ppm_data vex_data;
+volatile sens_history sens_data[8];
 mot_speed motor_speed;
 mot_cali motor_cali;
 heli_action copter_action;
@@ -19,13 +19,20 @@ calibration main_cali;
 void start_next_servo_pwm_period()
 {
 	servo_data.ready_to_restart = 0;
+	servo_data.chan = 0;
 
 	servo_shift_reset();
 
 	unsigned int tt = TCNT1;
 
+	OCR1A = tt + 128;
+
+	if(bit_is_set(TIFR1, OCF1A))
+	{
+		TIFR1 |= _BV(OCF1A);
+	}
+
 	TCCR1A |= _BV(COM1A0) | _BV(COM1A1);
-	OCR1A = tt + 64;
 	TIMSK1 |= _BV(OCIE1A);
 }
 
@@ -41,19 +48,19 @@ int main()
 	//load_calibration(&main_cali, 0);
 	apply_calibration(main_cali);
 
-	//LED_1_off();
-	//LED_2_off();
+	LED_1_off();
+	LED_2_off();
 
 	_delay_ms(1);
 
-	//LED_1_on();
-	//LED_2_on();
+	LED_1_on();
+	LED_2_on();
 
 	while(1)
 	{
 		if(servo_data.ready_to_restart != 0)
 		{
-			unsigned tsum = servo_data.servo_ticks[0] + servo_data.servo_ticks[1] + servo_data.servo_ticks[2] + servo_data.servo_ticks[3] + servo_data.servo_ticks[4];
+			unsigned long tsum = servo_data.servo_ticks[0] + servo_data.servo_ticks[1] + servo_data.servo_ticks[2] + servo_data.servo_ticks[3] + servo_data.servo_ticks[4];
 			unsigned long ttt = 0;
 			unsigned long lt = TCNT1;
 			do
@@ -62,7 +69,7 @@ int main()
 				ttt += ((tcntt | 0x10000) - lt) & 0xFFFF;
 				lt = tcntt;
 			}
-			while(tsum - ttt < servo_data.servo_period_delay);
+			while((tsum + ttt) < servo_data.servo_period_delay);
 
 			sens_data_proc();
 
@@ -117,17 +124,17 @@ int main()
 			{
 				if(vex_data.tx_good == 2)
 				{
-					//LED_1_on();
+					LED_1_on();
 				}
 				else
 				{
-					//LED_1_off();
+					LED_1_off();
 				}
 
-				copter_action.yaw = width_500 / 4;
-				copter_action.roll = width_500 / 4;
-				copter_action.pitch = width_500 / 4;
-				copter_action.col = width_500 *  + vex_data.chan_width[0];
+				copter_action.yaw = 0;
+				copter_action.roll = 0;
+				copter_action.pitch = 0;
+				copter_action.col = width_500;
 
 				mot_set(&motor_speed, &motor_cali, &copter_action);
 				mot_apply(&motor_speed, &motor_cali);

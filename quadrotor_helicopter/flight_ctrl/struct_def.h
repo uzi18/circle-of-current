@@ -77,7 +77,7 @@ typedef struct servo_ctrl_
 	unsigned long servo_ticks[8];
 	unsigned char ready_to_restart;
 	unsigned char chan;
-	unsigned char servo_period_delay;
+	unsigned long servo_period_delay;
 } servo_ctrl;
 
 typedef struct calibration_

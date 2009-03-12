@@ -8,7 +8,7 @@ void hardware_init()
 	input_capt_port &= 0xFF ^ _BV(input_capt_pin);
 	input_capt_ddr &= 0xFF ^ _BV(input_capt_pin);
 
-	//LED_init();
+	LED_init();
 
 	ser_init();
 
@@ -42,6 +42,7 @@ void software_init()
 	servo_data.chan = 0;
 	ppm_ovf_cnt = 0;
 	timer1_ovf_cnt = 0;
+	ADC_chan_cnt = 0;
 
 	op_mode = TEST_MODE_A;
 }

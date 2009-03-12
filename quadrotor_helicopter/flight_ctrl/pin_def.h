@@ -25,11 +25,11 @@
 #define input_capt_pin 6
 
 #define LED_1_pin 2
-#define LED_1_port PORTD
-#define LED_1_ddr DDRD
+#define LED_1_port PORTC
+#define LED_1_ddr DDRC
 
 #define LED_2_pin 3
-#define LED_2_port PORTD
-#define LED_2_ddr DDRD
+#define LED_2_port PORTC
+#define LED_2_ddr DDRC
 
 #endif
