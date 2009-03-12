@@ -26,20 +26,16 @@ void start_next_servo_pwm_period()
 	unsigned int tt = TCNT1;
 
 	OCR1A = tt + 128;
-	OCR1B = tt + 256;
+
+	servo_port &= 0xFF ^ _BV(servo_shift_pin);
 
 	if(bit_is_set(TIFR1, OCF1A))
 	{
 		TIFR1 |= _BV(OCF1A);
 	}
 
-	if(bit_is_set(TIFR1, OCF1B))
-	{
-		TIFR1 |= _BV(OCF1B);
-	}
-
-	TCCR1A |= _BV(COM1A0) | _BV(COM1A1);
-	TIMSK1 |= _BV(OCIE1B);
+	TCCR1A |= _BV(COM1A0);
+	TIMSK1 |= _BV(OCIE1A);
 }
 
 int main()
