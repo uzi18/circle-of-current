@@ -39,7 +39,7 @@ MMA7260Q for accelerometer ([http://www.sparkfun.com/commerce/product_info.php?p
 
 Flight control software structure is written and the three main systems are tested, RC input works, ESC output works, and sensor input works. All systems run on interrupts and timing has 0.05 microsecond resolution. ESC output will use a serial to parallel shift register using the hardware PWM pin, which is more accurate since it does not depend on software response time.
 
-Looking at the chart on the quadrotor topic on RC Groups, a 30 ounce (850 grams) craft on a 2100 mAH battery will fly for 14.3 minutes, which equates to 8.8A average current draw, which is within limits of our battery. We are building our craft using nearly identical motors and propellers, this is our benchmark.
+Looking at the chart on the quadrotor topic on RC Groups, a 30 ounce (850 grams) craft on a 2100 mAH battery will fly for 14.3 minutes, which equates to 8.8A average current draw, which is within our limits. We are building our craft using nearly identical motors and propellers, this is our benchmark.
 
 Lower center of gravity means lower angular acceleration from the motors, dangling a mass perpendicular to the craft below the center of gravity will help stabilize pitch and yaw.
 
