@@ -37,17 +37,13 @@ MMA7260Q for accelerometer ([http://www.sparkfun.com/commerce/product_info.php?p
 
 == Notes ==
 
+Flight control software structure is written and the three main systems are tested, RC input works, ESC output works, and sensor input works. All systems run on interrupts and timing has 0.05 microsecond resolution. ESC output will use a serial to parallel shift register using the hardware PWM pin, which is more accurate since it does not depend on software response time.
+
 Looking at the chart on the quadrotor topic on RC Groups, a 30 ounce (850 grams) craft on a 2100 mAH battery will fly for 14.3 minutes, which equates to 8.8A average current draw, which is within limits of our battery. We are building our craft using nearly identical motors and propellers, this is our benchmark.
 
 Lower center of gravity means lower angular acceleration from the motors, dangling a mass perpendicular to the craft below the center of gravity will help stabilize pitch and yaw.
 
-Three power supplies are needed: 9V for the camera, 5V for the MCU, 3.3V for the sensors. Simple level shifting will be used to interface the ADC with the MCU. The 5V supply may come from the BEC on the ESCs.
-
-If the flight controller code can fit on an ATmega168, then an ATmega168 should be used, but it will take input from another ATmega644P. If the code won't fit, then the ATmega644P will be used. There must be a system to check battery status and controller status that is separate from the flight system, as the flight system needs to run really really fast. The flight system will likely be controlled by UART or TWI because the SPI interface is reserved for the ADC.
-
-A free 8 bit timer with a frequency of 20 MHz divided by 1024 can control servos for the camera and other stuff.
-
-All chips will run on one 20 MHz clock. Either daisy chained or shared. This way, UART communication can be super fast, the servo controller can have greater accuracy.
+ATmega644 should be used for the flight controller, and a co-pilot can be attached but is optional. SPI, I2C and UART are all still available.
 
 Auto-landing and minimum altitude should be done with an ultrasonic sensor.
 
