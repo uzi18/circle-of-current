@@ -16,9 +16,7 @@ It looks like the ATmega168 will be capable of stabilizing the quadrotor helicop
 
 The microcontrollers on the ESCs are ATmega8, I2C firmware may be used, but the original firmware is under lock and cannot be backed up, therefor we will not attempt to use I2C.
 
-The a servo controller built with an ATtiny2313 will be used, it will have 0.5 microsecond resolution and pulses at over 100 Hz.
-
-Frame will be built with 3/8" aluminum tubing, platform will be polycarbonate
+Frame will be built with 3/8" aluminum tubing, platform will be polycarbonate or aluminum
 
 2410-9 brushless motors ([http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=6549 link]) and 18A ESCs ([http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=6456 link])
 
