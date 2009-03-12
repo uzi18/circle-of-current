@@ -12,7 +12,7 @@ Also purchased [http://www.seeedstudio.com/depot/angular-rate-sensor-ewts82-p-19
 
 It looks like the ATmega168 will be capable of stabilizing the quadrotor helicopter with its built in ADC, judging by the success of the Walkera UFO and the `MikroQuad` project.
 
-2200 mAH 3S1P (11.1V) 20C lithium polymer battery, this calculates to a maximum of 9.1A continuous current draw ([http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=6306&Product_Name=ZIPPY_Flightmax_2200mAh_3S1P_20C link])
+2200 mAh 3S1P (11.1V) 20C lithium polymer battery, this calculates to a maximum of 44A continuous current draw ([http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=6306&Product_Name=ZIPPY_Flightmax_2200mAh_3S1P_20C link])
 
 The microcontrollers on the ESCs are ATmega8, I2C firmware may be used, but the original firmware is under lock and cannot be backed up, therefor we will not attempt to use I2C.
 
