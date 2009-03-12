@@ -23,7 +23,9 @@ typedef struct sens_history_
 	unsigned long avg;
 	signed long centered_avg;
 	signed long centering_offset;
+	#ifdef DEBUG
 	signed long noise;
+	#endif
 } sens_history;
 
 typedef struct PID_const_
@@ -77,7 +79,7 @@ typedef struct servo_ctrl_
 	unsigned long servo_ticks[8];
 	unsigned char ready_to_restart;
 	unsigned char chan;
-	unsigned long servo_period_delay;
+	unsigned long servo_period_length;
 } servo_ctrl;
 
 typedef struct calibration_
@@ -91,16 +93,15 @@ typedef struct calibration_
 	signed long l_mot_scale;
 	signed long r_mot_scale;
 
-	signed long yaw_center_offset;
-	signed long pitch_center_offset;
-	signed long roll_center_offset;
+	signed long yaw_sens_center_offset;
+	signed long pitch_sens_center_offset;
+	signed long roll_sens_center_offset;
 
 	signed long fb_accel_center_offset;
 	signed long lr_accel_center_offset;
 	signed long ud_accel_center_offset;
 
-	signed long yaw_scale;
-	signed long roll_pitch_scale;
+	signed long yaw_sens_scale;
 
 	signed long fb_lr_accel_scale;
 	signed long ud_accel_scale;
@@ -113,25 +114,25 @@ typedef struct calibration_
 	signed long yaw_pid_err_low_thresh;
 	signed long yaw_pid_delta_err_low_thresh;
 
-	signed long roll_pitch_a_pid_kp;
-	signed long roll_pitch_a_pid_ki;
-	signed long roll_pitch_a_pid_kd;
-	signed long roll_pitch_a_pid_err_low_thresh;
-	signed long roll_pitch_a_pid_delta_err_low_thresh;
+	signed long roll_pitch_level_pid_kp;
+	signed long roll_pitch_level_pid_ki;
+	signed long roll_pitch_level_pid_kd;
+	signed long roll_pitch_level_pid_err_low_thresh;
+	signed long roll_pitch_level_pid_delta_err_low_thresh;
 
-	signed long roll_pitch_b_pid_kp;
-	signed long roll_pitch_b_pid_ki;
-	signed long roll_pitch_b_pid_kd;
-	signed long roll_pitch_b_pid_err_low_thresh;
-	signed long roll_pitch_b_pid_delta_err_low_thresh;
+	signed long roll_pitch_rate_pid_kp;
+	signed long roll_pitch_rate_pid_ki;
+	signed long roll_pitch_rate_pid_kd;
+	signed long roll_pitch_rate_pid_err_low_thresh;
+	signed long roll_pitch_rate_pid_delta_err_low_thresh;
 
 	signed long servo_pulse_scale;
 	signed long servo_pulse_stop;
-	signed long servo_period_delay;
+	signed long servo_period_length;
 	
-	signed long throttle_scale;
-	signed long spin_scale;
-	signed long move_scale;
+	signed long throttle_cmd_scale;
+	signed long yaw_cmd_scale;
+	signed long move_cmd_scale;
 	signed long hover_throttle;
 
 	unsigned char yaw_sens_hist_len;

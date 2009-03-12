@@ -47,3 +47,15 @@ signed long constrain(signed long in, signed long min, signed long max)
 		return in;
 	}
 }
+
+signed long abs(signed long in)
+{
+	if(in < 0)
+	{
+		return in * -1;
+	}
+	else
+	{
+		return in;
+	}
+}

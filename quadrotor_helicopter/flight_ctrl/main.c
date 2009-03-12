@@ -44,10 +44,19 @@ int main()
 	software_init();
 
 	default_calibration(&main_cali);
-	//calibrate_sensors(&main_cali);
-	//calibrate_controller(&main_cali);
-	//save_calibration(main_cali, 0);
-	//load_calibration(&main_cali, 0);
+	if(to_calibrate())
+	{
+		calibrate_sensors(&main_cali);
+		calibrate_controller(&main_cali);
+	}
+	if(to_load_from_eeprom())
+	{
+		load_calibration(&main_cali, 0);
+	}
+	if(to_save_to_eeprom())
+	{
+		save_calibration(main_cali, 0);
+	}
 	apply_calibration(main_cali);
 
 	LED_1_off();
@@ -71,11 +80,11 @@ int main()
 				ttt += ((tcntt | 0x10000) - lt) & 0xFFFF;
 				lt = tcntt;
 			}
-			while((tsum + ttt) < servo_data.servo_period_delay);
+			while((tsum + ttt) < servo_data.servo_period_length);
 
 			sens_data_proc();
 
-			if(op_mode == FLY_MODE)
+			if(op_mode == FLY_MODE || op_mode == SAFE_MODE)
 			{
 				ppm_data ctrl_data = vex_data;
 
@@ -85,33 +94,39 @@ int main()
 					{
 						ctrl_data.chan_width[i] = 0;
 					}
+
+					op_mode = SAFE_MODE;
+				}
+				else
+				{
+					op_mode = FLY_MODE;
 				}
 
 				signed long target;
 				signed long current;
 
-				target = scale(ctrl_data.chan_width[ctrl_data.yaw_ppm_chan], main_cali.spin_scale, spin_scale_multiplier);
-				current = scale(sens_data[yaw_sens_chan].centered_avg, main_cali.yaw_scale, yaw_scale_multiplier);
+				target = scale(ctrl_data.chan_width[ctrl_data.yaw_ppm_chan], main_cali.yaw_cmd_scale, yaw_cmd_scale_multiplier);
+				current = scale(sens_data[yaw_sens_chan].centered_avg, main_cali.yaw_sens_scale, yaw_sens_scale_multiplier);
 
 				copter_action.yaw = PID_mv(&yaw_pid, current, target);
 
-				target = scale(ctrl_data.chan_width[ctrl_data.roll_ppm_chan], main_cali.move_scale, move_scale_multiplier);
+				target = scale(ctrl_data.chan_width[ctrl_data.roll_ppm_chan], main_cali.move_cmd_scale, move_cmd_scale_multiplier);
 				current = scale(sens_data[lr_accel_chan].centered_avg, main_cali.fb_lr_accel_scale, fb_lr_accel_scale_multiplier);
 
 				target = PID_mv(&roll_pid_a, current, target);
-				current = scale(sens_data[roll_sens_chan].centered_avg, main_cali.roll_pitch_scale, roll_pitch_scale_multiplier);
+				current = sens_data[roll_sens_chan].centered_avg;
 
 				copter_action.roll = PID_mv(&roll_pid_b, current, target);
 
-				target = scale(ctrl_data.chan_width[ctrl_data.pitch_ppm_chan], main_cali.move_scale, move_scale_multiplier);
+				target = scale(ctrl_data.chan_width[ctrl_data.pitch_ppm_chan], main_cali.move_cmd_scale, move_cmd_scale_multiplier);
 				current = scale(sens_data[fb_accel_chan].centered_avg, main_cali.fb_lr_accel_scale, fb_lr_accel_scale_multiplier);
 
 				target = PID_mv(&pitch_pid_a, current, target);
-				current = scale(sens_data[pitch_sens_chan].centered_avg, main_cali.roll_pitch_scale, roll_pitch_scale_multiplier);
+				current = sens_data[pitch_sens_chan].centered_avg;
 
 				copter_action.pitch = PID_mv(&pitch_pid_b, current, target);				
 
-				copter_action.col = main_cali.hover_throttle + scale(ctrl_data.chan_width[ctrl_data.throttle_ppm_chan], main_cali.throttle_scale, throttle_scale_multiplier);
+				copter_action.col = main_cali.hover_throttle + scale(ctrl_data.chan_width[ctrl_data.throttle_ppm_chan], main_cali.throttle_cmd_scale, throttle_cmd_scale_multiplier);
 				
 				mot_set(&motor_speed, &motor_cali, &copter_action);
 				mot_apply(&motor_speed, &motor_cali);
@@ -152,7 +167,7 @@ int main()
 					unsigned char h = (unsigned char)h_;
 					ser_tx(h); ser_tx(l);
 				}
-				ser_rx_wait();
+				while(ser_rx() == -1);
 			}
 
 			start_next_servo_pwm_period();

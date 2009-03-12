@@ -1,9 +1,9 @@
 void servo_set(servo_ctrl * sc, signed long f, signed long b, signed long l, signed long r)
 {
-	sc->servo_ticks[f_mot_chan - 1] = f;
-	sc->servo_ticks[b_mot_chan - 1] = b;
-	sc->servo_ticks[l_mot_chan - 1] = l;
-	sc->servo_ticks[r_mot_chan - 1] = r;
+	sc->servo_ticks[f_mot_chan - 1] = constrain(f, width_500 * 2, width_500 * 4);
+	sc->servo_ticks[b_mot_chan - 1] = constrain(b, width_500 * 2, width_500 * 4);
+	sc->servo_ticks[l_mot_chan - 1] = constrain(l, width_500 * 2, width_500 * 4);
+	sc->servo_ticks[r_mot_chan - 1] = constrain(r, width_500 * 2, width_500 * 4);
 }
 
 void mot_apply(mot_speed * ms, mot_cali * mc)

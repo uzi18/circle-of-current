@@ -46,3 +46,23 @@ void software_init()
 
 	op_mode = TEST_MODE_A;
 }
+
+unsigned char to_load_from_eeprom()
+{
+	return 0;
+}
+
+unsigned char to_calibrate()
+{
+	return 0;
+}
+
+unsigned char to_save_to_eeprom()
+{
+	return 0;
+}
+
+unsigned char to_load_from_serial()
+{
+	return 0;
+}

@@ -1,24 +1,43 @@
 #define BAUD 19200
 #include <util/setbaud.h>
 
+typedef struct _ser_buff
+{
+	unsigned char d[128];
+	unsigned char h;
+	unsigned char t;
+	unsigned char s;
+	unsigned char f;
+}
+ser_buff_s;
+
+volatile ser_buff_s ser_tx_buff;
+volatile ser_buff_s ser_rx_buff;
+
 void ser_init()
 {
 	UBRR0 = UBRR_VALUE;
-	UCSR0B = _BV(RXEN0) | _BV(TXEN0);
-}
 
-void ser_tx(unsigned char d)
-{
-	UDR0 = d;
-	while(bit_is_clear(UCSR0A, TXC0));
-	UCSR0A |= _BV(TXC0);
+	ser_tx_buff.h = 0;
+	ser_tx_buff.t = 0;
+	ser_tx_buff.f = 0;
+	ser_tx_buff.s = 128;
+
+	ser_rx_buff.h = 0;
+	ser_rx_buff.t = 0;
+	ser_rx_buff.f = 0;
+	ser_rx_buff.s = 128;
+
+	UCSR0B = _BV(RXEN0) | _BV(TXEN0) | _BV(RXCIE0) | _BV(TXCIE0);
 }
 
 signed int ser_rx()
 {
-	if(bit_is_set(UCSR0A, RXC0))
+	if(ser_rx_buff.h != ser_rx_buff.t)
 	{
-		return UDR0;
+		unsigned char c = ser_rx_buff.d[ser_rx_buff.h];
+		ser_rx_buff.h = (ser_rx_buff.h + 1) % ser_rx_buff.s;
+		return c;
 	}
 	else
 	{
@@ -26,13 +45,39 @@ signed int ser_rx()
 	}
 }
 
-unsigned char ser_rx_wait()
+unsigned char ser_rx_size()
 {
-	signed int a;
-	do
+	return ((ser_rx_buff.t + ser_rx_buff.s) - ser_rx_buff.h) % ser_rx_buff.s;
+}
+
+void ser_tx(unsigned char c)
+{
+	ser_tx_buff.d[ser_tx_buff.t] = c;
+	ser_tx_buff.t = (ser_tx_buff.t + 1) % ser_tx_buff.s;
+
+	if(ser_tx_buff.f == 0)
 	{
-		a = ser_rx();
+		UDR0 = c;
+		ser_tx_buff.h = (ser_tx_buff.h + 1) % ser_tx_buff.s;
+		ser_tx_buff.f = 1;
 	}
-	while(a == -1);
-	return (unsigned char)a;
+}
+
+ISR(USART0_TX_vect)
+{
+	if(ser_tx_buff.h != ser_tx_buff.t)
+	{
+		UDR0 = ser_tx_buff.d[ser_tx_buff.h];
+		ser_tx_buff.h = (ser_tx_buff.h + 1) % ser_tx_buff.s;
+	}
+	else
+	{
+		ser_tx_buff.f = 0;
+	}
+}
+
+ISR(USART0_RX_vect)
+{
+	ser_rx_buff.d[ser_rx_buff.t] = UDR0;
+	ser_rx_buff.t = (ser_rx_buff.t + 1) % ser_rx_buff.s;
 }

@@ -42,6 +42,18 @@ void sens_data_calc_avg(sens_history * h)
 		}
 	}
 	h->avg = scale(sum, 1, cnt);
+
+	#ifdef DEBUG
+	sum = 0;
+	cnt = 0;
+	for(unsigned char i = 0; i < h->cnt && i < h->sens_history_length; i++)
+	{
+		sum += abs(h->res[i]) * 100;
+		cnt++;
+	}
+	h->noise = scale(sum, 1, cnt);
+	#endif
+
 	h->centered_avg = h->avg - h->centering_offset;
 	h->cnt = 0;
 }
