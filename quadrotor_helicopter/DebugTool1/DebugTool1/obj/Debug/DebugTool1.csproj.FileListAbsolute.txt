@@ -1,0 +1,10 @@
+C:\Documents and Settings\Administrator\Local Settings\Application Data\Temporary Projects\DebugTool1\bin\Debug\DebugTool1.exe
+C:\Documents and Settings\Administrator\Local Settings\Application Data\Temporary Projects\DebugTool1\bin\Debug\DebugTool1.pdb
+C:\Documents and Settings\Administrator\Local Settings\Application Data\Temporary Projects\DebugTool1\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\Administrator\Local Settings\Application Data\Temporary Projects\DebugTool1\obj\Debug\DebugTool1.Form1.resources
+C:\Documents and Settings\Administrator\Local Settings\Application Data\Temporary Projects\DebugTool1\obj\Debug\DebugTool1.Properties.Resources.resources
+C:\Documents and Settings\Administrator\Local Settings\Application Data\Temporary Projects\DebugTool1\obj\Debug\DebugTool1.csproj.GenerateResource.Cache
+C:\Documents and Settings\Administrator\Local Settings\Application Data\Temporary Projects\DebugTool1\obj\Debug\DebugTool1.exe
+C:\Documents and Settings\Administrator\Local Settings\Application Data\Temporary Projects\DebugTool1\obj\Debug\DebugTool1.pdb
+C:\Documents and Settings\Administrator\My Documents\Projects\quadrotor_helicopter\DebugTool1\DebugTool1\obj\Debug\DebugTool1.exe
+C:\Documents and Settings\Administrator\My Documents\Projects\quadrotor_helicopter\DebugTool1\DebugTool1\obj\Debug\DebugTool1.pdb
