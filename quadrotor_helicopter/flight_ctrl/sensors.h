@@ -64,5 +64,12 @@ void sens_data_proc()
 	{
 		sens_data_calc_avg(&sens_data[i]);
 	}
+	ADCSRA |= _BV(ADEN) | _BV(ADIE) | _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0);
+}
+
+void adc_init()
+{
+	ADC_chan_cnt = 0;
+	ADMUX &= 0xFF ^ (_BV(REFS1) | _BV(REFS0) | _BV(ADLAR));
 	ADCSRA |= _BV(ADEN) | _BV(ADSC) | _BV(ADIE) | _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0);
 }

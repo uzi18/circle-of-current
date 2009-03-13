@@ -1,5 +1,20 @@
 signed long scale(signed long in, signed long numer, signed long denom)
 {	
+	if(denom == 0)
+	{
+		if(in * numer > 0)
+		{
+			return 0x7FFFFFFF;
+		}
+		else if(in * numer < 0)
+		{
+			return 0x80000000;
+		}
+		else
+		{
+			return 0;
+		}
+	}
 	volatile signed long t_ = in * numer;
 	volatile signed long t = t_ / denom;
 	volatile signed long _t = t * denom;

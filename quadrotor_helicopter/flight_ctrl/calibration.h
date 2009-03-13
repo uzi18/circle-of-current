@@ -230,17 +230,20 @@ void calibrate_sensors(calibration * c)
 	signed long adcr[8];
 	unsigned long cnt;
 
+	ADCSRA &= 0xFF ^ _BV(ADIE);
+	loop_until_bit_is_clear(ADCSRA, ADSC);
+
 	for(unsigned char i = 0, cnt = 0; i < 8; i++, cnt = 0)
 	{
 		unsigned long sum = 0;
 
 		while(adcr[i] < 1000000)
 		{
+			ADMUX = (ADMUX & 0b11100000) | i;
+			ADCSRA = _BV(ADEN) | _BV(ADSC) | _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0);
 			loop_until_bit_is_clear(ADCSRA, ADSC);
 			sum += ADC;
 			cnt++;
-			ADMUX = (ADMUX & 0b11100000) | ADC_chan_cnt;
-			ADCSRA = _BV(ADEN) | _BV(ADSC) | _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0);
 		}
 
 		unsigned long avg = scale(sum, 1, cnt);
@@ -254,6 +257,10 @@ void calibrate_sensors(calibration * c)
 	c->fb_accel_center_offset = adcr[fb_accel_chan];
 	c->lr_accel_center_offset = adcr[lr_accel_chan];
 	c->ud_accel_center_offset = adcr[ud_accel_chan];
+
+	signed long avg_zero_g = scale(adcr[fb_accel_chan] + adcr[lr_accel_chan], 1, 2);
+	signed long max_allowed_accel = scale(abs(avg_zero_g - adcr[ud_accel_chan]), 71, 100);
+	c->fb_lr_accel_scale = scale(width_500 * fb_lr_accel_scale_multiplier, 1, max_allowed_accel);
 }
 
 void calibrate_controller(calibration * c)
@@ -265,6 +272,7 @@ void calibrate_controller(calibration * c)
 		vex_data.chan_offset[i] = 0;
 		sum[i] = 0;
 	}
+	timer_1_reset();
 	for(cnt = 0; cnt < 10; cnt++)
 	{
 		while(vex_data.new_flag == 0);

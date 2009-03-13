@@ -1,3 +1,19 @@
+void timer_1_reset()
+{
+	TCCR1B = 0;
+	TCNT1 = 0;
+	OCR1A = 0;
+	OCR1B = 0;
+	vex_data.tx_good = 0;
+	vex_data.new_flag = 0;
+	ppm_ovf_cnt = 0;
+	timer1_ovf_cnt = 0;
+	volatile unsigned char f = TIFR1;
+	TIFR1 |= f;
+	TCCR1B |= _BV(ICNC1) | _BV(ICES1) | _BV(CS10);
+	TIMSK1 |= _BV(TOIE1) | _BV(ICIE1);
+}
+
 void hardware_init()
 {
 	// initialize port
@@ -12,17 +28,13 @@ void hardware_init()
 
 	ser_init();
 
-	servo_shift_reset();
-
 	// initalize ADC
 
-	ADMUX &= 0xFF ^ (_BV(REFS1) | _BV(REFS0) | _BV(ADLAR));
-	ADCSRA |= _BV(ADEN) | _BV(ADSC) | _BV(ADIE) | _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0);
+	adc_init();
 
 	// initialize timer
 
-	TCCR1B |= _BV(ICNC1) | _BV(ICES1) | _BV(CS10);
-	TIMSK1 |= _BV(TOIE1) | _BV(ICIE1);
+	timer_1_reset();
 
 	// enable interrupts
 
@@ -39,7 +51,6 @@ void software_init()
 	vex_data.tx_good = 0;
 	ppm_ovf_cnt = 0;
 	timer1_ovf_cnt = 0;
-	ADC_chan_cnt = 0;
 
 	op_mode = TEST_MODE_A;
 }
@@ -49,7 +60,12 @@ unsigned char to_load_from_eeprom()
 	return 0;
 }
 
-unsigned char to_calibrate()
+unsigned char to_calibrate_sens()
+{
+	return 0;
+}
+
+unsigned char to_calibrate_ppm()
 {
 	return 0;
 }
