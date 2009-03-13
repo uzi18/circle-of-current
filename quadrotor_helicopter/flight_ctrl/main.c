@@ -1,32 +1,31 @@
 #include "main.h"
 
-static volatile ppm_data vex_data;
-static volatile sens_history sens_data[8];
-static volatile mot_speed motor_speed;
-static volatile mot_cali motor_cali;
-static volatile heli_action copter_action;
-static volatile servo_ctrl servo_data;
-static volatile PID_data yaw_pid;
-static volatile PID_data pitch_pid_a;
-static volatile PID_data pitch_pid_b;
-static volatile PID_data roll_pid_a;
-static volatile PID_data roll_pid_b;
-static volatile unsigned char op_mode;
-static volatile calibration main_cali;
+volatile ppm_data vex_data;
+volatile sens_history sens_data[8];
+mot_speed motor_speed;
+mot_cali motor_cali;
+heli_action copter_action;
+volatile servo_ctrl servo_data;
+PID_data yaw_pid;
+PID_data pitch_pid_a;
+PID_data pitch_pid_b;
+PID_data roll_pid_a;
+PID_data roll_pid_b;
+volatile unsigned char op_mode;
+calibration main_cali;
 
 #include "main_headers.h"
 
 void debug_tx(unsigned char addr, signed long data)
 {
-	addr++;
-	unsigned char c = 0;
+	addr *= 2;
+	addr |= _BV(7);
 	if(data < 0)
 	{
-		c = 1;
+		addr |= 1;
 		data *= -1;
 	}
-	c |= (addr << 4);
-	ser_tx(c);
+	ser_tx(addr);
 
 	for(unsigned char i = 0; i < 8; i++)
 	{
