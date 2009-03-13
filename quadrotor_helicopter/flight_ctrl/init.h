@@ -36,10 +36,7 @@ void software_init()
 		sens_data[i].cnt = 0;
 		servo_data.servo_ticks[i] = width_500;
 	}
-	servo_data.servo_ticks[5] = 0x10000;
 	vex_data.tx_good = 0;
-	servo_data.ready_to_restart = 1;
-	servo_data.chan = 0;
 	ppm_ovf_cnt = 0;
 	timer1_ovf_cnt = 0;
 	ADC_chan_cnt = 0;

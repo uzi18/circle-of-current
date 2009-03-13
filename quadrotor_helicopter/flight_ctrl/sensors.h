@@ -8,7 +8,6 @@ void sens_data_add(sens_history * h, unsigned int adc_res)
 
 ISR(ADC_vect)
 {
-	LED_2_tog();
 	sens_data_add(&sens_data[ADC_chan_cnt], ADC);
 	ADC_chan_cnt++;
 	ADC_chan_cnt %= 8;
@@ -48,7 +47,7 @@ void sens_data_calc_avg(sens_history * h)
 	cnt = 0;
 	for(unsigned char i = 0; i < h->cnt && i < h->sens_history_length; i++)
 	{
-		sum += abs(h->res[i]) * 100;
+		sum += abs(h->res[i] - h->avg) * 10;
 		cnt++;
 	}
 	h->noise = scale(sum, 1, cnt);

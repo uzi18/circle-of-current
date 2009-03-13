@@ -11,8 +11,8 @@ typedef struct _ser_buff
 }
 ser_buff_s;
 
-volatile ser_buff_s ser_tx_buff;
-volatile ser_buff_s ser_rx_buff;
+static volatile ser_buff_s ser_tx_buff;
+static volatile ser_buff_s ser_rx_buff;
 
 void ser_init()
 {

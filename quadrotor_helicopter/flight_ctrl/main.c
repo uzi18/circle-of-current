@@ -1,20 +1,39 @@
 #include "main.h"
 
-volatile ppm_data vex_data;
-volatile sens_history sens_data[8];
-mot_speed motor_speed;
-mot_cali motor_cali;
-heli_action copter_action;
-volatile servo_ctrl servo_data;
-PID_data yaw_pid;
-PID_data pitch_pid_a;
-PID_data pitch_pid_b;
-PID_data roll_pid_a;
-PID_data roll_pid_b;
-volatile unsigned char op_mode;
-calibration main_cali;
+static volatile ppm_data vex_data;
+static volatile sens_history sens_data[8];
+static volatile mot_speed motor_speed;
+static volatile mot_cali motor_cali;
+static volatile heli_action copter_action;
+static volatile servo_ctrl servo_data;
+static volatile PID_data yaw_pid;
+static volatile PID_data pitch_pid_a;
+static volatile PID_data pitch_pid_b;
+static volatile PID_data roll_pid_a;
+static volatile PID_data roll_pid_b;
+static volatile unsigned char op_mode;
+static volatile calibration main_cali;
 
 #include "main_headers.h"
+
+void debug_tx(unsigned char addr, signed long data)
+{
+	addr++;
+	unsigned char c = 0;
+	if(data < 0)
+	{
+		c = 1;
+		data *= -1;
+	}
+	c |= (addr << 4);
+	ser_tx(c);
+
+	for(unsigned char i = 0; i < 8; i++)
+	{
+		ser_tx(data & 0x0F);
+		data = (data & 0xFFFFFFF0) >> 4;
+	}
+}
 
 void start_next_servo_pwm_period()
 {
@@ -43,6 +62,14 @@ int main()
 	hardware_init();
 	software_init();
 
+	LED_1_off();
+	LED_2_off();
+
+	_delay_ms(1);
+
+	LED_1_on();
+	LED_2_on();
+
 	default_calibration(&main_cali);
 	if(to_calibrate())
 	{
@@ -57,15 +84,14 @@ int main()
 	{
 		save_calibration(main_cali, 0);
 	}
+	calibrate_controller(&main_cali);
+
+	hardware_init();
+	software_init();
+
 	apply_calibration(main_cali);
 
-	LED_1_off();
-	LED_2_off();
-
-	_delay_ms(1);
-
-	LED_1_on();
-	LED_2_on();
+	start_next_servo_pwm_period();
 
 	while(1)
 	{
@@ -156,6 +182,22 @@ int main()
 					vex_data.chan_width[2] + width_500 * 3,
 					vex_data.chan_width[3] + width_500 * 3
 				);
+
+				if(ser_tx_buff.f == 0)
+				{
+					for(unsigned char i = 0; i < 4; i++)
+					{
+						debug_tx(i, sens_data[i].noise);
+					}
+					for(unsigned char i = 4; i < 8; i++)
+					{
+						debug_tx(i, sens_data[i - 4].avg);
+					}
+					for(unsigned char i = 8; i < 12; i++)
+					{
+						debug_tx(i, vex_data.chan_width[i - 8]);
+					}
+				}
 			}
 			else if(op_mode == TEST_MODE_B)
 			{

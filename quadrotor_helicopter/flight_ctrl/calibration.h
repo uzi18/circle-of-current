@@ -267,8 +267,8 @@ void calibrate_controller(calibration * c)
 	}
 	for(cnt = 0; cnt < 10; cnt++)
 	{
-		vex_data.tx_good = 0;
-		while(vex_data.tx_good != 2);
+		while(vex_data.new_flag == 0);
+		vex_data.new_flag = 0;
 		if(cnt != 0)
 		{
 			for(unsigned char i = 0; i < 8; i++)
@@ -346,7 +346,7 @@ void apply_calibration(calibration c)
 
 	for(unsigned char i = 0; i < 8; i++)
 	{
-		vex_data.chan_offset[i] = c.ppm_chan_offset;
+		vex_data.chan_offset[i] = c.ppm_chan_offset[i];
 	}
 
 	vex_data.yaw_ppm_chan = c.yaw_ppm_chan;

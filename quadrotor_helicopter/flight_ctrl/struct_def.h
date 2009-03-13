@@ -8,6 +8,7 @@ typedef struct _ppm_data
 	unsigned char chan_cnt;
 	unsigned long last_capt;
 	unsigned char tx_good;
+	unsigned char new_flag;
 	unsigned long ovf_cnt;
 	unsigned char yaw_ppm_chan;
 	unsigned char roll_ppm_chan;

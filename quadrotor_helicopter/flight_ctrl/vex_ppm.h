@@ -1,5 +1,5 @@
-volatile unsigned char ppm_ovf_cnt;
-volatile unsigned char timer1_ovf_cnt;
+static volatile unsigned char ppm_ovf_cnt;
+static volatile unsigned char timer1_ovf_cnt;
 
 ISR(TIMER1_CAPT_vect)
 {
@@ -28,11 +28,16 @@ ISR(TIMER1_CAPT_vect)
 	}
 	else // if pulse is shorter than 3ms, then it's a servo pulse
 	{
-		vex_data.chan_width[vex_data.chan_cnt] = t - (width_500 * 3) - vex_data.chan_offset[vex_data.chan_cnt]; // store time
+		unsigned char index = vex_data.chan_cnt % 8;
+		vex_data.chan_width[index] = t - (width_500 * 3) - vex_data.chan_offset[index]; // store time
 		vex_data.chan_cnt++; // next channel
 		if(vex_data.chan_cnt >= 4 && vex_data.tx_good != 0) // last channel, data is now good, reset to first pin
 		{
 			vex_data.tx_good = 2;
+			if(vex_data.chan_cnt == 4)
+			{
+				vex_data.new_flag = 1;
+			}
 		}
 	}
 }
