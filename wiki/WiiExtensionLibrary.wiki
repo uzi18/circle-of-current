@@ -1,4 +1,6 @@
-Wiimote Extension Library for AVR Microcontroller
+#summary Library for DIY Wiimote Extensions
+
+=Wiimote Extension Library for AVR Microcontroller=
 
 This is a library that gives an AVR microcontroller the ability to act as a Wiimote extension controller (Nunchuk, Classic Controller, Guitar Hero 3 controller, Guitar Hero World Tour guitar controller, Guitar Hero World Tour drum controller, etc). The library has two parts: the I2C slave device and Wiimote protocol handling. It can be used with AVR-GCC, and it is possible to adapt it to work with Arduino if you know how to include the files into your sketch properly.
 
@@ -6,7 +8,7 @@ twi.c and twi.h are used to make the microcontroller a register based I2C slave 
 
 wiimote.c and wiimote.h handles the interface between the application software and the I2C registers, it also handles the encryption of the data sent to the Wiimote. The encryption look-up tables are in wm_crypto.h .
 
-Using the Library
+==Using the Library==
 
 You need to connect the Wiimote's extension port to your microcontroller's I2C bus. There is also one pin on the extension port that is used to detect whether or not something is connected, this should be connected to Vcc, or if you want to control this detection, connect it to an I/O pin.
 
@@ -37,12 +39,12 @@ Once wm_init has been called, button press data can be set by calling wm_newacti
 
 For various controller IDs, and information on the button press data array, visit http://wiibrew.org/wiki/Wiimote/Extension_Controllers .
 
-Example of Use
+==Example of Use==
 
 WiiDrumController
 http://code.google.com/p/circle-of-current/wiki/WiiDrumController
 
-Source Code Download
+==Source Code Download==
 
 Go to http://code.google.com/p/circle-of-current/source/browse/#svn/wii_drum and download:
 wiimote.c
