@@ -229,17 +229,17 @@ void wm_init(unsigned char * id, unsigned char * t, unsigned char * cal_data, vo
 	memcpy(wm_cal_data, cal_data, 32);
 
 	// initialize device detect pin
-	cbi(dev_detect_port, dev_detect_pin);
-	sbi(dev_detect_ddr, dev_detect_pin);
+	dev_detect_port &= 0xFF ^ _BV(dev_detect_pin);
+	dev_detect_ddr |= _BV(dev_detect_pin);
 	_delay_ms(500); // delay to simulate disconnect
 
 	// ready twi bus, no pull-ups
-	cbi(twi_port, twi_scl_pin);
-	cbi(twi_port, twi_sda_pin);
+	twi_port &= 0xFF ^ _BV(twi_scl_pin);
+	twi_port &= 0xFF ^ _BV(twi_sda_pin);
 
 	// start twi slave, link events
 	twi_slave_init(0x52, wm_slaveRx, wm_slaveTxStart, wm_slaveTxEnd);
 
 	// make the wiimote think something is connected
-	sbi(dev_detect_port, dev_detect_pin);
+	dev_detect_port |= _BV(dev_detect_pin);
 }
