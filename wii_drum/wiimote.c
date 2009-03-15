@@ -15,7 +15,8 @@ static volatile unsigned char wm_ft[8];
 static volatile unsigned char wm_sb[8];
 
 // button data
-static volatile wm_cd_s wm_action;
+static volatile unsigned char wm_action[6];
+static volatile unsigned char wm_action_old[6];
 
 /*
 
@@ -194,28 +195,32 @@ void wm_slaveRx(unsigned char addr, unsigned char l)
 				// generate decryption once all data is loaded
 				wm_gentabs();
 		
-				wm_transmit(wm_action.d, 0x00, 6);
+				wm_transmit(wm_action, 0x00, 6);
 			}
 		}
 	}
 }
 
-void wm_newaction(wm_cd_s t)
+void wm_newaction(unsigned char * d)
 {
 	// load button data from user application
-	wm_action = t;
-	
-	// encrypt button data
-	wm_transmit(wm_action.d, 0x00, 6);
+	memcpy(wm_action, d, 6);
+
+	if(memcmp(wm_action_old, wm_action, 6) != 0)
+	{
+		// encrypt button data only if new
+		wm_transmit(wm_action, 0x00, 6);
+		memcpy(wm_action_old, wm_action, 6);
+	}
 }
 
-void wm_init(unsigned char * id, wm_cd_s t, unsigned char * cal_data, void (*function)(void))
+void wm_init(unsigned char * id, unsigned char * t, unsigned char * cal_data, void (*function)(void))
 {
 	// link user function
 	wm_sample_event = function;
 
 	// start state
-	wm_action = t;
+	memcpy(wm_action, t, 6);
 
 	// set id
 	memcpy(wm_id, id, 6);
@@ -232,13 +237,8 @@ void wm_init(unsigned char * id, wm_cd_s t, unsigned char * cal_data, void (*fun
 	cbi(twi_port, twi_scl_pin);
 	cbi(twi_port, twi_sda_pin);
 
-	// link twi slave events
-	twi_attach_rx_event(wm_slaveRx);
-	twi_attach_tx_start(wm_slaveTxStart);
-	twi_attach_tx_end(wm_slaveTxEnd);
-
-	// start twi slave
-	twi_slave_init(0x52);
+	// start twi slave, link events
+	twi_slave_init(0x52, wm_slaveRx, wm_slaveTxStart, wm_slaveTxEnd);
 
 	// make the wiimote think something is connected
 	sbi(dev_detect_port, dev_detect_pin);

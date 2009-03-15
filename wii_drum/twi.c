@@ -12,11 +12,16 @@ static volatile unsigned char twi_reg_addr;
 static volatile unsigned char twi_first_addr_flag; // set address flag
 static volatile unsigned char twi_rw_len; // length of most recent operation
 
-void twi_slave_init(unsigned char addr)
+void twi_slave_init(unsigned char addr, void (*rx_funct)(unsigned char, unsigned char), void (*tx_s_funct)(unsigned char), void (*tx_e_funct)(unsigned char, unsigned char))
 {
 	// initialize stuff
 	twi_reg_addr = 0;
 	for(unsigned int i = 0; i < 256; i++) twi_reg[i] = 0;	
+
+	// link functions
+	twi_rx_event = rx_funct;
+	twi_tx_start_event = tx_s_funct;
+	twi_tx_end_event = tx_e_funct;
 
 	// set slave address
 	TWAR = addr << 1;
@@ -34,22 +39,6 @@ void twi_set_reg(unsigned char addr, unsigned char d)
 unsigned char twi_read_reg(unsigned char addr)
 {
 	return twi_reg[addr];
-}
-
-// event linking functions
-void twi_attach_rx_event( void (*function)(unsigned char, unsigned char) )
-{
-	twi_rx_event = function;
-}
-
-void twi_attach_tx_start( void (*function)(unsigned char) )
-{
-	twi_tx_start_event = function;
-}
-
-void twi_attach_tx_end( void (*function)(unsigned char, unsigned char) )
-{
-	twi_tx_end_event = function;
 }
 
 void twi_clear_int(unsigned char ack)

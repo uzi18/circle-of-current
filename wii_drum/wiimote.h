@@ -9,16 +9,11 @@
 #include "macros.h"
 #include "twi.h"
 
-typedef struct _wm_cd
-{
-	unsigned char d[6];
-} wm_cd_s;
-
 // initialize wiimote interface with id, starting data, and calibration data
-void wm_init(unsigned char *, wm_cd_s, unsigned char *, void (*)(void));
+void wm_init(unsigned char *, unsigned char *, unsigned char *, void (*)(void));
 
 // set button data
-void wm_newaction(wm_cd_s);
+void wm_newaction(unsigned char *);
 
 #define wiimote_h
 #endif

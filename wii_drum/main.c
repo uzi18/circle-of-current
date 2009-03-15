@@ -222,13 +222,13 @@ int main()
 		hit_s[i] = default_hit_softness;
 	}
 
-	wm_cd_s but_dat; // struct containing button data
-	but_dat.d[0] = 0b00011111;
-	but_dat.d[1] = 0b00011111;
-	but_dat.d[2] = 0b11111111;
-	but_dat.d[3] = 0b11111111;
-	but_dat.d[4] = 0b11111111;
-	but_dat.d[5] = 0b11111111;
+	unsigned char but_dat[6]; // struct containing button data
+	but_dat[0] = 0b00011111;
+	but_dat[1] = 0b00011111;
+	but_dat[2] = 0b11111111;
+	but_dat[3] = 0b11111111;
+	but_dat[4] = 0b11111111;
+	but_dat[5] = 0b11111111;
 
 	// make wiimote think this is a drum
 	wm_init(drum_id, but_dat, cal_data, wm_timer_inc);
@@ -256,7 +256,7 @@ int main()
 		check_hit_f_llags();
 
 		// apply hits
-		but_dat.d[5] = hit_f_l;
+		but_dat[5] = hit_f_l;
 
 		#ifdef USE_SERPORT
 		unsigned char d; // serial port latest data
@@ -265,27 +265,27 @@ int main()
 
 		if(c > 0) // new command over serial port
 		{
-			but_dat.d[4] = 0xFF;
-			but_dat.d[5] = 0xFF;
+			but_dat[4] = 0xFF;
+			but_dat[5] = 0xFF;
 
-			if(bit_is_set(d, 0)) cbi(but_dat.d[5], green_bit);
-			if(bit_is_set(d, 1)) cbi(but_dat.d[5], red_bit);
-			if(bit_is_set(d, 2)) cbi(but_dat.d[5], yellow_bit);
-			if(bit_is_set(d, 3)) cbi(but_dat.d[5], blue_bit);
-			if(bit_is_set(d, 4)) cbi(but_dat.d[5], orange_bit);
-			if(bit_is_set(d, 5)) cbi(but_dat.d[5], bass_bit);
+			if(bit_is_set(d, 0)) cbi(but_dat[5], green_bit);
+			if(bit_is_set(d, 1)) cbi(but_dat[5], red_bit);
+			if(bit_is_set(d, 2)) cbi(but_dat[5], yellow_bit);
+			if(bit_is_set(d, 3)) cbi(but_dat[5], blue_bit);
+			if(bit_is_set(d, 4)) cbi(but_dat[5], orange_bit);
+			if(bit_is_set(d, 5)) cbi(but_dat[5], bass_bit);
 
-			if(bit_is_set(d, 6)) cbi(but_dat.d[4], minus_bit);
-			if(bit_is_set(d, 7)) cbi(but_dat.d[4], plus_bit);
+			if(bit_is_set(d, 6)) cbi(but_dat[4], minus_bit);
+			if(bit_is_set(d, 7)) cbi(but_dat[4], plus_bit);
 		}
 		#endif
 
 		#ifdef GHWT
 
-		but_dat.d[2] = 0xFF;
-		but_dat.d[3] = 0xFF;
+		but_dat[2] = 0xFF;
+		but_dat[3] = 0xFF;
 
-		if(but_dat.d[5] != 0xFF)
+		if(but_dat[5] != 0xFF)
 		{
 			unsigned long t = wm_timer;
 			
@@ -293,30 +293,30 @@ int main()
 			for(unsigned long i = hit_last + t; i < 16; i++)
 			{
 				unsigned char j = (unsigned char)(i % 8);
-				if(bit_is_clear(but_dat.d[5], j))
+				if(bit_is_clear(but_dat[5], j))
 				{
 					// set pad
-					but_dat.d[2] = pad_tbl[j];
+					but_dat[2] = pad_tbl[j];
 					
 					// set softness
-					but_dat.d[3] = 0b00001100 | (hit_s[i] << 5);
-					but_dat.d[4] &= 0b01111110;
+					but_dat[3] = 0b00001100 | (hit_s[i] << 5);
+					but_dat[4] &= 0b01111110;
 					break;
 				}
 			}
 		}
 
 		// plus and minus buttons
-		if(bit_is_clear(plusminus_in_reg, plus_pin)) cbi(but_dat.d[4], plus_bit);
-		if(bit_is_clear(plusminus_in_reg, minus_pin)) cbi(but_dat.d[4], minus_bit);
+		if(bit_is_clear(plusminus_in_reg, plus_pin)) cbi(but_dat[4], plus_bit);
+		if(bit_is_clear(plusminus_in_reg, minus_pin)) cbi(but_dat[4], minus_bit);
 
 		// simulate thumbstick with switches
-		but_dat.d[0] = 0b00011111;
-		but_dat.d[1] = 0b00011111;
-		if(bit_is_clear(stick_in_reg, up_stick_pin)) but_dat.d[1] += thumbstick_speed;
-		if(bit_is_clear(stick_in_reg, down_stick_pin)) but_dat.d[1] -= thumbstick_speed;
-		if(bit_is_clear(stick_in_reg, left_stick_pin)) but_dat.d[0] -= thumbstick_speed;
-		if(bit_is_clear(stick_in_reg, right_stick_pin)) but_dat.d[0] += thumbstick_speed;
+		but_dat[0] = 0b00011111;
+		but_dat[1] = 0b00011111;
+		if(bit_is_clear(stick_in_reg, up_stick_pin)) but_dat[1] += thumbstick_speed;
+		if(bit_is_clear(stick_in_reg, down_stick_pin)) but_dat[1] -= thumbstick_speed;
+		if(bit_is_clear(stick_in_reg, left_stick_pin)) but_dat[0] -= thumbstick_speed;
+		if(bit_is_clear(stick_in_reg, right_stick_pin)) but_dat[0] += thumbstick_speed;
 
 		#endif
 
