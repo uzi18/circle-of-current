@@ -133,6 +133,8 @@ void wm_timer_inc()
 
 int main()
 {
+	sei();
+
 	#ifdef USE_SERPORT
 	// start serial port
 	sbi(uart_port, uart_rx_pin); // pull up

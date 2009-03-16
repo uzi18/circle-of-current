@@ -4,46 +4,19 @@
 // pointer to user function
 static void (*wm_sample_event)();
 
+// id and calibration data
+static volatile unsigned char wm_id[6];
+static volatile unsigned char wm_cal_data[32];
+
 // crypto data
 static volatile unsigned char wm_rand[10];
 static volatile unsigned char wm_key[6];
 static volatile unsigned char wm_ft[8];
 static volatile unsigned char wm_sb[8];
 
-// virtual register
-static volatile unsigned char twi_reg[256];
-static volatile unsigned int twi_reg_addr;
-
-static volatile unsigned char twi_first_addr_flag; // set address flag
-static volatile unsigned char twi_rw_len; // length of most recent operation
-
-void twi_slave_init(unsigned char addr)
-{
-	// initialize stuff
-	twi_reg_addr = 0;
-
-	// set slave address
-	TWAR = addr << 1;
-	
-	// enable twi module, acks, and twi interrupt
-	TWCR = _BV(TWEN) | _BV(TWIE) | _BV(TWEA);
-
-	// enable interrupts
-	sei();
-}
-
-void twi_clear_int(unsigned char ack)
-{
-	// get ready by clearing interrupt, with or without ack
-	if(ack != 0)
-	{
-		TWCR = _BV(TWEN) | _BV(TWIE) | _BV(TWINT) | _BV(TWEA);
-	}
-	else
-	{
-		TWCR = _BV(TWEN) | _BV(TWIE) | _BV(TWINT);
-	}
-}
+// button data
+static volatile unsigned char wm_action[6];
+static volatile unsigned char wm_action_old[6];
 
 /*
 
@@ -111,46 +84,119 @@ void wm_gentabs()
 	wm_sb[7] = pgm_read_byte(&(sboxes[idx + 1][wm_rand[2]])) ^ pgm_read_byte(&(sboxes[idx + 2][wm_rand[6]]));
 }
 
+// put data into TWI slave register, encrypted if encryption is enabled
+void wm_transmit(unsigned char * d, unsigned char addr, unsigned char l)
+{
+	if(twi_read_reg(0xF0) == 0xAA && addr != 0xF0)
+	{
+		for(unsigned char i = 0; i < l; i++)
+		{
+			twi_set_reg(addr + i, (d[i] - wm_ft[(addr + i) % 8]) ^ wm_sb[(addr + i) % 8]);
+		}
+	}
+	else
+	{
+		for(unsigned char i = 0; i < l; i++)
+		{
+			twi_set_reg(addr + i, d[i]);
+		}
+	}
+}
+
 void wm_slaveTxStart(unsigned char addr)
 {
+	unsigned char d[8];
 	if(addr >= 0x00 && addr < 0x06)
 	{
 		// call user event
 		wm_sample_event();
 	}
+	if(addr >= 0x20 && addr < 0x28)
+	{
+		// requested calibration data
+		for(unsigned char i = addr - 0x20, j = 0; j < 8; i++, j++)
+		{			
+			d[j] = wm_cal_data[i];
+		}
+		wm_transmit(d, addr, 8);
+	}
+	if(addr >= 0x28 && addr < 0x30)
+	{
+		// requested calibration data
+		for(unsigned char i = addr - 0x20, j = 0; j < 8; i++, j++)
+		{			
+			d[j] = wm_cal_data[i];
+		}
+		wm_transmit(d, addr, 8);
+	}
+	if(addr >= 0x30 && addr < 0x38)
+	{
+		// requested calibration data
+		for(unsigned char i = addr - 0x20, j = 0; j < 8; i++, j++)
+		{			
+			d[j] = wm_cal_data[i];
+		}
+		wm_transmit(d, addr, 8);
+	}
+	if(addr >= 0x38 && addr <= 0x3F)
+	{
+		// requested calibration data
+		for(unsigned char i = addr - 0x20, j = 0; j < 8; i++, j++)
+		{			
+			d[j] = wm_cal_data[i];
+		}
+		wm_transmit(d, addr, 8);
+	}
+	if(addr >= 0xFA && addr <= 0xFF)
+	{
+		// requested id
+		for(unsigned char i = addr - 0xFA, j = 0; j < 6; i++, j++)
+		{			
+			d[j] = wm_id[i];
+		}
+		wm_transmit(d, addr, 6);
+	}
+}
+
+void wm_slaveTxEnd(unsigned char addr, unsigned char l)
+{
 }
 
 void wm_slaveRx(unsigned char addr, unsigned char l)
 {
-	// if encryption data is sent, store them accordingly
-	if(addr >= 0x40 && addr < 0x46)
 	{
-		for(unsigned int i = 0; i < 6; i++)
+		// if encryption data is sent, store them accordingly
+		if(addr >= 0x40 && addr < 0x46)
 		{
-			wm_rand[9 - i] = twi_reg[0x40 + i];
+			for(unsigned char i = 0; i < 6; i++)
+			{
+				wm_rand[9 - i] = twi_read_reg(0x40 + i);
+			}
 		}
-	}
-	else if(addr >= 0x46 && addr < 0x4C)
-	{
-		for(unsigned int i = 6; i < 10; i++)
+		else if(addr >= 0x46 && addr < 0x4C)
 		{
-			wm_rand[9 - i] = twi_reg[0x40 + i];
+			for(unsigned char i = 6; i < 10; i++)
+			{
+				wm_rand[9 - i] = twi_read_reg(0x40 + i);
+			}
+			for(unsigned char i = 0; i < 2; i++)
+			{
+				wm_key[5 - i] = twi_read_reg(0x40 + 10 + i);
+			}
 		}
-		for(unsigned int i = 0; i < 2; i++)
+		else if(addr >= 0x4C && addr < 0x50)
 		{
-			wm_key[5 - i] = twi_reg[0x40 + 10 + i];
-		}
-	}
-	else if(addr >= 0x4C && addr < 0x50)
-	{
-		for(unsigned int i = 2; i < 6; i++)
-		{
-			wm_key[5 - i] = twi_reg[0x40 + 10 + i];
-		}
-		if(addr + l == 0x50)
-		{
-			// generate decryption once all data is loaded
-			wm_gentabs();
+			for(unsigned char i = 2; i < 6; i++)
+			{
+				wm_key[5 - i] = twi_read_reg(0x40 + 10 + i);
+			}
+			if(addr + l == 0x50)
+			{
+				// generate decryption once all data is loaded
+				wm_gentabs();
+		
+				wm_transmit(wm_action, 0x00, 6);
+			}
 		}
 	}
 }
@@ -158,7 +204,14 @@ void wm_slaveRx(unsigned char addr, unsigned char l)
 void wm_newaction(unsigned char * d)
 {
 	// load button data from user application
-	memcpy(twi_reg, d, 6);
+	memcpy(wm_action, d, 6);
+
+	if(memcmp(wm_action_old, wm_action, 6) != 0)
+	{
+		// encrypt button data only if new
+		wm_transmit(wm_action, 0x00, 6);
+		memcpy(wm_action_old, wm_action, 6);
+	}
 }
 
 void wm_init(unsigned char * id, unsigned char * t, unsigned char * cal_data, void (*function)(void))
@@ -167,19 +220,13 @@ void wm_init(unsigned char * id, unsigned char * t, unsigned char * cal_data, vo
 	wm_sample_event = function;
 
 	// start state
-	wm_newaction(t);
+	memcpy(wm_action, t, 6);
 
 	// set id
-	for(unsigned int i = 0, j = 0xFA; i < 6; i++, j++)
-	{
-		twi_reg[i] = id[i];
-	}
+	memcpy(wm_id, id, 6);
 
 	// set calibration data
-	for(unsigned int i = 0, j = 0x20; i < 6; i++, j++)
-	{
-		twi_reg[i] = cal_data[i];
-	}
+	memcpy(wm_cal_data, cal_data, 32);
 
 	// initialize device detect pin
 	dev_detect_port &= 0xFF ^ _BV(dev_detect_pin);
@@ -191,91 +238,8 @@ void wm_init(unsigned char * id, unsigned char * t, unsigned char * cal_data, vo
 	twi_port &= 0xFF ^ _BV(twi_sda_pin);
 
 	// start twi slave, link events
-	twi_slave_init(0x52);
+	twi_slave_init(0x52, wm_slaveRx, wm_slaveTxStart, wm_slaveTxEnd);
 
 	// make the wiimote think something is connected
 	dev_detect_port |= _BV(dev_detect_pin);
-}
-
-ISR(TWI_vect)
-{
-	switch(TW_STATUS)
-	{
-		// Slave Rx
-		case TW_SR_SLA_ACK: // addressed, returned ack
-		case TW_SR_GCALL_ACK: // addressed generally, returned ack
-		case TW_SR_ARB_LOST_SLA_ACK: // lost arbitration, returned ack
-		case TW_SR_ARB_LOST_GCALL_ACK: // lost arbitration generally, returned ack
-			// get ready to receive pointer
-			twi_first_addr_flag = 0;
-			// ack
-			twi_clear_int(1);
-			break;
-		case TW_SR_DATA_ACK: // data received, returned ack
-		case TW_SR_GCALL_DATA_ACK: // data received generally, returned ack
-		if(twi_first_addr_flag != 0)
-		{
-			// put byte in register
-			unsigned char t = TWDR;
-			if(twi_reg[0xF0] == 0xAA && twi_reg_addr != 0xF0) // if encryption is on
-			{
-				// decrypt
-				twi_reg[twi_reg_addr] = (t ^ wm_sb[twi_reg_addr % 8]) + wm_ft[twi_reg_addr % 8];
-			}
-			else
-			{
-				twi_reg[twi_reg_addr] = t;
-			}
-			twi_reg_addr++;
-			twi_rw_len++;
-		}
-		else
-		{
-			// set address
-			twi_reg_addr = TWDR;
-			twi_first_addr_flag = 1;
-			twi_rw_len = 0;
-		}
-		twi_clear_int(1); // ack
-			break;
-		case TW_SR_STOP: // stop or repeated start condition received
-			// run user defined function
-			wm_slaveRx(twi_reg_addr - twi_rw_len, twi_rw_len);
-			twi_clear_int(1); // ack future responses
-			break;
-		case TW_SR_DATA_NACK: // data received, returned nack
-		case TW_SR_GCALL_DATA_NACK: // data received generally, returned nack
-			twi_clear_int(0); // nack back at master
-			break;
-		
-		// Slave Tx
-		case TW_ST_SLA_ACK:	// addressed, returned ack
-		case TW_ST_ARB_LOST_SLA_ACK: // arbitration lost, returned ack
-			// run user defined function
-			wm_slaveTxStart(twi_reg_addr);
-			twi_rw_len = 0;
-		case TW_ST_DATA_ACK: // byte sent, ack returned
-			// ready output byte
-			if(twi_reg[0xF0] == 0xAA) // encryption is on
-			{
-				// encrypt
-				TWDR = (twi_reg[twi_reg_addr] - wm_ft[twi_reg_addr % 8]) ^ wm_sb[twi_reg_addr % 8];
-			}
-			else
-			{
-				TWDR = twi_reg[twi_reg_addr];
-			}
-			twi_reg_addr++;
-			twi_rw_len++;
-			twi_clear_int(1); // ack
-			break;
-		case TW_ST_DATA_NACK: // received nack, we are done 
-		case TW_ST_LAST_DATA: // received ack, but we are done already!
-			// ack future responses
-			twi_clear_int(1);
-			break;
-		default:
-			twi_clear_int(0);
-			break;
-	}
 }
