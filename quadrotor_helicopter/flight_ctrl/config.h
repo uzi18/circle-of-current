@@ -98,7 +98,7 @@
 #define roll_pitch_level_pid_const_addr (yaw_pid_const_addr + 4 * 5)
 #define roll_pitch_rate_pid_const_addr (roll_pitch_level_pid_const_addr + 4 * 5)
 #define servo_pulse_data_addr (roll_pitch_rate_pid_const_addr + 4 * 5)
-#define cmd_scale_addr (servo_pulse_data_addr + 4 * 2)
+#define cmd_scale_addr (servo_pulse_data_addr + 4 * 1)
 #define sens_hist_len_addr (cmd_scale_addr + 4 * 3)
 #define hover_throttle_addr (sens_hist_len_addr + 1 * 4)
 #define ppm_chan_addr (hover_throttle_addr + 4 * 1)

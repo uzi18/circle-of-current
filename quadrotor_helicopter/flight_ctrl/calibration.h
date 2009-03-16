@@ -66,9 +66,7 @@ void load_calibration(calibration * c, unsigned long a)
 	c->roll_pitch_rate_pid_err_low_thresh = eeprom_read_dword_(a + roll_pitch_rate_pid_const_addr + (4 * 3));
 	c->roll_pitch_rate_pid_delta_err_low_thresh = eeprom_read_dword_(a + roll_pitch_rate_pid_const_addr + (4 * 4));
 
-	c->servo_pulse_scale = eeprom_read_dword_(a + servo_pulse_data_addr + (4 * 0));
-	c->servo_pulse_stop = eeprom_read_dword_(a + servo_pulse_data_addr + (4 * 1));
-	c->servo_period_length = eeprom_read_dword_(a + servo_pulse_data_addr + (4 * 2));
+	c->servo_period_length = eeprom_read_dword_(a + servo_pulse_data_addr + (4 * 0));
 
 	c->throttle_cmd_scale = eeprom_read_dword_(a + cmd_scale_addr + (4 * 0));
 	c->yaw_cmd_scale = eeprom_read_dword_(a + cmd_scale_addr + (4 * 1));
@@ -135,9 +133,7 @@ void save_calibration(calibration c, unsigned long a)
 	eeprom_write_dword_(a + roll_pitch_rate_pid_const_addr + (4 * 3), c.roll_pitch_rate_pid_err_low_thresh);
 	eeprom_write_dword_(a + roll_pitch_rate_pid_const_addr + (4 * 4), c.roll_pitch_rate_pid_delta_err_low_thresh);
 
-	eeprom_write_dword_(a + servo_pulse_data_addr + (4 * 0), c.servo_pulse_scale);
-	eeprom_write_dword_(a + servo_pulse_data_addr + (4 * 1), c.servo_pulse_stop);
-	eeprom_write_dword_(a + servo_pulse_data_addr + (4 * 2), c.servo_period_length);
+	eeprom_write_dword_(a + servo_pulse_data_addr + (4 * 0), c.servo_period_length);
 
 	eeprom_write_dword_(a + cmd_scale_addr + (4 * 0), c.throttle_cmd_scale);
 	eeprom_write_dword_(a + cmd_scale_addr + (4 * 1), c.yaw_cmd_scale);
@@ -204,8 +200,6 @@ void default_calibration(calibration * c)
 	c->roll_pitch_rate_pid_err_low_thresh = roll_pitch_rate_pid_err_low_thresh_default;
 	c->roll_pitch_rate_pid_delta_err_low_thresh = roll_pitch_rate_pid_delta_err_low_thresh_default;
 
-	c->servo_pulse_scale = servo_pulse_scale_default;
-	c->servo_pulse_stop = servo_pulse_stop_default;
 	c->servo_period_length = servo_period_length_default;
 
 	c->throttle_cmd_scale = throttle_cmd_scale_default;
@@ -233,22 +227,22 @@ void calibrate_sensors(calibration * c)
 	ADCSRA &= 0xFF ^ _BV(ADIE);
 	loop_until_bit_is_clear(ADCSRA, ADSC);
 
-	for(unsigned char i = 0, cnt = 0; i < 8; i++, cnt = 0)
+	for(unsigned char i = 0; i < 8; i++, cnt = 0)
 	{
 		unsigned long sum = 0;
-
-		while(adcr[i] < 1000000)
+		for(unsigned char j = 0; j < 64; j++)
 		{
 			ADMUX = (ADMUX & 0b11100000) | i;
 			ADCSRA = _BV(ADEN) | _BV(ADSC) | _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0);
 			loop_until_bit_is_clear(ADCSRA, ADSC);
 			sum += ADC;
-			cnt++;
 		}
 
-		unsigned long avg = scale(sum, 1, cnt);
+		unsigned long avg = scale(sum, 1, 64);
 		adcr[i] = avg;
 	}
+
+	adc_init();
 
 	c->yaw_sens_center_offset = adcr[yaw_sens_chan];
 	c->roll_sens_center_offset = adcr[roll_sens_chan];
@@ -272,11 +266,11 @@ void calibrate_controller(calibration * c)
 		vex_data.chan_offset[i] = 0;
 		sum[i] = 0;
 	}
-	timer_1_reset();
 	for(cnt = 0; cnt < 10; cnt++)
 	{
 		while(vex_data.new_flag == 0);
 		vex_data.new_flag = 0;
+		LED_2_tog();
 		if(cnt != 0)
 		{
 			for(unsigned char i = 0; i < 8; i++)
@@ -303,9 +297,6 @@ void apply_calibration(calibration c)
 	motor_cali.l_mot_scale = c.l_mot_scale;
 	motor_cali.r_mot_scale = c.r_mot_scale;
 
-	motor_cali.servo_pulse_scale = c.servo_pulse_scale;
-	motor_cali.servo_stop = c.servo_pulse_stop;
-
 	sens_data[yaw_sens_chan].centering_offset = c.yaw_sens_center_offset;
 	sens_data[roll_sens_chan].centering_offset = c.roll_sens_center_offset;
 	sens_data[pitch_sens_chan].centering_offset = c.pitch_sens_center_offset;
@@ -328,29 +319,29 @@ void apply_calibration(calibration c)
 	yaw_pid.constants.err_low_thresh = c.yaw_pid_err_low_thresh;
 	yaw_pid.constants.delta_err_low_thresh = c.yaw_pid_delta_err_low_thresh;
 
-	pitch_pid_a.constants.kp = c.roll_pitch_level_pid_kp;
-	pitch_pid_a.constants.ki = c.roll_pitch_level_pid_ki;
-	pitch_pid_a.constants.kd = c.roll_pitch_level_pid_kd;
-	pitch_pid_a.constants.err_low_thresh = c.roll_pitch_level_pid_err_low_thresh;
-	pitch_pid_a.constants.delta_err_low_thresh = c.roll_pitch_level_pid_delta_err_low_thresh;
+	pitch_pid_level.constants.kp = c.roll_pitch_level_pid_kp;
+	pitch_pid_level.constants.ki = c.roll_pitch_level_pid_ki;
+	pitch_pid_level.constants.kd = c.roll_pitch_level_pid_kd;
+	pitch_pid_level.constants.err_low_thresh = c.roll_pitch_level_pid_err_low_thresh;
+	pitch_pid_level.constants.delta_err_low_thresh = c.roll_pitch_level_pid_delta_err_low_thresh;
 
-	roll_pid_a.constants.kp = c.roll_pitch_level_pid_kp;
-	roll_pid_a.constants.ki = c.roll_pitch_level_pid_ki;
-	roll_pid_a.constants.kd = c.roll_pitch_level_pid_kd;
-	roll_pid_a.constants.err_low_thresh = c.roll_pitch_level_pid_err_low_thresh;
-	roll_pid_a.constants.delta_err_low_thresh = c.roll_pitch_level_pid_delta_err_low_thresh;
+	roll_pid_level.constants.kp = c.roll_pitch_level_pid_kp;
+	roll_pid_level.constants.ki = c.roll_pitch_level_pid_ki;
+	roll_pid_level.constants.kd = c.roll_pitch_level_pid_kd;
+	roll_pid_level.constants.err_low_thresh = c.roll_pitch_level_pid_err_low_thresh;
+	roll_pid_level.constants.delta_err_low_thresh = c.roll_pitch_level_pid_delta_err_low_thresh;
 
-	pitch_pid_b.constants.kp = c.roll_pitch_rate_pid_kp;
-	pitch_pid_b.constants.ki = c.roll_pitch_rate_pid_ki;
-	pitch_pid_b.constants.kd = c.roll_pitch_rate_pid_kd;
-	pitch_pid_b.constants.err_low_thresh = c.roll_pitch_rate_pid_err_low_thresh;
-	pitch_pid_b.constants.delta_err_low_thresh = c.roll_pitch_rate_pid_delta_err_low_thresh;
+	pitch_pid_rate.constants.kp = c.roll_pitch_rate_pid_kp;
+	pitch_pid_rate.constants.ki = c.roll_pitch_rate_pid_ki;
+	pitch_pid_rate.constants.kd = c.roll_pitch_rate_pid_kd;
+	pitch_pid_rate.constants.err_low_thresh = c.roll_pitch_rate_pid_err_low_thresh;
+	pitch_pid_rate.constants.delta_err_low_thresh = c.roll_pitch_rate_pid_delta_err_low_thresh;
 
-	roll_pid_b.constants.kp = c.roll_pitch_rate_pid_kp;
-	roll_pid_b.constants.ki = c.roll_pitch_rate_pid_ki;
-	roll_pid_b.constants.kd = c.roll_pitch_rate_pid_kd;
-	roll_pid_b.constants.err_low_thresh = c.roll_pitch_rate_pid_err_low_thresh;
-	roll_pid_b.constants.delta_err_low_thresh = c.roll_pitch_rate_pid_delta_err_low_thresh;
+	roll_pid_rate.constants.kp = c.roll_pitch_rate_pid_kp;
+	roll_pid_rate.constants.ki = c.roll_pitch_rate_pid_ki;
+	roll_pid_rate.constants.kd = c.roll_pitch_rate_pid_kd;
+	roll_pid_rate.constants.err_low_thresh = c.roll_pitch_rate_pid_err_low_thresh;
+	roll_pid_rate.constants.delta_err_low_thresh = c.roll_pitch_rate_pid_delta_err_low_thresh;
 
 	for(unsigned char i = 0; i < 8; i++)
 	{

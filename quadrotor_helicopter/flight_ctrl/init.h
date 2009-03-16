@@ -46,7 +46,7 @@ void software_init()
 	for(unsigned char i = 0; i < 8; i++)
 	{
 		sens_data[i].cnt = 0;
-		servo_data.servo_ticks[i] = width_500;
+		servo_data.servo_ticks[i] = width_500 * 2;
 	}
 	vex_data.tx_good = 0;
 	ppm_ovf_cnt = 0;
@@ -62,12 +62,12 @@ unsigned char to_load_from_eeprom()
 
 unsigned char to_calibrate_sens()
 {
-	return 0;
+	return 1;
 }
 
 unsigned char to_calibrate_ppm()
 {
-	return 0;
+	return 1;
 }
 
 unsigned char to_save_to_eeprom()

@@ -1,43 +1,25 @@
 #include "main.h"
 
-volatile ppm_data vex_data;
-volatile sens_history sens_data[8];
-mot_speed motor_speed;
-mot_cali motor_cali;
-heli_action copter_action;
-volatile servo_ctrl servo_data;
-PID_data yaw_pid;
-PID_data pitch_pid_a;
-PID_data pitch_pid_b;
-PID_data roll_pid_a;
-PID_data roll_pid_b;
-volatile unsigned char op_mode;
-volatile unsigned char fly_by_wire;
-calibration main_cali;
+static volatile ppm_data vex_data;
+static volatile sens_history sens_data[8];
+static mot_speed motor_speed;
+static mot_cali motor_cali;
+static heli_action copter_action;
+static volatile servo_ctrl servo_data;
+static PID_data yaw_pid;
+static PID_data pitch_pid_level;
+static PID_data pitch_pid_rate;
+static PID_data roll_pid_level;
+static PID_data roll_pid_rate;
+static volatile unsigned char op_mode;
+static volatile unsigned char fly_by_wire;
+static calibration main_cali;
 
 #include "main_headers.h"
 
-#ifdef DEBUG
-
-void debug_tx(unsigned char addr, signed long data)
+ISR(BADISR_vect)
 {
-	addr *= 2;
-	addr |= _BV(7);
-	if(data < 0)
-	{
-		addr |= 1;
-		data *= -1;
-	}
-	ser_tx(addr);
-
-	for(unsigned char i = 0; i < 8; i++)
-	{
-		ser_tx(data & 0x0F);
-		data = (data & 0xFFFFFFF0) >> 4;
-	}
 }
-
-#endif
 
 void cmd_proc()
 {
@@ -67,21 +49,24 @@ void start_next_servo_pwm_period()
 
 void timer_1_period_wait(signed long passed, signed long total)
 {
-	unsigned long ttt = 0;
-	unsigned long lt = TCNT1;
+	volatile unsigned long ttt = 0;
+	volatile unsigned long lt = TCNT1;
 	do
 	{
-		unsigned long tcntt = TCNT1;
+		volatile unsigned long tcntt = TCNT1;
 		ttt += ((tcntt | 0x10000) - lt) & 0xFFFF;
 		lt = tcntt;
 	}
 	while((passed + ttt) < total);
+	LED_1_tog();
+	LED_2_tog();
 }
 
 int main()
 {
 	hardware_init();
-	software_init();
+
+	LED_2_on();
 
 	default_calibration(&main_cali);
 	if(to_load_from_eeprom())
@@ -102,12 +87,13 @@ int main()
 	}
 	apply_calibration(main_cali);
 
-	timer_1_reset();
-
-	start_next_servo_pwm_period();
+	software_init();
+	servo_data.ready_to_restart = 1;
 
 	while(1)
 	{
+		LED_2_tog();
+
 		if(servo_data.ready_to_restart != 0)
 		{
 			unsigned long tsum = servo_data.servo_ticks[0] + servo_data.servo_ticks[1] + servo_data.servo_ticks[2] + servo_data.servo_ticks[3] + servo_data.servo_ticks[4];
@@ -153,25 +139,25 @@ int main()
 				target = scale(ctrl_data.chan_width[ctrl_data.roll_ppm_chan], main_cali.move_cmd_scale, move_cmd_scale_multiplier);
 				current = scale(sens_data[lr_accel_chan].centered_avg, main_cali.fb_lr_accel_scale, fb_lr_accel_scale_multiplier);
 
-				allowed_roll = PID_mv(&roll_pid_a, current, target);
+				allowed_roll = PID_mv(&roll_pid_level, current, target);
 				target = allowed_roll;
 				current = sens_data[roll_sens_chan].centered_avg;
 
-				copter_action.roll = PID_mv(&roll_pid_b, current, target);
+				copter_action.roll = PID_mv(&roll_pid_rate, current, target);
 
 				target = scale(ctrl_data.chan_width[ctrl_data.pitch_ppm_chan], main_cali.move_cmd_scale, move_cmd_scale_multiplier);
 				current = scale(sens_data[fb_accel_chan].centered_avg, main_cali.fb_lr_accel_scale, fb_lr_accel_scale_multiplier);
 
-				allowed_pitch = PID_mv(&pitch_pid_a, current, target);
+				allowed_pitch = PID_mv(&pitch_pid_level, current, target);
 				target = allowed_pitch;
 				current = sens_data[pitch_sens_chan].centered_avg;
 
-				copter_action.pitch = PID_mv(&pitch_pid_b, current, target);				
+				copter_action.pitch = PID_mv(&pitch_pid_rate, current, target);				
 
 				copter_action.col = main_cali.hover_throttle + scale(ctrl_data.chan_width[ctrl_data.throttle_ppm_chan], main_cali.throttle_cmd_scale, throttle_cmd_scale_multiplier);
 				
 				mot_set(&motor_speed, &motor_cali, &copter_action);
-				mot_apply(&motor_speed, &motor_cali);
+				servo_set(&servo_data, &motor_speed);
 
 				#ifdef DEBUG
 
@@ -179,7 +165,7 @@ int main()
 				{
 					for(unsigned char i = 0, j = 0; i < 8; i++, j++)
 					{
-						debug_tx(i, sens_data[i].avg);
+						debug_tx(i, sens_data[i].centered_avg);
 					}
 					for(unsigned char i = 0, j = 8; i < 8; i++, j++)
 					{
@@ -219,29 +205,27 @@ int main()
 					LED_1_off();
 				}
 
-				servo_set
-				(
-					&servo_data,
-					vex_data.chan_width[0] + width_500 * 3,
-					vex_data.chan_width[1] + width_500 * 3,
-					vex_data.chan_width[2] + width_500 * 3,
-					vex_data.chan_width[3] + width_500 * 3
-				);
+				servo_set(&servo_data, &motor_speed);
 
 				if(ser_tx_buff.f == 0)
 				{
-					for(unsigned char i = 0, j = 0; i < 8; i++, j++)
+					for(unsigned char i = 0, j = 0; i < 4; i++, j++)
 					{
-						debug_tx(i, sens_data[i].avg);
+						debug_tx(j, sens_data[i].avg);
 					}
-					for(unsigned char i = 0, j = 8; i < 8; i++, j++)
+					for(unsigned char i = 0, j = 8; i < 4; i++, j++)
 					{
-						debug_tx(j, sens_data[i].noise);
+						debug_tx(j, sens_data[i].centered_avg);
 					}
-					for(unsigned char i = 0, j = 16; i < 8; i++, j++)
+					for(unsigned char i = 0, j = 16; i < 4; i++, j++)
 					{
 						debug_tx(j, vex_data.chan_width[i]);
 					}
+					for(unsigned char i = 0, j = 24; i < 4; i++, j++)
+					{
+						debug_tx(j, vex_data.chan_offset[i]);
+					}
+					debug_tx(32, tsum);
 				}
 			}
 			else if(op_mode == TEST_MODE_B)

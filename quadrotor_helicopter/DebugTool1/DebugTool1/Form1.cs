@@ -82,9 +82,9 @@ namespace DebugTool1
                     }
                     else
                     {
-                        data += (c << (4 * cnt));
+                        data += (c << (7 * cnt));
                         cnt++;
-                        if (cnt == 8)
+                        if (cnt == 5)
                         {
                             if (sign_flag != 0)
                             {

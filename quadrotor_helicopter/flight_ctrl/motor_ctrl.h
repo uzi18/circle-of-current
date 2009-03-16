@@ -1,31 +1,19 @@
-void servo_set(servo_ctrl * sc, signed long f, signed long b, signed long l, signed long r)
+void servo_set(servo_ctrl * sc, mot_speed * ms)
 {
-	sc->servo_ticks[f_mot_chan - 1] = constrain(f, width_500 * 2, width_500 * 4);
-	sc->servo_ticks[b_mot_chan - 1] = constrain(b, width_500 * 2, width_500 * 4);
-	sc->servo_ticks[l_mot_chan - 1] = constrain(l, width_500 * 2, width_500 * 4);
-	sc->servo_ticks[r_mot_chan - 1] = constrain(r, width_500 * 2, width_500 * 4);
-}
-
-void mot_apply(mot_speed * ms, mot_cali * mc)
-{
-	servo_set
-	(
-		&servo_data,
-		mc->servo_stop + scale(ms->f, mc->servo_pulse_scale, motor_scale_multiplier),
-		mc->servo_stop + scale(ms->b, mc->servo_pulse_scale, motor_scale_multiplier),
-		mc->servo_stop + scale(ms->l, mc->servo_pulse_scale, motor_scale_multiplier),
-		mc->servo_stop + scale(ms->r, mc->servo_pulse_scale, motor_scale_multiplier)
-	);
+	sc->servo_ticks[f_mot_chan - 1] = constrain(ms->f, width_500 * 2, width_500 * 4);
+	sc->servo_ticks[b_mot_chan - 1] = constrain(ms->b, width_500 * 2, width_500 * 4);
+	sc->servo_ticks[l_mot_chan - 1] = constrain(ms->l, width_500 * 2, width_500 * 4);
+	sc->servo_ticks[r_mot_chan - 1] = constrain(ms->r, width_500 * 2, width_500 * 4);
 }
 
 void mot_set(mot_speed * ms, mot_cali * mc, heli_action * ha)
 {
-	ms->f = ha->col + ha->yaw - ha->pitch + mc->f_mot_tweak;
-	ms->b = ha->col + ha->yaw + ha->pitch + mc->b_mot_tweak;
-	ms->l = ha->col - ha->yaw - ha->roll + mc->l_mot_tweak;
-	ms->r = ha->col - ha->yaw + ha->roll + mc->r_mot_tweak;
-	ms->f = scale(ms->f, mc->f_mot_scale, motor_scale_multiplier);
-	ms->b = scale(ms->b, mc->b_mot_scale, motor_scale_multiplier);
-	ms->l = scale(ms->l, mc->l_mot_scale, motor_scale_multiplier);
-	ms->r = scale(ms->r, mc->r_mot_scale, motor_scale_multiplier);
+	ms->f = ha->col + ha->yaw - ha->pitch;
+	ms->b = ha->col + ha->yaw + ha->pitch;
+	ms->l = ha->col - ha->yaw - ha->roll;
+	ms->r = ha->col - ha->yaw + ha->roll;
+	ms->f = scale(ms->f, mc->f_mot_scale, motor_scale_multiplier) + mc->f_mot_tweak;
+	ms->b = scale(ms->b, mc->b_mot_scale, motor_scale_multiplier) + mc->b_mot_tweak;
+	ms->l = scale(ms->l, mc->l_mot_scale, motor_scale_multiplier) + mc->l_mot_tweak;
+	ms->r = scale(ms->r, mc->r_mot_scale, motor_scale_multiplier) + mc->r_mot_tweak;
 }

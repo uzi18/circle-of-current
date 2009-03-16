@@ -3,7 +3,7 @@
 
 typedef struct _ser_buff
 {
-	unsigned char d[128];
+	unsigned char d[255];
 	unsigned char h;
 	unsigned char t;
 	unsigned char s;
@@ -19,7 +19,7 @@ typedef struct _cmd
 
 typedef struct _cmd_buff
 {
-	cmd com[128];
+	cmd com[8];
 	unsigned char h;
 	unsigned char t;
 	unsigned char s;
@@ -40,11 +40,11 @@ void ser_init()
 	ser_tx_buff.h = 0;
 	ser_tx_buff.t = 0;
 	ser_tx_buff.f = 0;
-	ser_tx_buff.s = 128;
+	ser_tx_buff.s = 255;
 
 	cmd_buff.h = 0;
 	cmd_buff.t = 0;
-	cmd_buff.s = 128;
+	cmd_buff.s = 8;
 
 	UCSR0B = _BV(RXEN0) | _BV(TXEN0) | _BV(RXCIE0) | _BV(TXCIE0);
 }
@@ -100,9 +100,9 @@ ISR(USART0_RX_vect)
 	}
 	else
 	{
-		cmd_buff.data += c << (4 * cmd_buff.cnt);
+		cmd_buff.data += c << (7 * cmd_buff.cnt);
 		cmd_buff.cnt++;
-		if(cmd_buff.cnt == 8)
+		if(cmd_buff.cnt == 5)
 		{
 			if(cmd_buff.sign_f != 0)
 			{
@@ -112,5 +112,23 @@ ISR(USART0_RX_vect)
 			cmd_buff.com[cmd_buff.t].addr = cmd_buff.addr;
 			cmd_buff.t = (cmd_buff.t + 1) % cmd_buff.s;
 		}
+	}
+}
+
+void debug_tx(unsigned char addr, signed long data)
+{
+	addr *= 2;
+	addr |= _BV(7);
+	if(data < 0)
+	{
+		addr |= 1;
+		data *= -1;
+	}
+	ser_tx(addr);
+
+	for(unsigned char i = 0; i < 5; i++)
+	{
+		ser_tx(data & 0x7F);
+		data = (data & 0xFFFFFF80) >> 7;
 	}
 }
