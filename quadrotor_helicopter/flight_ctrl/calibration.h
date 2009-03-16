@@ -5,7 +5,25 @@ signed long eeprom_read_dword_(unsigned long addr)
 
 void eeprom_write_dword_(unsigned long addr, unsigned long data)
 {
-	eeprom_write_dword(addr, data);
+	unsigned long b = eeprom_read_dword_(addr);
+	if(b != data)
+	{
+		eeprom_write_dword(addr, data);
+	}
+}
+
+signed int eeprom_read_word_(unsigned long addr)
+{
+	return eeprom_read_word(addr);
+}
+
+void eeprom_write_word_(unsigned long addr, unsigned int data)
+{
+	unsigned int b = eeprom_read_word_(addr);
+	if(b != data)
+	{
+		eeprom_write_word(addr, data);
+	}
 }
 
 unsigned char eeprom_read_byte_(unsigned long addr)
@@ -15,141 +33,30 @@ unsigned char eeprom_read_byte_(unsigned long addr)
 
 void eeprom_write_byte_(unsigned long addr, unsigned char data)
 {
-	eeprom_write_byte(addr, data);
+	unsigned char b = eeprom_read_byte_(addr);
+	if(b != data)
+	{
+		eeprom_write_byte(addr, data);
+	}
 }
 
-void load_calibration(calibration * c, unsigned long a)
+calibration load_calibration(unsigned long a)
 {
-	c->f_mot_adj = eeprom_read_dword_(a + mot_adj_addr + (4 * 0));
-	c->b_mot_adj = eeprom_read_dword_(a + mot_adj_addr + (4 * 1));
-	c->l_mot_adj = eeprom_read_dword_(a + mot_adj_addr + (4 * 2));
-	c->r_mot_adj = eeprom_read_dword_(a + mot_adj_addr + (4 * 3));
-
-	c->f_mot_scale = eeprom_read_dword_(a + mot_scale_addr + (4 * 0));
-	c->b_mot_scale = eeprom_read_dword_(a + mot_scale_addr + (4 * 1));
-	c->l_mot_scale = eeprom_read_dword_(a + mot_scale_addr + (4 * 2));
-	c->r_mot_scale = eeprom_read_dword_(a + mot_scale_addr + (4 * 3));
-
-	c->yaw_sens_center_offset = eeprom_read_dword_(a + gyro_sens_center_offset_addr + (4 * 0));
-	c->pitch_sens_center_offset = eeprom_read_dword_(a + gyro_sens_center_offset_addr + (4 * 1));
-	c->roll_sens_center_offset = eeprom_read_dword_(a + gyro_sens_center_offset_addr + (4 * 2));
-
-	c->fb_accel_center_offset = eeprom_read_dword_(a + accel_center_offset_addr + (4 * 0));
-	c->lr_accel_center_offset = eeprom_read_dword_(a + accel_center_offset_addr + (4 * 1));
-	c->ud_accel_center_offset = eeprom_read_dword_(a + accel_center_offset_addr + (4 * 2));
-
-	c->fb_lr_accel_scale = eeprom_read_dword_(a + accel_scale_addr + (4 * 0));
-	c->ud_accel_scale = eeprom_read_dword_(a + accel_scale_addr + (4 * 1));
-
-	c->yaw_sens_scale = eeprom_read_dword_(a + gyro_sens_scale_addr + (4 * 0));
-
-	for(unsigned char i = 0; i < 8; i++)
+	calibration c;
+	unsigned char * p = &c;
+	for(unsigned long i = 0; i < sizeof(c); i++)
 	{
-		c->ppm_chan_offset[i] = eeprom_read_dword_(a + ppm_chan_offset_addr + (4 * i));
+		p[i] = eeprom_read_byte_(a + i);
 	}
-
-	c->yaw_pid_kp = eeprom_read_dword_(a + yaw_pid_const_addr + (4 * 0));
-	c->yaw_pid_ki = eeprom_read_dword_(a + yaw_pid_const_addr + (4 * 1));
-	c->yaw_pid_kd = eeprom_read_dword_(a + yaw_pid_const_addr + (4 * 2));
-	c->yaw_pid_err_low_thresh = eeprom_read_dword_(a + yaw_pid_const_addr + (4 * 3));
-	c->yaw_pid_delta_err_low_thresh = eeprom_read_dword_(a + yaw_pid_const_addr + (4 * 4));
-
-	c->roll_pitch_level_pid_kp = eeprom_read_dword_(a + roll_pitch_level_pid_const_addr + (4 * 0));
-	c->roll_pitch_level_pid_ki = eeprom_read_dword_(a + roll_pitch_level_pid_const_addr + (4 * 1));
-	c->roll_pitch_level_pid_kd = eeprom_read_dword_(a + roll_pitch_level_pid_const_addr + (4 * 2));
-	c->roll_pitch_level_pid_err_low_thresh = eeprom_read_dword_(a + roll_pitch_level_pid_const_addr + (4 * 3));
-	c->roll_pitch_level_pid_delta_err_low_thresh = eeprom_read_dword_(a + roll_pitch_level_pid_const_addr + (4 * 4));
-
-	c->roll_pitch_rate_pid_kp = eeprom_read_dword_(a + roll_pitch_rate_pid_const_addr + (4 * 0));
-	c->roll_pitch_rate_pid_ki = eeprom_read_dword_(a + roll_pitch_rate_pid_const_addr + (4 * 1));
-	c->roll_pitch_rate_pid_kd = eeprom_read_dword_(a + roll_pitch_rate_pid_const_addr + (4 * 2));
-	c->roll_pitch_rate_pid_err_low_thresh = eeprom_read_dword_(a + roll_pitch_rate_pid_const_addr + (4 * 3));
-	c->roll_pitch_rate_pid_delta_err_low_thresh = eeprom_read_dword_(a + roll_pitch_rate_pid_const_addr + (4 * 4));
-
-	c->servo_period_length = eeprom_read_dword_(a + servo_pulse_data_addr + (4 * 0));
-
-	c->throttle_cmd_scale = eeprom_read_dword_(a + cmd_scale_addr + (4 * 0));
-	c->yaw_cmd_scale = eeprom_read_dword_(a + cmd_scale_addr + (4 * 1));
-	c->move_cmd_scale = eeprom_read_dword_(a + cmd_scale_addr + (4 * 2));
-
-	c->yaw_sens_hist_len = eeprom_read_byte_(a + sens_hist_len_addr + (1 * 0));
-	c->roll_pitch_sens_hist_len = eeprom_read_byte_(a + sens_hist_len_addr + (1 * 1));
-	c->vert_accel_hist_len = eeprom_read_byte_(a + sens_hist_len_addr + (1 * 2));
-	c->hori_accel_hist_len = eeprom_read_byte_(a + sens_hist_len_addr + (1 * 3));
-
-	c->hover_throttle = eeprom_read_dword_(a + hover_throttle_addr + (4 * 0));
-
-	c->yaw_ppm_chan = eeprom_read_byte_(a + ppm_chan_addr + (1 * 0));
-	c->roll_ppm_chan = eeprom_read_byte_(a + ppm_chan_addr + (1 * 1));
-	c->pitch_ppm_chan = eeprom_read_byte_(a + ppm_chan_addr + (1 * 2));
-	c->throttle_ppm_chan = eeprom_read_byte_(a + ppm_chan_addr + (1 * 3));
 }
 
 void save_calibration(calibration c, unsigned long a)
 {
-	eeprom_write_dword_(a + mot_adj_addr + (4 * 0), c.f_mot_adj);
-	eeprom_write_dword_(a + mot_adj_addr + (4 * 1), c.b_mot_adj);
-	eeprom_write_dword_(a + mot_adj_addr + (4 * 2), c.l_mot_adj);
-	eeprom_write_dword_(a + mot_adj_addr + (4 * 3), c.r_mot_adj);
-
-	eeprom_write_dword_(a + mot_scale_addr + (4 * 0), c.f_mot_scale);
-	eeprom_write_dword_(a + mot_scale_addr + (4 * 1), c.b_mot_scale);
-	eeprom_write_dword_(a + mot_scale_addr + (4 * 2), c.l_mot_scale);
-	eeprom_write_dword_(a + mot_scale_addr + (4 * 3), c.r_mot_scale);
-
-	eeprom_write_dword_(a + gyro_sens_center_offset_addr + (4 * 0), c.yaw_sens_center_offset);
-	eeprom_write_dword_(a + gyro_sens_center_offset_addr + (4 * 1), c.pitch_sens_center_offset);
-	eeprom_write_dword_(a + gyro_sens_center_offset_addr + (4 * 2), c.roll_sens_center_offset);
-
-	eeprom_write_dword_(a + accel_center_offset_addr + (4 * 0), c.fb_accel_center_offset);
-	eeprom_write_dword_(a + accel_center_offset_addr + (4 * 1), c.lr_accel_center_offset);
-	eeprom_write_dword_(a + accel_center_offset_addr + (4 * 2), c.ud_accel_center_offset);
-
-	eeprom_write_dword_(a + gyro_sens_scale_addr + (4 * 0), c.yaw_sens_scale);
-
-	eeprom_write_dword_(a + accel_scale_addr + (4 * 0), c.fb_lr_accel_scale);
-	eeprom_write_dword_(a + accel_scale_addr + (4 * 1), c.ud_accel_scale);
-
-	for(unsigned char i = 0; i < 8; i++)
+	unsigned char * p = &c;
+	for(unsigned long i = 0; i < sizeof(c); i++)
 	{
-		eeprom_write_dword_(a + ppm_chan_offset_addr + (4 * i), c.ppm_chan_offset[i]);
+		eeprom_write_byte_(a + i, p[i]);
 	}
-
-	eeprom_write_dword_(a + yaw_pid_const_addr + (4 * 0), c.yaw_pid_kp);
-	eeprom_write_dword_(a + yaw_pid_const_addr + (4 * 1), c.yaw_pid_ki);
-	eeprom_write_dword_(a + yaw_pid_const_addr + (4 * 2), c.yaw_pid_kd);
-	eeprom_write_dword_(a + yaw_pid_const_addr + (4 * 3), c.yaw_pid_err_low_thresh);
-	eeprom_write_dword_(a + yaw_pid_const_addr + (4 * 4), c.yaw_pid_delta_err_low_thresh);
-
-	eeprom_write_dword_(a + roll_pitch_level_pid_const_addr + (4 * 0), c.roll_pitch_level_pid_kp);
-	eeprom_write_dword_(a + roll_pitch_level_pid_const_addr + (4 * 1), c.roll_pitch_level_pid_ki);
-	eeprom_write_dword_(a + roll_pitch_level_pid_const_addr + (4 * 2), c.roll_pitch_level_pid_kd);
-	eeprom_write_dword_(a + roll_pitch_level_pid_const_addr + (4 * 3), c.roll_pitch_level_pid_err_low_thresh);
-	eeprom_write_dword_(a + roll_pitch_level_pid_const_addr + (4 * 4), c.roll_pitch_level_pid_delta_err_low_thresh);
-
-	eeprom_write_dword_(a + roll_pitch_rate_pid_const_addr + (4 * 0), c.roll_pitch_rate_pid_kp);
-	eeprom_write_dword_(a + roll_pitch_rate_pid_const_addr + (4 * 1), c.roll_pitch_rate_pid_ki);
-	eeprom_write_dword_(a + roll_pitch_rate_pid_const_addr + (4 * 2), c.roll_pitch_rate_pid_kd);
-	eeprom_write_dword_(a + roll_pitch_rate_pid_const_addr + (4 * 3), c.roll_pitch_rate_pid_err_low_thresh);
-	eeprom_write_dword_(a + roll_pitch_rate_pid_const_addr + (4 * 4), c.roll_pitch_rate_pid_delta_err_low_thresh);
-
-	eeprom_write_dword_(a + servo_pulse_data_addr + (4 * 0), c.servo_period_length);
-
-	eeprom_write_dword_(a + cmd_scale_addr + (4 * 0), c.throttle_cmd_scale);
-	eeprom_write_dword_(a + cmd_scale_addr + (4 * 1), c.yaw_cmd_scale);
-	eeprom_write_dword_(a + cmd_scale_addr + (4 * 3), c.move_cmd_scale);
-
-	eeprom_write_byte_(a + sens_hist_len_addr + (1 * 0), c.yaw_sens_hist_len);
-	eeprom_write_byte_(a + sens_hist_len_addr + (1 * 1), c.roll_pitch_sens_hist_len);
-	eeprom_write_byte_(a + sens_hist_len_addr + (1 * 2), c.vert_accel_hist_len);
-	eeprom_write_byte_(a + sens_hist_len_addr + (1 * 3), c.hori_accel_hist_len);
-
-	eeprom_write_dword_(a + hover_throttle_addr + (4 * 3), c.hover_throttle);
-
-	eeprom_write_byte_(a + ppm_chan_addr + (1 * 0), c.yaw_ppm_chan);
-	eeprom_write_byte_(a + ppm_chan_addr + (1 * 1), c.roll_ppm_chan);
-	eeprom_write_byte_(a + ppm_chan_addr + (1 * 2), c.pitch_ppm_chan);
-	eeprom_write_byte_(a + ppm_chan_addr + (1 * 3), c.throttle_ppm_chan);
 }
 
 void default_calibration(calibration * c)
@@ -176,6 +83,8 @@ void default_calibration(calibration * c)
 
 	c->fb_lr_accel_scale = fb_lr_accel_scale_default;
 	c->ud_accel_scale = ud_accel_scale_default;
+
+	c->sine_of_max_ang = sine_of_max_ang_default;
 
 	for(unsigned char i = 0; i < 6; i++)
 	{
@@ -217,6 +126,12 @@ void default_calibration(calibration * c)
 	c->throttle_ppm_chan = throttle_ppm_chan_default;
 	c->roll_ppm_chan = roll_ppm_chan_default;
 	c->pitch_ppm_chan = pitch_ppm_chan_default;
+
+	c->extra_servo_chan = extra_servo_chan_default;
+
+	c->servo_ppm_link[0] = servo_ppm_link_0_default;
+	c->servo_ppm_link[1] = servo_ppm_link_1_default;
+	c->servo_ppm_link[2] = servo_ppm_link_2_default;
 }
 
 void calibrate_sensors(calibration * c)
@@ -251,9 +166,12 @@ void calibrate_sensors(calibration * c)
 	c->fb_accel_center_offset = adcr[fb_accel_chan];
 	c->lr_accel_center_offset = adcr[lr_accel_chan];
 	c->ud_accel_center_offset = adcr[ud_accel_chan];
+}
 
-	signed long avg_zero_g = scale(adcr[fb_accel_chan] + adcr[lr_accel_chan], 1, 2);
-	signed long max_allowed_accel = scale(abs(avg_zero_g - adcr[ud_accel_chan]), 71, 100);
+void set_ctrl_limit(calibration * c)
+{
+	signed long avg_zero_g = scale(c->fb_accel_center_offset + c->lr_accel_center_offset, 1, 2);
+	signed long max_allowed_accel = scale(abs(avg_zero_g - c->ud_accel_center_offset), c->sine_of_max_ang, sine_multiplyer);
 	c->fb_lr_accel_scale = scale(width_500 * fb_lr_accel_scale_multiplier, 1, max_allowed_accel);
 }
 

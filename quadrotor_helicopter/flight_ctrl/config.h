@@ -5,7 +5,7 @@
 #if (width_500 != 10000)
 #error "weird, width_500 is not = 10000"
 #endif
-#define sens_history_max_length 20
+#define sens_history_max_length 15
 #define PID_const_multiplier 100
 #define mot_scale_multiplier 100
 #define yaw_sens_scale_multiplier 100
@@ -16,11 +16,13 @@
 #define motor_scale_multiplier 100
 #define move_cmd_scale_multiplier 100
 
-#define f_mot_chan 1
-#define b_mot_chan 2
-#define l_mot_chan 3
-#define r_mot_chan 4
-#define aux_servo_chan 5
+#define sine_of_max_ang_default 38
+#define sine_multiplyer 100
+
+#define extra_servo_chan_default 3
+#define servo_ppm_link_0_default 4
+#define servo_ppm_link_1_default 5
+#define servo_ppm_link_2_default 6
 
 #define roll_ppm_chan_default 0
 #define pitch_ppm_chan_default 1
@@ -82,25 +84,9 @@
 #define yaw_cmd_scale_default 100
 #define move_cmd_scale_default 100
 
-#define yaw_sens_hist_len_default 20
-#define roll_pitch_sens_hist_len_default 20
-#define vert_accel_hist_len_default 20
-#define hori_accel_hist_len_default 20
-
-#define mot_adj_addr (0 + 4 * 0)
-#define mot_scale_addr (mot_adj_addr + 4 * 4)
-#define gyro_sens_center_offset_addr (mot_scale_addr + 4 * 4)
-#define accel_center_offset_addr (gyro_sens_center_offset_addr + 4 * 3)
-#define accel_scale_addr (accel_center_offset_addr + 4 * 2)
-#define gyro_sens_scale_addr (accel_scale_addr + 4 * 1)
-#define ppm_chan_offset_addr (gyro_sens_scale_addr + 4 * 2)
-#define yaw_pid_const_addr (ppm_chan_offset_addr + 4 * 8)
-#define roll_pitch_level_pid_const_addr (yaw_pid_const_addr + 4 * 5)
-#define roll_pitch_rate_pid_const_addr (roll_pitch_level_pid_const_addr + 4 * 5)
-#define servo_pulse_data_addr (roll_pitch_rate_pid_const_addr + 4 * 5)
-#define cmd_scale_addr (servo_pulse_data_addr + 4 * 1)
-#define sens_hist_len_addr (cmd_scale_addr + 4 * 3)
-#define hover_throttle_addr (sens_hist_len_addr + 1 * 4)
-#define ppm_chan_addr (hover_throttle_addr + 4 * 1)
+#define yaw_sens_hist_len_default 15
+#define roll_pitch_sens_hist_len_default 15
+#define vert_accel_hist_len_default 15
+#define hori_accel_hist_len_default 15
 
 #endif 

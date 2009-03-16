@@ -7,7 +7,8 @@ signed long PID_mv(PID_data * pid, signed long current, signed long target)
 	{
 		pid->err_sum = 0;
 	}
-	signed long mv = scale(err, pid->constants.kp, PID_const_multiplier) + scale(pid->err_sum, pid->constants.ki, PID_const_multiplier) + scale(delta_err, pid->constants.kd, PID_const_multiplier);
+	signed long mv = err * pid->constants.kp + pid->err_sum * pid->constants.ki + delta_err * pid->constants.kd;
+	mv = scale(mv, 1, PID_const_multiplier);
 	pid->err_sum = scale(pid->err_sum, 99, 100);
 	pid->err_last = err;
 

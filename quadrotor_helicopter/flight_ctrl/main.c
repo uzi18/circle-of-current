@@ -1,6 +1,7 @@
 #include "main.h"
 
 static volatile ppm_data vex_data;
+static ppm_data ctrl_data;
 static volatile sens_history sens_data[8];
 static mot_speed motor_speed;
 static mot_cali motor_cali;
@@ -13,7 +14,10 @@ static PID_data roll_pid_level;
 static PID_data roll_pid_rate;
 static volatile unsigned char op_mode;
 static volatile unsigned char fly_by_wire;
+static volatile unsigned char safety;
 static calibration main_cali;
+static unsigned long process_time;
+static unsigned int process_time_stamp;
 
 #include "main_headers.h"
 
@@ -47,19 +51,17 @@ void start_next_servo_pwm_period()
 	TIMSK1 |= _BV(OCIE1A);
 }
 
-void timer_1_period_wait(signed long passed, signed long total)
+signed long timer_1_period_wait(signed long passed, signed long total)
 {
 	volatile unsigned long ttt = 0;
 	volatile unsigned long lt = TCNT1;
-	do
+	while((passed + ttt) < total)
 	{
 		volatile unsigned long tcntt = TCNT1;
 		ttt += ((tcntt | 0x10000) - lt) & 0xFFFF;
 		lt = tcntt;
 	}
-	while((passed + ttt) < total);
-	LED_1_tog();
-	LED_2_tog();
+	return ttt;
 }
 
 int main()
@@ -71,7 +73,7 @@ int main()
 	default_calibration(&main_cali);
 	if(to_load_from_eeprom())
 	{
-		load_calibration(&main_cali, 0);
+		main_cali = load_calibration(0);
 	}
 	if(to_calibrate_sens())
 	{
@@ -80,6 +82,10 @@ int main()
 	if(to_calibrate_ppm())
 	{
 		calibrate_controller(&main_cali);
+	}
+	if(to_set_limit())
+	{
+		set_ctrl_limit(&main_cali);
 	}
 	if(to_save_to_eeprom())
 	{
@@ -96,33 +102,41 @@ int main()
 
 		if(servo_data.ready_to_restart != 0)
 		{
-			unsigned long tsum = servo_data.servo_ticks[0] + servo_data.servo_ticks[1] + servo_data.servo_ticks[2] + servo_data.servo_ticks[3] + servo_data.servo_ticks[4];
+			unsigned long tsum = servo_data.servo_ticks[0] + servo_data.servo_ticks[1] + servo_data.servo_ticks[2] + servo_data.servo_ticks[3];
+			for(unsigned char i = 4; i < 4 + main_cali.extra_servo_chan; i++)
+			{
+				tsum += servo_data.servo_ticks[i];
+			}
 
-			timer_1_period_wait(tsum, servo_data.servo_period_length);
+			timer_1_period_wait(tsum + process_time, servo_data.servo_period_length);
+
+			process_time_stamp = TCNT0;
 
 			sens_data_proc();
 
-			if(op_mode == FLY_MODE || op_mode == SAFE_MODE)
+			if(vex_data.tx_good != 2 && fly_by_wire == 0 && op_mode == FLY_MODE)
 			{
-				ppm_data ctrl_data = vex_data;
+				op_mode = LOST_CMD_MODE;
+			}
 
-				if(vex_data.tx_good != 2 && fly_by_wire == 0)
+			if(op_mode == FLY_MODE || op_mode == LOST_CMD_MODE)
+			{
+				if(fly_by_wire == 0)
+				{
+					ctrl_data = vex_data;
+				}
+
+				if(op_mode == LOST_CMD_MODE)
 				{
 					for(unsigned char i = 0; i < 8; i++)
 					{
 						ctrl_data.chan_width[i] = 0;
 					}
-
-					op_mode = SAFE_MODE;
-				}
-				else
-				{
-					op_mode = FLY_MODE;
 				}
 
-				if(fly_by_wire != 0)
+				for(unsigned char i = 4, j = 0; i < 4 + main_cali.extra_servo_chan; i++, j++)
 				{
-					//
+					servo_data.servo_ticks[i] = ctrl_data.chan_width[main_cali.servo_ppm_link[j]];
 				}
 
 				signed long target;
@@ -205,6 +219,11 @@ int main()
 					LED_1_off();
 				}
 
+				motor_speed.f = vex_data.chan_width[0];
+				motor_speed.b = vex_data.chan_width[1];
+				motor_speed.l = vex_data.chan_width[2];
+				motor_speed.r = vex_data.chan_width[3];
+				
 				servo_set(&servo_data, &motor_speed);
 
 				if(ser_tx_buff.f == 0)
@@ -235,6 +254,9 @@ int main()
 			#endif
 
 			start_next_servo_pwm_period();
+
+			unsigned int tcnt0_ = TCNT0;
+			process_time = (((tcnt0_ | 0x100) - process_time_stamp) & 0xFF) * 1024;
 		}
 
 		cmd_proc();

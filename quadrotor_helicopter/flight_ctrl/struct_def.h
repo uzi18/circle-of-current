@@ -105,7 +105,7 @@ typedef struct calibration_
 	signed long fb_lr_accel_scale;
 	signed long ud_accel_scale;
 
-	signed long ppm_chan_offset[8];
+	unsigned char sine_of_max_ang;
 
 	signed long yaw_pid_kp;
 	signed long yaw_pid_ki;
@@ -132,6 +132,8 @@ typedef struct calibration_
 	signed long move_cmd_scale;
 	signed long hover_throttle;
 
+	signed long ppm_chan_offset[8];
+
 	unsigned char yaw_sens_hist_len;
 	unsigned char roll_pitch_sens_hist_len;
 	unsigned char vert_accel_hist_len;
@@ -141,5 +143,8 @@ typedef struct calibration_
 	unsigned char roll_ppm_chan;
 	unsigned char pitch_ppm_chan;
 	unsigned char throttle_ppm_chan;
+
+	unsigned char extra_servo_chan;
+	unsigned char servo_ppm_link[3];
 } calibration;
 #endif

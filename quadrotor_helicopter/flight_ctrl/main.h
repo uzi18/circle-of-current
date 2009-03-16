@@ -15,6 +15,7 @@
 #define FLY_MODE 1
 #define POWER_OFF_MODE 2
 #define OTHER_MODE 3
-#define SAFE_MODE 4
-#define TEST_MODE_A 5
-#define TEST_MODE_B 6
+#define LOST_CMD_MODE 4
+#define SAFE_MODE 5
+#define TEST_MODE_A 6
+#define TEST_MODE_B 7

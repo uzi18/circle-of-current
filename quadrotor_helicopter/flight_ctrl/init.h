@@ -36,6 +36,8 @@ void hardware_init()
 
 	timer_1_reset();
 
+	TCCR0B |= _BV(CS00) | _BV(CS02); // start timer 0
+
 	// enable interrupts
 
 	sei();
@@ -51,31 +53,38 @@ void software_init()
 	vex_data.tx_good = 0;
 	ppm_ovf_cnt = 0;
 	timer1_ovf_cnt = 0;
+	process_time = 0;
+	safety = 0;
 
 	op_mode = TEST_MODE_A;
 }
 
 unsigned char to_load_from_eeprom()
 {
-	return 0;
+	return 1;
 }
 
 unsigned char to_calibrate_sens()
 {
-	return 1;
+	return 0;
 }
 
 unsigned char to_calibrate_ppm()
 {
-	return 1;
+	return 0;
 }
 
 unsigned char to_save_to_eeprom()
 {
-	return 0;
+	return 1;
 }
 
 unsigned char to_load_from_serial()
+{
+	return 0;
+}
+
+unsigned char to_set_limit()
 {
 	return 0;
 }

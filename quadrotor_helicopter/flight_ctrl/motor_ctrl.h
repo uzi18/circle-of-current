@@ -1,9 +1,9 @@
 void servo_set(servo_ctrl * sc, mot_speed * ms)
 {
-	sc->servo_ticks[f_mot_chan - 1] = constrain(ms->f, width_500 * 2, width_500 * 4);
-	sc->servo_ticks[b_mot_chan - 1] = constrain(ms->b, width_500 * 2, width_500 * 4);
-	sc->servo_ticks[l_mot_chan - 1] = constrain(ms->l, width_500 * 2, width_500 * 4);
-	sc->servo_ticks[r_mot_chan - 1] = constrain(ms->r, width_500 * 2, width_500 * 4);
+	sc->servo_ticks[f_mot_chan] = constrain(ms->f, width_500, width_500 * 5);
+	sc->servo_ticks[b_mot_chan] = constrain(ms->b, width_500, width_500 * 5);
+	sc->servo_ticks[l_mot_chan] = constrain(ms->l, width_500, width_500 * 5);
+	sc->servo_ticks[r_mot_chan] = constrain(ms->r, width_500, width_500 * 5);
 }
 
 void mot_set(mot_speed * ms, mot_cali * mc, heli_action * ha)

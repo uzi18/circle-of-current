@@ -6,11 +6,11 @@
 #define servo_shift_pin 5
 #define servo_input_pin 2
 #define servo_reset_pin 3
-#define f_motor_pin 0
-#define b_motor_pin 1
-#define l_motor_pin 2
-#define r_motor_pin 3
-#define aux_servo_pin 4
+
+#define f_mot_chan 0
+#define b_mot_chan (f_mot_chan + 1)
+#define l_mot_chan (b_mot_chan + 1)
+#define r_mot_chan (l_mot_chan + 1)
 
 #define roll_sens_chan 0
 #define pitch_sens_chan 1

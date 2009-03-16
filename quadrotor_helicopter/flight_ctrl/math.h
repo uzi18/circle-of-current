@@ -74,3 +74,27 @@ signed long abs(signed long in)
 		return in;
 	}
 }
+
+signed long max(signed long a, signed long b)
+{
+	if(a > b)
+	{
+		return a;
+	}
+	else
+	{
+		return b;
+	}
+}
+
+signed long min(signed long a, signed long b)
+{
+	if(a < b)
+	{
+		return a;
+	}
+	else
+	{
+		return b;
+	}
+}
