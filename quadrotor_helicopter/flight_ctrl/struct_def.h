@@ -24,9 +24,7 @@ typedef struct sens_history_
 	unsigned long avg;
 	signed long centered_avg;
 	signed long centering_offset;
-	#ifdef DEBUG
 	signed long noise;
-	#endif
 } sens_history;
 
 typedef struct PID_const_
