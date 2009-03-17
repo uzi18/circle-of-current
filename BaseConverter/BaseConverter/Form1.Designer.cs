@@ -79,7 +79,7 @@ namespace BaseConverter
             this.copy2StripMenuItem,
             this.quitToolStripMenuItem});
             this.RightClickMenu.Name = "RightClickMenu";
-            this.RightClickMenu.Size = new System.Drawing.Size(153, 92);
+            this.RightClickMenu.Size = new System.Drawing.Size(108, 70);
             this.RightClickMenu.Text = "Menu";
             // 
             // notifyToolStripMenuItem
@@ -88,7 +88,7 @@ namespace BaseConverter
             this.onToolStripMenuItem,
             this.offToolStripMenuItem});
             this.notifyToolStripMenuItem.Name = "notifyToolStripMenuItem";
-            this.notifyToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.notifyToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
             this.notifyToolStripMenuItem.Text = "Notify?";
             // 
             // onToolStripMenuItem
@@ -112,34 +112,34 @@ namespace BaseConverter
             this.hex2ToolStripMenuItem,
             this.bin2toolStripMenuItem});
             this.copy2StripMenuItem.Name = "copy2StripMenuItem";
-            this.copy2StripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.copy2StripMenuItem.Size = new System.Drawing.Size(107, 22);
             this.copy2StripMenuItem.Text = "Copy";
             // 
             // dec2ToolStripMenuItem
             // 
             this.dec2ToolStripMenuItem.Name = "dec2ToolStripMenuItem";
-            this.dec2ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.dec2ToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
             this.dec2ToolStripMenuItem.Text = "Decimal";
             this.dec2ToolStripMenuItem.Click += new System.EventHandler(this.decimalToolStripMenuItem_Click);
             // 
             // hex2ToolStripMenuItem
             // 
             this.hex2ToolStripMenuItem.Name = "hex2ToolStripMenuItem";
-            this.hex2ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.hex2ToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
             this.hex2ToolStripMenuItem.Text = "Hex";
             this.hex2ToolStripMenuItem.Click += new System.EventHandler(this.hexToolStripMenuItem_Click);
             // 
             // bin2toolStripMenuItem
             // 
             this.bin2toolStripMenuItem.Name = "bin2toolStripMenuItem";
-            this.bin2toolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.bin2toolStripMenuItem.Size = new System.Drawing.Size(112, 22);
             this.bin2toolStripMenuItem.Text = "Binary";
             this.bin2toolStripMenuItem.Click += new System.EventHandler(this.binaryToolStripMenuItem_Click);
             // 
             // quitToolStripMenuItem
             // 
             this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
-            this.quitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.quitToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
             this.quitToolStripMenuItem.Text = "Quit";
             this.quitToolStripMenuItem.Click += new System.EventHandler(this.KillButton_Click);
             // 
@@ -319,11 +319,12 @@ namespace BaseConverter
             this.Controls.Add(this.label1);
             this.Controls.Add(this.DetectedLabel);
             this.Controls.Add(this.InputBox);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Base Converter";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Resize += new System.EventHandler(this.Form1_Resize);
             this.RightClickMenu.ResumeLayout(false);
             this.CopyMenu.ResumeLayout(false);

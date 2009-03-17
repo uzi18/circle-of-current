@@ -217,5 +217,10 @@ namespace BaseConverter
         {
             EnableNoti.Checked = true;
         }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            NotiIcon.Visible = false;
+        }
     }
 }
