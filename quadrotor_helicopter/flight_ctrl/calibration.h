@@ -28,6 +28,7 @@ void eeprom_write_word_(unsigned long addr, unsigned int data)
 
 unsigned char eeprom_read_byte_(unsigned long addr)
 {
+	LED_2_tog();
 	return eeprom_read_byte(addr);
 }
 
@@ -40,11 +41,10 @@ void eeprom_write_byte_(unsigned long addr, unsigned char data)
 	}
 }
 
-calibration load_calibration(unsigned long a)
+void load_calibration(calibration * c, unsigned long a)
 {
-	calibration c;
-	unsigned char * p = &c;
-	for(unsigned long i = 0; i < sizeof(c); i++)
+	unsigned char * p = c;
+	for(unsigned long i = 0; i < sizeof(calibration); i++)
 	{
 		p[i] = eeprom_read_byte_(a + i);
 	}
@@ -53,7 +53,7 @@ calibration load_calibration(unsigned long a)
 void save_calibration(calibration c, unsigned long a)
 {
 	unsigned char * p = &c;
-	for(unsigned long i = 0; i < sizeof(c); i++)
+	for(unsigned long i = 0; i < sizeof(calibration); i++)
 	{
 		eeprom_write_byte_(a + i, p[i]);
 	}
@@ -137,7 +137,7 @@ void default_calibration(calibration * c)
 void calibrate_sensors(calibration * c)
 {
 	signed long adcr[8];
-	unsigned long cnt;
+	unsigned long cnt = 0;
 
 	ADCSRA &= 0xFF ^ _BV(ADIE);
 	loop_until_bit_is_clear(ADCSRA, ADSC);
@@ -184,11 +184,11 @@ void calibrate_controller(calibration * c)
 		vex_data.chan_offset[i] = 0;
 		sum[i] = 0;
 	}
+	vex_data.new_flag = 0;
 	for(cnt = 0; cnt < 10; cnt++)
 	{
 		while(vex_data.new_flag == 0);
 		vex_data.new_flag = 0;
-		LED_2_tog();
 		if(cnt != 0)
 		{
 			for(unsigned char i = 0; i < 8; i++)

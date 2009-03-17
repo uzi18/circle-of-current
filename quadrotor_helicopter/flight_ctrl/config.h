@@ -19,7 +19,7 @@
 #define sine_of_max_ang_default 38
 #define sine_multiplyer 100
 
-#define extra_servo_chan_default 3
+#define extra_servo_chan_default 1
 #define servo_ppm_link_0_default 4
 #define servo_ppm_link_1_default 5
 #define servo_ppm_link_2_default 6

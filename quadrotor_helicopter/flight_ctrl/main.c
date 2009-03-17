@@ -68,12 +68,17 @@ int main()
 {
 	hardware_init();
 
-	LED_2_on();
+	vex_data.new_flag = 0;
+	while(vex_data.new_flag == 0);
+	vex_data.new_flag = 0;
+
+	LED_1_off();
+	LED_1_tog();
 
 	default_calibration(&main_cali);
 	if(to_load_from_eeprom())
 	{
-		main_cali = load_calibration(0);
+		load_calibration(&main_cali, 0);
 	}
 	if(to_calibrate_sens())
 	{
@@ -89,6 +94,7 @@ int main()
 	}
 	if(to_save_to_eeprom())
 	{
+		default_calibration(&main_cali);
 		save_calibration(main_cali, 0);
 	}
 	apply_calibration(main_cali);
@@ -98,10 +104,10 @@ int main()
 
 	while(1)
 	{
-		LED_2_tog();
-
-		if(servo_data.ready_to_restart != 0)
+		keep_busy;
+		if(servo_data.ready_to_restart == 1)
 		{
+			//LED_2_tog();
 			unsigned long tsum = servo_data.servo_ticks[0] + servo_data.servo_ticks[1] + servo_data.servo_ticks[2] + servo_data.servo_ticks[3];
 			for(unsigned char i = 4; i < 4 + main_cali.extra_servo_chan; i++)
 			{
@@ -212,17 +218,17 @@ int main()
 			{
 				if(vex_data.tx_good == 2)
 				{
-					LED_1_on();
+					//LED_1_on();
 				}
 				else
 				{
-					LED_1_off();
+					//LED_1_off();
 				}
 
-				motor_speed.f = vex_data.chan_width[0];
-				motor_speed.b = vex_data.chan_width[1];
-				motor_speed.l = vex_data.chan_width[2];
-				motor_speed.r = vex_data.chan_width[3];
+				motor_speed.f = vex_data.chan_width[0] + width_500 * 3;
+				motor_speed.b = vex_data.chan_width[1] + width_500 * 3;
+				motor_speed.l = vex_data.chan_width[2] + width_500 * 3;
+				motor_speed.r = vex_data.chan_width[3] + width_500 * 3;
 				
 				servo_set(&servo_data, &motor_speed);
 

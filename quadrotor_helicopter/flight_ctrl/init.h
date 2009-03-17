@@ -7,7 +7,7 @@ void timer_1_reset()
 	vex_data.tx_good = 0;
 	vex_data.new_flag = 0;
 	ppm_ovf_cnt = 0;
-	timer1_ovf_cnt = 0;
+	//timer1_ovf_cnt = 0;
 	volatile unsigned char f = TIFR1;
 	TIFR1 |= f;
 	TCCR1B |= _BV(ICNC1) | _BV(ICES1) | _BV(CS10);
@@ -52,7 +52,7 @@ void software_init()
 	}
 	vex_data.tx_good = 0;
 	ppm_ovf_cnt = 0;
-	timer1_ovf_cnt = 0;
+	//timer1_ovf_cnt = 0;
 	process_time = 0;
 	safety = 0;
 
@@ -61,7 +61,7 @@ void software_init()
 
 unsigned char to_load_from_eeprom()
 {
-	return 1;
+	return 0;
 }
 
 unsigned char to_calibrate_sens()
@@ -71,12 +71,12 @@ unsigned char to_calibrate_sens()
 
 unsigned char to_calibrate_ppm()
 {
-	return 0;
+	return 1;
 }
 
 unsigned char to_save_to_eeprom()
 {
-	return 1;
+	return 0;
 }
 
 unsigned char to_load_from_serial()

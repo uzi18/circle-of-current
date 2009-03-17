@@ -19,3 +19,5 @@
 #define SAFE_MODE 5
 #define TEST_MODE_A 6
 #define TEST_MODE_B 7
+
+#define keep_busy volatile char _____a = 0; if(_____a == 1) _____a = 2

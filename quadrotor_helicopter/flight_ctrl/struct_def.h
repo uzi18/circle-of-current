@@ -3,7 +3,7 @@
 
 typedef struct _ppm_data
 {
-	signed long chan_width[8];
+	signed int chan_width[8];
 	signed long chan_offset[8];
 	unsigned char chan_cnt;
 	unsigned long last_capt;
