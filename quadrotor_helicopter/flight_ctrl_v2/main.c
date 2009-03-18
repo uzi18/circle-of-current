@@ -38,7 +38,7 @@ int main()
 	{
 		if(esc_is_done())
 		{
-			timer1_period_wait(esc_get_total() + process_time, ticks_500us * 25);
+			timer1_period_wait(esc_get_total() + process_time, ticks_10ms);
 
 			unsigned int process_time_stamp = TCNT0;
 
@@ -60,17 +60,17 @@ int main()
 			{
 				for(unsigned char i = 8, k = 16, j = 0; j < 8; i++, j++, k++)
 				{
-					debug_tx(i, sens_read(j, 1));
-					debug_tx(k, sens_noise(j));
+					debug_tx_long(i, sens_read(j, 1));
+					debug_tx_long(k, sens_noise(j));
 				}
 
 				for(unsigned char i = 0, j = 0; j < 8; i++, j++)
 				{
-					debug_tx(i, ppm_chan_width(j));
+					debug_tx_long(i, ppm_chan_width(j));
 				}
 
-				debug_tx(24, esc_get_total());
-				debug_tx(25, process_time);
+				debug_tx_long(32, esc_get_total());
+				debug_tx_long(33, process_time);
 			}
 			
 			esc_start_next();

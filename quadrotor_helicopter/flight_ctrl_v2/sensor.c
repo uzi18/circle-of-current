@@ -40,7 +40,7 @@ void sens_init()
 	adc_start(0, _BV(ADIE));
 }
 
-signed int sens_read(unsigned char index, unsigned char calc_noise)
+double sens_read(unsigned char index, unsigned char calc_noise)
 {
 	unsigned long sum = 0;
 	unsigned char cnt = 0;
@@ -54,7 +54,8 @@ signed int sens_read(unsigned char index, unsigned char calc_noise)
 		sum += sens_res[index].res[i % sens_hist_len];
 		cnt++;
 	}
-	sens_res[index].avg = calc_multi(sum, 1, cnt);
+	sens_res[index].avg = (double)sum / (double)cnt;
+	signed long avg = lround(sens_res[index].avg);
 
 	if(calc_noise != 0)
 	{
@@ -62,10 +63,10 @@ signed int sens_read(unsigned char index, unsigned char calc_noise)
 		cnt = 0;
 		for(unsigned char i = 0; i < sens_res[index].cnt && i < sens_hist_len; i++)
 		{
-			sum += calc_abs((signed long)sens_res[index].res[i] - (signed long)sens_res[index].avg);
+			sum += calc_abs((signed long)sens_res[index].res[i] - avg);
 			cnt++;
 		}
-		sens_res[index].noise = calc_multi(sum, noise_multiplier, cnt);
+		sens_res[index].noise = (double)sum / (double)cnt;
 	}
 
 	if(sens_res[index].cnt > sens_hist_len / 2)
@@ -73,15 +74,17 @@ signed int sens_read(unsigned char index, unsigned char calc_noise)
 		sens_res[index].cnt = 0;
 	}
 
-	signed int r = sens_res[index].avg;
-	r -= sens_res[index].offset;
-
-	return r;
+	return sens_res[index].avg - sens_res[index].offset;
 }
 
-unsigned int sens_noise(unsigned char i)
+double sens_noise(unsigned char i)
 {
 	return sens_res[i].noise;
+}
+
+double sens_offset(unsigned char i)
+{
+	return sens_res[i].offset;
 }
 
 void sens_calibrate(unsigned char t)
@@ -100,7 +103,7 @@ void sens_calibrate(unsigned char t)
 	}
 	for(unsigned char j = 0; j < 8; j++)
 	{
-		sens_res[j].offset = calc_multi(sum[j], 1, t);
+		sens_res[j].offset = (double)sum[j] / (double)t;
 	}
 	adc_start(0, _BV(ADIE));
 }

@@ -86,7 +86,7 @@ ISR(USART0_RX_vect)
 	}
 }
 
-void debug_tx(unsigned char addr, signed long data)
+void debug_tx_long(unsigned char addr, signed long data)
 {
 	addr *= 2;
 	addr |= _BV(7);
@@ -101,6 +101,48 @@ void debug_tx(unsigned char addr, signed long data)
 	{
 		ser_tx(data & 0x7F);
 		data = (data & 0xFFFFFF80) >> 7;
+	}
+}
+
+void debug_tx_double(unsigned char addr, double data)
+{
+	addr *= 2;
+	addr |= _BV(7);
+	if(data < 0)
+	{
+		addr |= 1;
+		data *= -1;
+	}
+	ser_tx(addr);
+
+	signed char exp = 0;
+	while(data >= 10000000)
+	{
+		data = data / 10;
+		exp--;
+	}
+	while(data < 1000000)
+	{
+		data = data * 10;
+		exp++;
+	}
+
+	unsigned long data_ = lround(data);
+
+	for(unsigned char i = 0; i < 4; i++)
+	{
+		ser_tx(data_ & 0x7F);
+		data = (data_ & 0xFFFFFF80) >> 7;
+	}
+
+	if(exp < 0)
+	{
+		exp *= -1;
+		ser_tx((unsigned char)exp | _BV(6));
+	}
+	else
+	{
+		ser_tx((unsigned char)exp | _BV(6) | _BV(5));
 	}
 }
 

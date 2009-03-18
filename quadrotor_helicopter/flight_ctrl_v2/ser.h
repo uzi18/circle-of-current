@@ -1,6 +1,7 @@
 #ifndef ser_h_inc
 #define ser_h_inc
 
+#include <math.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
@@ -43,7 +44,8 @@ void ser_init();
 cmd com_rx();
 unsigned char com_rx_size();
 void ser_tx(unsigned char);
-void debug_tx(unsigned char, signed long);
+void debug_tx_long(unsigned char, signed long);
+void debug_tx_double(unsigned char, double);
 unsigned char ser_tx_is_busy();
 
 #endif

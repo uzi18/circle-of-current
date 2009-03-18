@@ -86,13 +86,33 @@ namespace DebugTool1
                         cnt++;
                         if (cnt == 5)
                         {
+							double data_;
+							
+							if (c & 0x40 == 0x40)
+							{
+								data -= (c << (7 * (cnt - 1)));								
+								
+								if (c & 0x20 == 0x20)
+								{
+									data_ = (double)data * Math.Pow(10, -1 * (double)(c & 0x1F));
+								}
+								else
+								{
+									data_ = (double)data * Math.Pow(10, (double)(c & 0x1F));
+								}
+							}
+							else
+							{
+								data_ = (double)data;
+							}
+							
                             if (sign_flag != 0)
                             {
-                                data *= -1;
+                                data_ *= -1;
                             }
                             try
                             {
-                                DataList.Items[addr].SubItems[1].Text = Convert.ToString(data);
+                                DataList.Items[addr].SubItems[1].Text = Convert.ToString(data_);
                             }
                             catch
                             {

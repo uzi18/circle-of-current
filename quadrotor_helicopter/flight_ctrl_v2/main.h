@@ -1,6 +1,7 @@
 #ifndef main_h_inc
 #define main_h_inc
 
+#include <math.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>

@@ -5,9 +5,9 @@
 #define BAUD 19200
 
 #define noise_multiplier 10
-#define PID_const_multiplier 100
 
 #define ticks_500us ((F_CPU * 5) / 10000)
+#define ticks_10ms (ticks_500us * 20)
 
 #define ppm_highest_chan_default 6
 #define esc_extra_chan_num_default 3
