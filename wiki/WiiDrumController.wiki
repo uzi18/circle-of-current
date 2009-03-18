@@ -2,6 +2,8 @@
 
 = Wii Drum Controller  =
 
+[http://frank.circleofcurrent.com/wiidrum.php My Website Link]
+
 Rock Band 2 (RB2) and Guitar Hero World Tour (GHWT) both work with the drum set controller that is packaged with GHWT. The GHWT drums, unlike the RB2 drums, is plugged into a Wiimote's expansion port. This expansion port is a I2C bus and the drum is a I2C slave device. An AVR microcontroller can be connected on this bus as a I2C slave with the same slave address to trick the Wii into thinking that it's connected to a drum controller.
 
 The code inside \wii_drum is firmware source code for an AVR microcontroller. It uses the [WiiExtensionLibrary Wiimote Extension Library]
