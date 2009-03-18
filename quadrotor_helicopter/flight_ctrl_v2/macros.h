@@ -4,5 +4,6 @@
 #define cbi(sfr, bit) (_SFR_BYTE(sfr) &= ~_BV(bit)) // clear bit
 #define sbi(sfr, bit) (_SFR_BYTE(sfr) |= _BV(bit)) // set bit
 #define tog(sfr, bit) (_SFR_BYTE(sfr) ^= _BV(bit)) // toggle bit
+#define nop() __asm__ __volatile__ ("nop") // no operation
 
 #endif

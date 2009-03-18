@@ -10,5 +10,6 @@
 
 void timer0_init();
 void timer1_init();
+unsigned long timer1_period_wait(signed long, signed long);
 
 #endif

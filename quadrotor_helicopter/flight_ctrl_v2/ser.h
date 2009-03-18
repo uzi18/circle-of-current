@@ -44,5 +44,6 @@ cmd com_rx();
 unsigned char com_rx_size();
 void ser_tx(unsigned char);
 void debug_tx(unsigned char, signed long);
+unsigned char ser_tx_is_busy();
 
 #endif

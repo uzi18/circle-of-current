@@ -33,6 +33,7 @@ unsigned char com_rx_size()
 
 void ser_tx(unsigned char c)
 {
+	while((ser_tx_buff.t + 1) % ser_tx_buff.s == ser_tx_buff.h);
 	ser_tx_buff.d[ser_tx_buff.t] = c;
 	ser_tx_buff.t = (ser_tx_buff.t + 1) % ser_tx_buff.s;
 
@@ -101,4 +102,9 @@ void debug_tx(unsigned char addr, signed long data)
 		ser_tx(data & 0x7F);
 		data = (data & 0xFFFFFF80) >> 7;
 	}
+}
+
+unsigned char ser_tx_is_busy()
+{
+	return ser_tx_buff.f;
 }

@@ -16,5 +16,6 @@ unsigned char ppm_is_new_data(unsigned char);
 signed int ppm_chan_width(unsigned char);
 void ppm_calibrate(unsigned char);
 unsigned char ppm_highest_chan_read();
+unsigned char ppm_tx_is_good(unsigned char);
 
 #endif

@@ -8,6 +8,7 @@ static volatile unsigned int ppm_last_capt;
 static volatile unsigned char ppm_ovf_cnt;
 static volatile unsigned char ppm_new_data;
 static volatile unsigned char ppm_tx_good;
+static volatile unsigned char ppm_read_busy;
 
 ISR(TIMER1_CAPT_vect)
 {
@@ -37,23 +38,18 @@ ISR(TIMER1_CAPT_vect)
 	}
 	else // if pulse is shorter than 3ms, then it's a servo pulse
 	{
-		unsigned char index = ppm_chan % 8;
-		if(t >= ticks_500us && t <= ticks_500us * 5)
+		if(ppm_chan != ppm_read_busy - 1)
 		{
-			ppm_width[index] = t; // store time
-			ppm_chan++; // next channel
-			if(ppm_chan >= 4 && ppm_tx_good != 0) // last channel, data is now good, reset to first pin
-			{
-				ppm_tx_good = 2;
-				if(ppm_chan == ppm_highest_chan)
-				{
-					ppm_new_data = 1;
-				}
-			}
+			ppm_width[ppm_chan] = t; // store time
 		}
-		else
+		ppm_chan++; // next channel
+		if(ppm_chan >= 4 && ppm_tx_good != 0) // last channel, data is now good, reset to first pin
 		{
-			ppm_tx_good = 0;
+			ppm_tx_good = 2;
+			if(ppm_chan == ppm_highest_chan)
+			{
+				ppm_new_data = 1;
+			}
 		}
 	}
 }
@@ -61,9 +57,9 @@ ISR(TIMER1_CAPT_vect)
 ISR(TIMER1_OVF_vect)
 {
 	ppm_ovf_cnt++;
-	if(ppm_ovf_cnt > 8)
+	if(ppm_ovf_cnt > 10)
 	{
-		ppm_ovf_cnt = 8;
+		ppm_ovf_cnt = 10;
 		ppm_tx_good = 0;
 	}
 }
@@ -80,7 +76,10 @@ void ppm_init()
 	ppm_chan = 0;
 	ppm_ovf_cnt = 0;
 	ppm_last_capt = 0;
-	ppm_highest_chan = 5;
+	ppm_highest_chan = ppm_highest_chan_default;
+
+	cbi(ppm_port, ppm_pin);
+	cbi(ppm_ddr, ppm_pin);
 
 	timer1_init();
 
@@ -94,6 +93,12 @@ unsigned char ppm_is_new_data(unsigned char c)
 	return ppm_new_data;
 }
 
+unsigned char ppm_tx_is_good(unsigned char c)
+{
+	ppm_tx_good &= c;
+	return ppm_tx_good;
+}
+
 unsigned char ppm_highest_chan_read()
 {
 	return ppm_highest_chan;
@@ -101,12 +106,18 @@ unsigned char ppm_highest_chan_read()
 
 signed int ppm_chan_width(unsigned char i)
 {
+	ppm_read_busy = i + 1;
 	signed int r = ppm_width[i] - ppm_offset[i];
+	ppm_read_busy = 0;
 	return r;
 }
 
 void ppm_calibrate(unsigned char t)
 {
+	for(unsigned char i = 0; i < 8; i++)
+	{
+		ppm_offset[i] = 0;
+	}
 	unsigned long sum[8] = {0,0,0,0,0,0,0,0};
 	for(unsigned char i = 0; i < t; i++)
 	{
@@ -114,7 +125,7 @@ void ppm_calibrate(unsigned char t)
 		while(ppm_new_data == 0);
 		for(unsigned char j = 0; j < 8; j++)
 		{
-			sum[j] += ppm_width[j];
+			sum[j] += ppm_chan_width(j);
 		}
 	}
 	for(unsigned char j = 0; j < 8; j++)

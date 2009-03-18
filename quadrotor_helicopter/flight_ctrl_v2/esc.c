@@ -31,7 +31,8 @@ void esc_init()
 		esc_chan_width[i] = ticks_500us;
 	}
 
-	esc_safety = 0;
+	esc_safety = 1;
+	esc_extra_chan_num = esc_extra_chan_num_default;
 
 	cbi(esc_port, esc_rst_pin);
 	cbi(esc_port, esc_clk_pin);
@@ -40,6 +41,8 @@ void esc_init()
 	sbi(esc_ddr, esc_rst_pin);
 	sbi(esc_ddr, esc_clk_pin);
 	sbi(esc_ddr, esc_dat_pin);
+
+	esc_start_next();
 
 	timer1_init();
 
@@ -51,7 +54,7 @@ void esc_shift_rst()
 {
 	cbi(esc_port, esc_rst_pin);
 
-	if(esc_safety != 0)
+	if(esc_safety == 0)
 	{
 		sbi(esc_port, esc_rst_pin);
 	}
@@ -60,19 +63,18 @@ void esc_shift_rst()
 
 	sbi(esc_port, esc_dat_pin);
 
-	sbi(esc_port, esc_clk_pin);
-	cbi(esc_port, esc_clk_pin);
+	sbi(TCCR1C, FOC1A);
+	nop(); nop(); nop(); nop();
+	nop(); nop(); nop(); nop();
+	nop(); nop(); nop(); nop();
+	nop(); nop(); nop(); nop();
+	sbi(TCCR1C, FOC1A);
 
 	cbi(esc_port, esc_dat_pin);
 }
 
-void esc_start_next(unsigned int * w)
+void esc_start_next()
 {
-	for(unsigned char i = 0; i < 8; i++)
-	{
-		esc_chan_width[i] = w[i];
-	}
-
 	OCR1A = TCNT1 + 128;
 
 	esc_chan = 0;
@@ -81,7 +83,7 @@ void esc_start_next(unsigned int * w)
 	esc_shift_rst();
 }
 
-unsigned char esc_is_done()
+volatile unsigned char esc_is_done()
 {
 	return esc_done;
 }
@@ -94,4 +96,19 @@ void esc_safe(unsigned char c)
 void esc_set_extra_chan(unsigned char c)
 {
 	esc_extra_chan_num = c;
+}
+
+void esc_set_width(unsigned char c, unsigned int w)
+{
+	esc_chan_width[c] = w;
+}
+
+unsigned long esc_get_total()
+{
+	unsigned long sum = 0;
+	for(unsigned char i = 0; i < 4 + esc_extra_chan_num; i++)
+	{
+		sum += esc_chan_width[i];
+	}
+	return sum;
 }

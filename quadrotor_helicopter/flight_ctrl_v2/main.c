@@ -2,12 +2,26 @@
 
 void main_init()
 {
+	sbi(LED_port, LED1_pin);
+	sbi(LED_port, LED2_pin);
+	sbi(LED_ddr, LED1_pin);
+	sbi(LED_ddr, LED2_pin);
+
+	sei();
+
+	timer0_init();
 	ser_init();
 	ppm_init();
 	sens_init();
-	esc_init();	
+	esc_init();
 
-	sei();
+	sens_calibrate(10);
+	tog(LED_port, LED2_pin);
+
+	ppm_calibrate(10);
+	tog(LED_port, LED1_pin);
+
+	esc_safe(0);
 }
 
 void main_loop()
@@ -16,27 +30,53 @@ void main_loop()
 
 int main()
 {
+	unsigned long process_time = 0;
+
 	main_init();
 
 	while(1)
 	{
-		signed long esc_ticks[8] = {ticks_500us,ticks_500us,ticks_500us,ticks_500us,ticks_500us,ticks_500us,ticks_500us,ticks_500us};
 		if(esc_is_done())
 		{
-			unsigned long tsum = esc_ticks[0] + esc_ticks[1] + esc_ticks[2] + esc_ticks[3];
-			for(unsigned char i = 4; i < 4 + main_cali.extra_servo_chan; i++)
+			timer1_period_wait(esc_get_total() + process_time, ticks_500us * 25);
+
+			unsigned int process_time_stamp = TCNT0;
+
+			if(ppm_tx_is_good(3) == 2)
 			{
-				tsum += esc_ticks[i];
+				sbi(LED_port, LED1_pin);
+			}
+			else
+			{
+				cbi(LED_port, LED1_pin);
 			}
 
-			timer_1_period_wait(tsum + process_time, servo_data.servo_period_length);
+			for(unsigned char i = 0; i < 8; i++)
+			{
+				esc_set_width(i, ppm_chan_width(i) + ticks_500us * 3);
+			}
 
-			process_time_stamp = TCNT0;
+			if(ser_tx_is_busy() == 0)
+			{
+				for(unsigned char i = 8, k = 16, j = 0; j < 8; i++, j++, k++)
+				{
+					debug_tx(i, sens_read(j, 1));
+					debug_tx(k, sens_noise(j));
+				}
 
+				for(unsigned char i = 0, j = 0; j < 8; i++, j++)
+				{
+					debug_tx(i, ppm_chan_width(j));
+				}
+
+				debug_tx(24, esc_get_total());
+				debug_tx(25, process_time);
+			}
+			
 			esc_start_next();
 
 			unsigned int tcnt0_ = TCNT0;
-			process_time = (((tcnt0_ | 0x100) - process_time_stamp) & 0xFF) * 1024;
+			process_time = (unsigned long)(((tcnt0_ | 0x100) - process_time_stamp) & 0xFF) * 1024;
 		}
 	}
 

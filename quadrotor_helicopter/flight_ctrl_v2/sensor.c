@@ -6,7 +6,7 @@ static volatile unsigned char adc_chan;
 
 ISR(ADC_vect)
 {
-	adc_chan = ADMUX & 0b00011111;
+	adc_chan = ADMUX & 0b00000111;
 	sens_res[adc_chan].res[sens_res[adc_chan].cnt % sens_hist_len] = ADC;
 	sens_res[adc_chan].cnt++;
 	adc_chan++;
@@ -49,7 +49,7 @@ signed int sens_read(unsigned char index, unsigned char calc_noise)
 		sum += sens_res[index].res[i];
 		cnt++;
 	}
-	for(unsigned char i = sens_res[index].cnt + sens_hist_len, j = 0; j > sens_hist_len / 2; j++, i--)
+	for(unsigned char i = sens_res[index].cnt + sens_hist_len, j = 0; j < sens_hist_len / 2 && j < sens_res[index].cnt; j++, i--)
 	{
 		sum += sens_res[index].res[i % sens_hist_len];
 		cnt++;
@@ -68,12 +68,20 @@ signed int sens_read(unsigned char index, unsigned char calc_noise)
 		sens_res[index].noise = calc_multi(sum, noise_multiplier, cnt);
 	}
 
-	sens_res[index].cnt = 0;
+	if(sens_res[index].cnt > sens_hist_len / 2)
+	{
+		sens_res[index].cnt = 0;
+	}
 
 	signed int r = sens_res[index].avg;
 	r -= sens_res[index].offset;
 
 	return r;
+}
+
+unsigned int sens_noise(unsigned char i)
+{
+	return sens_res[i].noise;
 }
 
 void sens_calibrate(unsigned char t)

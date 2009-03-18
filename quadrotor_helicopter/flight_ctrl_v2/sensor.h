@@ -24,5 +24,6 @@ signed int sens_read(unsigned char, unsigned char);
 void sens_calibrate(unsigned char);
 void adc_start(unsigned char, unsigned char);
 void adc_wait_stop();
+unsigned int sens_noise(unsigned char);
 
 #endif

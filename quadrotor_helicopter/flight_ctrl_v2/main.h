@@ -13,5 +13,6 @@
 #include "sensor.h"
 #include "ser.h"
 #include "save.h"
+#include "timer.h"
 
 #endif
