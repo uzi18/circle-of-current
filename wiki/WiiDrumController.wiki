@@ -40,10 +40,6 @@ Thanks to Hector Martin for the decryption and encryption method. He wrote about
 
 [http://www.derkeiler.com/pdf/Newsgroups/sci.crypt/2008-11/msg00110.pdf PDF Link]
 
-==== twi.c ====
-
-The functions contained in this file handles I2C slave operations (slave only, functions for master not included).
-
 == Hardware ==
 
 [http://i156.photobucket.com/albums/t31/frank26080115/DSC03116Small.jpg First Hardware Picture]
