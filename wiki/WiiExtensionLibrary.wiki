@@ -2,11 +2,13 @@
 
 =Wiimote Extension Library for AVR Microcontroller=
 
+[http://frank.circleofcurrent.com/wiiextensionlib.php My Website Link]
+
 This is a library that gives an AVR microcontroller the ability to act as a Wiimote extension controller (Nunchuk, Classic Controller, Guitar Hero 3 controller, Guitar Hero World Tour guitar controller, Guitar Hero World Tour drum controller, etc). The library has two parts: the I2C slave device and Wiimote protocol handling. It can be used with AVR-GCC, and it is possible to adapt it to work with Arduino if you know how to include the files into your sketch properly.
 
-twi.c and twi.h are used to make the microcontroller a register based I2C slave device. It has 256 registers in an array, these registers are written to and read by the Wiimote via the I2C bus using a fairly standard method.
+wiimote.c and wiimote.h handles the interface between the application software and the I2C bus, it also handles the encryption of the data sent to the Wiimote. The encryption look-up tables are in wm_crypto.h .
 
-wiimote.c and wiimote.h handles the interface between the application software and the I2C registers, it also handles the encryption of the data sent to the Wiimote. The encryption look-up tables are in wm_crypto.h .
+wiimote.c has code to make the microcontroller a register based I2C slave device. It has 256 registers in an array, these registers are written to and read by the Wiimote via the I2C bus using a fairly standard method. 
 
 ==Using the Library==
 
@@ -17,7 +19,7 @@ The pin-out of the extension port is shown below, the order from left to right i
 || Ground || No Connection || SCL ||
 || SDA || Device Detect || Vcc (3.3V) ||
 
-Define your hardware connections in a file called pin_def.h like so:
+Define your hardware connections in wiimote.h like so:
 
 {{{
 #define twi_port PORTC
@@ -50,5 +52,3 @@ Go to http://code.google.com/p/circle-of-current/source/browse/#svn/wii_drum and
 wiimote.c
 wiimote.h
 wm_crypto.h
-twi.c
-twi.h
