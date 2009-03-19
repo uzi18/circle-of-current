@@ -11,6 +11,16 @@ void main_init()
 
 	timer0_init();
 	ser_init();
+
+	for(signed char y = -2; y <= 2; y++)
+	{
+		for(signed char x = -2; x <= 2; x++)
+		{
+			debug_tx(0, PSTR("atan2 "), calc_atan2(y, x));
+		}
+	}
+	while(1);
+
 	ppm_init();
 	sens_init();
 	esc_init();
@@ -56,6 +66,7 @@ int main()
 				esc_set_width(i, ppm_chan_width(i) + ticks_500us * 3);
 			}
 
+			/*
 			if(ser_tx_is_busy() == 0)
 			{
 				for(unsigned char i = 8, k = 16, j = 0; j < 8; i++, j++, k++)
@@ -72,6 +83,7 @@ int main()
 				debug_tx_long(32, esc_get_total());
 				debug_tx_long(33, process_time);
 			}
+			*/
 			
 			esc_start_next();
 

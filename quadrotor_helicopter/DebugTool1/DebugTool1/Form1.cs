@@ -17,6 +17,16 @@ namespace DebugTool1
         {
             InitializeComponent();
 
+            string temp = "";
+            for(int y = -2; y <= 2; y++)
+	        {                
+                for (int x = -2; x <= 2; x++)
+		        {
+                    temp += Convert.ToString(Math.Atan2(y, x)) + " " + y + " " + x +"\r\n";
+		        }
+	        }
+            MessageBox.Show(temp);
+
             for (int i = 0; i < 64; i++)
             {
                 string[] sub_items = new string[2];
@@ -88,11 +98,11 @@ namespace DebugTool1
                         {
 							double data_;
 							
-							if (c & 0x40 == 0x40)
+							if ((c & 0x40) == 0x40)
 							{
 								data -= (c << (7 * (cnt - 1)));								
 								
-								if (c & 0x20 == 0x20)
+								if ((c & 0x20) == 0x20)
 								{
 									data_ = (double)data * Math.Pow(10, -1 * (double)(c & 0x1F));
 								}

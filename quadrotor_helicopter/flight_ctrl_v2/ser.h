@@ -4,6 +4,7 @@
 #include <math.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <avr/pgmspace.h>
 
 #include "config.h"
 #include "pindef.h"
@@ -44,8 +45,7 @@ void ser_init();
 cmd com_rx();
 unsigned char com_rx_size();
 void ser_tx(unsigned char);
-void debug_tx_long(unsigned char, signed long);
-void debug_tx_double(unsigned char, double);
+void debug_tx(unsigned char, const signed char *, double);
 unsigned char ser_tx_is_busy();
 
 #endif

@@ -86,64 +86,22 @@ ISR(USART0_RX_vect)
 	}
 }
 
-void debug_tx_long(unsigned char addr, signed long data)
+void debug_tx(unsigned char addr, const signed char * str, double data)
 {
-	addr *= 2;
-	addr |= _BV(7);
-	if(data < 0)
+	ser_tx(addr | 0x80);
+	unsigned char c;
+	while ((c = pgm_read_byte(str++)))
 	{
-		addr |= 1;
-		data *= -1;
+    	ser_tx(c);
 	}
-	ser_tx(addr);
-
-	for(unsigned char i = 0; i < 5; i++)
+	unsigned char * num_str;
+	num_str = calloc(32, sizeof(unsigned char));
+	num_str = dtostrf(data, -5, 3, num_str);
+	for(unsigned char i = 0; num_str[i] != 0; i++)
 	{
-		ser_tx(data & 0x7F);
-		data = (data & 0xFFFFFF80) >> 7;
+		ser_tx(num_str[i]);
 	}
-}
-
-void debug_tx_double(unsigned char addr, double data)
-{
-	addr *= 2;
-	addr |= _BV(7);
-	if(data < 0)
-	{
-		addr |= 1;
-		data *= -1;
-	}
-	ser_tx(addr);
-
-	signed char exp = 0;
-	while(data >= 10000000)
-	{
-		data = data / 10;
-		exp--;
-	}
-	while(data < 1000000)
-	{
-		data = data * 10;
-		exp++;
-	}
-
-	unsigned long data_ = lround(data);
-
-	for(unsigned char i = 0; i < 4; i++)
-	{
-		ser_tx(data_ & 0x7F);
-		data = (data_ & 0xFFFFFF80) >> 7;
-	}
-
-	if(exp < 0)
-	{
-		exp *= -1;
-		ser_tx((unsigned char)exp | _BV(6));
-	}
-	else
-	{
-		ser_tx((unsigned char)exp | _BV(6) | _BV(5));
-	}
+	ser_tx('\r'); ser_tx('\n');
 }
 
 unsigned char ser_tx_is_busy()

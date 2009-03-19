@@ -2,8 +2,13 @@
 #define calc_h_inc
 
 #include <avr/io.h>
+#include <avr/pgmspace.h>
 #include <math.h>
 #include "config.h"
+#include "pindef.h"
+#include "macros.h"
+
+#define rad_to_deg_const 57.2957795130823
 
 typedef struct PID_const_
 {
@@ -41,5 +46,10 @@ double calc_map_double(double, double, double, double, double);
 double PID_mv(PID_data *, double, double);
 double complementary_filter(double *, double, double, double, double);
 double kalman_filter(kalman_data *, double, double, double);
+double calc_atan2(double, double);
+double calc_asin(double);
+double calc_pow(double, signed char);
+double calc_rad_to_deg(double);
+double calc_deg_to_rad(double);
 
 #endif

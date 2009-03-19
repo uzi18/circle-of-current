@@ -114,6 +114,115 @@ signed long calc_min(signed long a, signed long b)
 	}
 }
 
+double calc_pow(double x, signed char n)
+{
+	if(n == 0)
+	{
+		return 1;
+	}
+	else if(bit_is_set(n, 0))
+	{
+		return x * calc_pow(x, n - 1);
+	}
+	else
+	{
+		double z = calc_pow(x, n / 2);
+		return z * z;
+	}
+}
+
+#include "trig_tbl.h"
+
+double calc_asin(double x)
+{
+	unsigned long addr = lround(fabs(calc_constrain_double(x, -1, 1) * asin_multiplier));
+	union float__ {
+		unsigned long l;
+		double d;
+	} _float_;
+	_float_.l = pgm_read_dword(&(asin_tbl[addr])); 
+	double r = _float_.d;
+	if(x < 0)
+	{
+		return -r;
+	}
+	else
+	{
+		return r;
+	}
+}
+
+double calc_atan2(double y, double x)
+{
+	double z = 0;
+	if(fabs(x) > fabs(y))
+	{
+		z = y / x;
+	}
+	else if(fabs(x) < fabs(y))
+	{
+		z = x / y;
+	}
+	else if(x == 0 && y == 0)
+	{
+		return 0;
+	}
+	else if(x == y)
+	{
+		z = 1;
+	}
+
+	z *= atan_multiplier;
+
+	unsigned long addr = lround(fabs(z));
+
+	union float__ {
+		unsigned long l;
+		double d;
+	} _float_;
+
+	_float_.l = pgm_read_dword(&(atan_tbl[addr])); 
+	double r = _float_.d;
+
+	if(fabs(x) < fabs(y))
+	{
+		r = (M_PI / 2) - r;
+	}
+
+	if(x > 0)
+	{
+		if(y > 0)
+		{
+			return r;
+		}
+		else
+		{
+			return -r;
+		}
+	}
+	else
+	{
+		if(y > 0)
+		{
+			return M_PI - r;
+		}
+		else
+		{
+			return 0 - M_PI + r;
+		}
+	}
+}
+
+double calc_rad_to_deg(double x)
+{
+	return x * rad_to_deg_const;
+}
+
+double calc_deg_to_rad(double x)
+{
+	return x / rad_to_deg_const;
+}
+
 signed long calc_constrain_long(signed long in, signed long min_, signed long max_)
 {
 	return calc_min(calc_max(in, min_), max_);
@@ -124,9 +233,9 @@ double calc_constrain_double(double in, double min_, double max_)
 	return fmin(fmax(in, min_), max_);
 }
 
-double complementary_filter(double * ang, double accel_h, double accel_v, double gyro_r, double w)
+double complementary_filter(double * ang, double accel_ang, double gyro_r, double w, double dt)
 {
-	*ang = (1 - w) * (*ang + gyro_r) + (w * atan2(accel_h, accel_v));
+	*ang = (1 - w) * (*ang + (gyro_r * dt)) + (w * accel_ang);
 	return *ang;
 }
 
@@ -151,15 +260,13 @@ double PID_mv(PID_data * pid, double current, double target)
 	return mv;
 }
 
-double kalman_filter(kalman_data * kd, double gyro_r, double accel_h, double accel_v)
+double kalman_filter(kalman_data * kd, double gyro_r, double ang, double dt)
 {
-	kd->x[0] += gyro_r - kd->x[1];
-	kd->P[0] += (-1 * (kd->P[2] + kd->P[1])) + kd->Q[0];
-	kd->P[1] -= kd->P[3];
-	kd->P[2] -= kd->P[3];
-	kd->P[3] += kd->Q[1];
-
-	double ang = atan2(accel_h, accel_v);
+	kd->x[0] += dt * (gyro_r - kd->x[1]);
+	kd->P[0] += (-dt * (kd->P[2] + kd->P[1])) + (dt * kd->Q[0]);
+	kd->P[1] -= dt * kd->P[3];
+	kd->P[2] -= dt * kd->P[3];
+	kd->P[3] += dt * kd->Q[1];
 
 	double y = ang - kd->x[0];
 	double S = kd->P[0] + kd->R;
