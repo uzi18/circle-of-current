@@ -130,6 +130,6 @@ void ppm_calibrate(unsigned char t)
 	}
 	for(unsigned char j = 0; j < 8; j++)
 	{
-		ppm_offset[j] = calc_multi((signed long)sum[j], 1, (signed long)t);
+		ppm_offset[j] = lround((double)sum[j] / (double)t);
 	}
 }

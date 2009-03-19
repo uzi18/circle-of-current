@@ -51,5 +51,6 @@ double calc_asin(double);
 double calc_pow(double, signed char);
 double calc_rad_to_deg(double);
 double calc_deg_to_rad(double);
+void kalman_init(kalman_data *, double, double, double);
 
 #endif

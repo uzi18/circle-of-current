@@ -1,6 +1,13 @@
 #ifndef pindef_h_inc
 #define pindef_h_inc
 
+#define roll_accel_chan 0
+#define pitch_accel_chan 1
+#define vert_accel_chan 2
+#define roll_gyro_chan 3
+#define pitch_gyro_chan 4
+#define yaw_gyro_chan 5
+
 #define esc_port PORTD
 #define esc_ddr DDRD
 #define esc_rst_pin 4

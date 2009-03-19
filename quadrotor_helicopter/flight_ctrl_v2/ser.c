@@ -94,8 +94,9 @@ void debug_tx(unsigned char addr, const signed char * str, double data)
 	{
     	ser_tx(c);
 	}
-	unsigned char * num_str;
-	num_str = calloc(32, sizeof(unsigned char));
+	ser_tx('=');
+	signed char * num_str;
+	num_str = calloc(32, sizeof(num_str));
 	num_str = dtostrf(data, -5, 3, num_str);
 	for(unsigned char i = 0; num_str[i] != 0; i++)
 	{

@@ -1,6 +1,7 @@
 #ifndef ser_h_inc
 #define ser_h_inc
 
+#include <stdlib.h>
 #include <math.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>

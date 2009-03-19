@@ -282,3 +282,18 @@ double kalman_filter(kalman_data * kd, double gyro_r, double ang, double dt)
 
 	return kd->x[0];
 }
+
+void kalman_init(kalman_data * kd, double Q_accel, double Q_gyro, double R_accel)
+{
+	kd->x[0] = 0;
+	kd->x[1] = 0;
+
+	kd->P[0] = 0;
+	kd->P[1] = 0;
+	kd->P[2] = 0;
+	kd->P[3] = 0;
+
+	kd->Q[0] = Q_accel;
+	kd->Q[1] = Q_gyro;
+	kd->R = R_accel;
+}

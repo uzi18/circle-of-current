@@ -1,6 +1,7 @@
 #ifndef ppm_h_inc
 #define ppm_h_inc
 
+#include <math.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
