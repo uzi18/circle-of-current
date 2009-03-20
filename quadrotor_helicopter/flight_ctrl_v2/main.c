@@ -9,11 +9,13 @@ void main_init()
 
 	sei();
 
-	timer0_init();
 	ser_init();
+	param_init();
+
 	ppm_init();
 	sens_init();
 	esc_init();
+	timer0_init();
 
 	sens_calibrate(10);
 	tog(LED_port, LED2_pin);
@@ -50,31 +52,33 @@ int main()
 
 	while(1)
 	{
-		if(start_proc())
+		//if(start_proc())
 		{
+			tog(LED_port, LED2_pin);
+
 			if(ppm_tx_is_good(3) == 2)
 			{
-				sbi(LED_port, LED1_pin);
+				//sbi(LED_port, LED1_pin);
 			}
 			else
 			{
-				cbi(LED_port, LED1_pin);
+				//cbi(LED_port, LED1_pin);
 			}
 
-			for(unsigned char i = 0; i < 8; i++)
+			//for(unsigned char i = 0; i < 6; i++)
 			{
-				sens_read(i, 1);
+			//	sens_read(i, 0);
 			}
 
-			double roll_accel_val = sens_avg(roll_accel_chan) - sens_offset(roll_accel_chan);
-			double pitch_accel_val = sens_avg(pitch_accel_chan) - sens_offset(pitch_accel_chan);
-			double vert_accel_val = sens_avg(vert_accel_chan) - sens_offset(vert_accel_chan);
+			double roll_accel_val = sens_read(roll_accel_chan) - sens_offset(roll_accel_chan);
+			double pitch_accel_val = sens_read(pitch_accel_chan) - sens_offset(pitch_accel_chan);
+			double vert_accel_val = sens_read(vert_accel_chan) - sens_offset(vert_accel_chan);
 
 			double roll_atan = calc_atan2(roll_accel_val, vert_accel_val);
 			double pitch_atan = calc_atan2(pitch_accel_val, vert_accel_val);
 
-			double roll_asin = calc_asin(roll_accel_val / one_G_val);
-			double pitch_asin = calc_asin(pitch_accel_val / one_G_val);
+			//double roll_asin = calc_asin(roll_accel_val / one_G_val);
+			//double pitch_asin = calc_asin(pitch_accel_val / one_G_val);
 
 			double roll_gyro_val = sens_avg(roll_gyro_chan) - sens_offset(roll_gyro_chan);
 			double pitch_gyro_val = sens_avg(pitch_gyro_chan) - sens_offset(pitch_gyro_chan);
@@ -83,21 +87,16 @@ int main()
 			roll_ang_cf = complementary_filter(&roll_ang_cf, roll_atan, roll_gyro_val * gyro_to_rad_per_sec, accel_gyro_w_ratio, frame_delta_time);
 			pitch_ang_cf = complementary_filter(&pitch_ang_cf, pitch_atan, pitch_gyro_val * gyro_to_rad_per_sec, accel_gyro_w_ratio, frame_delta_time);
 
-			roll_ang_kf = kalman_filter(&roll_kalman, roll_gyro_val * gyro_to_rad_per_sec, roll_atan, frame_delta_time);
-			pitch_ang_kf = kalman_filter(&pitch_kalman, pitch_gyro_val * gyro_to_rad_per_sec, pitch_atan, frame_delta_time);
+			//roll_ang_kf = kalman_filter(&roll_kalman, roll_gyro_val * gyro_to_rad_per_sec, roll_atan, frame_delta_time);
+			//pitch_ang_kf = kalman_filter(&pitch_kalman, pitch_gyro_val * gyro_to_rad_per_sec, pitch_atan, frame_delta_time);
 
 			double roll_cmd = ppm_chan_width(0);
 
-			for(unsigned char i = 0; i < 8; i++)
-			{
-				esc_set_width(i, ppm_chan_width(i) + ticks_500us * 3);
-			}
-
-			if(ser_tx_is_busy() == 0)
+			if(ser_tx_is_busy() == 0 && 1 == 0)
 			{
 				for(unsigned char i = 8, k = 16, h = 24, j = 0; j < 8; i++, j++, k++, h++)
 				{
-					sens_hist t_sh = sens_read(j, 1);
+					sens_hist t_sh = sens_proc(j, 1);
 					debug_tx(i, PSTR("sensor avg    "), t_sh.avg);
 					debug_tx(h, PSTR("sensor offset "), t_sh.offset);
 					debug_tx(k, PSTR("sensor noise  "), t_sh.noise);
@@ -107,7 +106,19 @@ int main()
 				{
 					debug_tx(i, PSTR("ppm pulse     "), ppm_chan_width(j));
 				}
-			}			
+			}
+
+			//tog(LED_port, LED2_pin);
+
+			//while(start_proc());
+		}
+
+		if(start_proc())
+		{
+			for(unsigned char i = 0; i < 6; i++)
+			{
+				esc_set_width(i, ppm_chan_width(i) + ticks_500us * 3);
+			}
 		}
 	}
 

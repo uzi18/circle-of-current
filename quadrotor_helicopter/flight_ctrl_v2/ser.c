@@ -1,7 +1,6 @@
 #include "ser.h"
 
 static volatile ser_buff_s ser_tx_buff;
-static volatile cmd_buff_s cmd_buff;
 
 void ser_init()
 {
@@ -10,25 +9,9 @@ void ser_init()
 	ser_tx_buff.h = 0;
 	ser_tx_buff.t = 0;
 	ser_tx_buff.f = 0;
-	ser_tx_buff.s = 255;
-
-	cmd_buff.h = 0;
-	cmd_buff.t = 0;
-	cmd_buff.s = 8;
+	ser_tx_buff.s = 256;
 
 	UCSR0B = _BV(RXEN0) | _BV(TXEN0) | _BV(RXCIE0) | _BV(TXCIE0);
-}
-
-cmd com_rx()
-{
-	cmd c = cmd_buff.com[cmd_buff.h];
-	cmd_buff.h = (cmd_buff.h + 1) % cmd_buff.s;
-	return c;
-}
-
-unsigned char com_rx_size()
-{
-	return ((cmd_buff.t + cmd_buff.s) - cmd_buff.h) % cmd_buff.s;
 }
 
 void ser_tx(unsigned char c)
@@ -58,31 +41,69 @@ ISR(USART0_TX_vect)
 	}
 }
 
+static volatile unsigned char ser_rx_addr;
+static volatile double ser_rx_data;
+static volatile signed char ser_rx_data_sign;
+static volatile signed char ser_rx_data_dot;
+static volatile unsigned char ser_rx_state;
+
+
 ISR(USART0_RX_vect)
 {
 	unsigned long c = UDR0;
-	if(bit_is_set(c, 7))
+	if(c == '@')
 	{
-		c &= 0xFF ^ _BV(7);
-		cmd_buff.sign_f = c & (0xFF ^ _BV(0));
-		cmd_buff.addr = c >> 1;
-		cmd_buff.cnt = 0;
-		cmd_buff.data = 0;
+		ser_rx_addr = 0;
+		ser_rx_state = 0;
 	}
-	else
+	else if(c == '=')
 	{
-		cmd_buff.data += c << (7 * cmd_buff.cnt);
-		cmd_buff.cnt++;
-		if(cmd_buff.cnt == 5)
+		ser_rx_data = 0;
+		ser_rx_data_sign = 1;
+		ser_rx_data_dot = 0;
+		ser_rx_state = 1;
+	}
+	else if(c == '#' && ser_rx_state == 1)
+	{
+		for(signed char i = 0; i < ser_rx_data_dot - 1; i++)
 		{
-			if(cmd_buff.sign_f != 0)
-			{
-				cmd_buff.data *= -1;
-			}
-			cmd_buff.com[cmd_buff.t].data = cmd_buff.data;
-			cmd_buff.com[cmd_buff.t].addr = cmd_buff.addr;
-			cmd_buff.t = (cmd_buff.t + 1) % cmd_buff.s;
+			ser_rx_data /= 10;
 		}
+
+		param_set_d(ser_rx_addr % 128, ser_rx_data * (double)ser_rx_data_sign);
+	}
+	else if(c == 'S')
+	{
+		param_save(ser_rx_addr);
+	}
+	else if(c == 'L')
+	{
+		param_load(ser_rx_addr);
+	}
+	else if(c >= '0' && c <= '9')
+	{
+		if(ser_rx_state == 0)
+		{
+			ser_rx_addr *= 10;
+			ser_rx_addr += c - '0';
+		}
+		else
+		{
+			ser_rx_data *= 10;
+			ser_rx_data += (double)(c - '0');
+			if(ser_rx_data_dot > 0)
+			{
+				ser_rx_data_dot++;
+			}
+		}
+	}
+	else if(c == '.')
+	{
+		ser_rx_data_dot = 1;
+	}
+	else if(c == '-')
+	{
+		ser_rx_data_sign = -1;
 	}
 }
 
@@ -96,12 +117,13 @@ void debug_tx(unsigned char addr, const signed char * str, double data)
 	}
 	ser_tx('=');
 	signed char * num_str;
-	num_str = calloc(32, sizeof(num_str));
+	num_str = calloc(16, sizeof(num_str));
 	num_str = dtostrf(data, -5, 3, num_str);
 	for(unsigned char i = 0; num_str[i] != 0; i++)
 	{
 		ser_tx(num_str[i]);
 	}
+	free(num_str);
 	ser_tx('\r'); ser_tx('\n');
 }
 

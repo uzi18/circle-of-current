@@ -38,19 +38,12 @@ ISR(TIMER0_COMPA_vect)
 
 ISR(TIMER0_COMPB_vect)
 {
+	start_proc_flag = 0;
 	esc_start_next();
 	OCR0B += loop_frame;
 }
 
 unsigned char start_proc()
 {
-	if(start_proc_flag != 0)
-	{
-		start_proc_flag = 0;
-		return 1;
-	}
-	else
-	{
-		return 0;
-	}
+	return start_proc_flag;
 }

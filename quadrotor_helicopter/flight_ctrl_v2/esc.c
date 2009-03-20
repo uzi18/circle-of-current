@@ -53,6 +53,10 @@ void esc_init()
 void esc_shift_rst()
 {
 	cbi(esc_port, esc_rst_pin);
+	nop(); nop(); nop(); nop();
+	nop(); nop(); nop(); nop();
+	nop(); nop(); nop(); nop();
+	nop(); nop(); nop(); nop();
 
 	if(esc_safety == 0)
 	{

@@ -3,51 +3,66 @@
 
 // define default values
 
-#define dhgsdfgsdfg_def_val 2345
-#define sdfgsdgsdfgsdfgs_def_val 2345
-#define sdfgsdfg_def_val 2345
-#define sdfgsdfgsdgds_def_val 2345
-#define _blank_name_4_def_val 0
+#define test1_def_val 1
+#define wetwet_def_val 2
+#define wertwet_def_val 3
+#define wetwertw_def_val 4
+#define terwtwertwe_def_val 5
+#define rtwertwe_def_val 6
+#define twetwertw_def_val 7
+#define wertewrt_def_val 8
 
 // define addresses
 
-#define dhgsdfgsdfg_addr 0
-#define sdfgsdgsdfgsdfgs_addr 1
-#define sdfgsdfg_addr 2
-#define sdfgsdfgsdgds_addr 3
-#define _blank_name_4_addr 4
+#define test1_addr 0
+#define wetwet_addr 1
+#define wertwet_addr 2
+#define wetwertw_addr 3
+#define terwtwertwe_addr 4
+#define rtwertwe_addr 5
+#define twetwertw_addr 6
+#define wertewrt_addr 7
 
 // make union
 
 typedef union saved_params_s_ {
 	struct {
-		double dhgsdfgsdfg;
-		double sdfgsdgsdfgsdfgs;
-		double sdfgsdfg;
-		double sdfgsdfgsdgds;
-		double _blank_name_4;
+		double test1;
+		double wetwet;
+		double wertwet;
+		double wetwertw;
+		double terwtwertwe;
+		double rtwertwe;
+		double twetwertw;
+		double wertewrt;
 	} d_s;
 
 	struct {
-		signed long dhgsdfgsdfg;
-		signed long sdfgsdgsdfgsdfgs;
-		signed long sdfgsdfg;
-		signed long sdfgsdfgsdgds;
-		signed long _blank_name_4;
+		signed long test1;
+		signed long wetwet;
+		signed long wertwet;
+		signed long wetwertw;
+		signed long terwtwertwe;
+		signed long rtwertwe;
+		signed long twetwertw;
+		signed long wertewrt;
 	} sl_s;
 
 	struct {
-		unsigned long dhgsdfgsdfg;
-		unsigned long sdfgsdgsdfgsdfgs;
-		unsigned long sdfgsdfg;
-		unsigned long sdfgsdfgsdgds;
-		unsigned long _blank_name_4;
+		unsigned long test1;
+		unsigned long wetwet;
+		unsigned long wertwet;
+		unsigned long wetwertw;
+		unsigned long terwtwertwe;
+		unsigned long rtwertwe;
+		unsigned long twetwertw;
+		unsigned long wertewrt;
 	} ul_s;
 
-	double d_val[5];
-	signed long sl_val[5];
-	unsigned long ul_val[5];
-	unsigned char c[20];
+	double d_val[8];
+	signed long sl_val[8];
+	unsigned long ul_val[8];
+	unsigned char c[32];
 } saved_params_s;
 
 void params_set_default();
@@ -60,11 +75,14 @@ static saved_params_s saved_params;
 
 void params_set_default()
 {
-	saved_params.d_s.dhgsdfgsdfg = dhgsdfgsdfg_def_val;
-	saved_params.d_s.sdfgsdgsdfgsdfgs = sdfgsdgsdfgsdfgs_def_val;
-	saved_params.d_s.sdfgsdfg = sdfgsdfg_def_val;
-	saved_params.d_s.sdfgsdfgsdgds = sdfgsdfgsdgds_def_val;
-	saved_params.d_s._blank_name_4 = _blank_name_4_def_val;
+	saved_params.d_s.test1 = test1_def_val;
+	saved_params.d_s.wetwet = wetwet_def_val;
+	saved_params.d_s.wertwet = wertwet_def_val;
+	saved_params.d_s.wetwertw = wetwertw_def_val;
+	saved_params.d_s.terwtwertwe = terwtwertwe_def_val;
+	saved_params.d_s.rtwertwe = rtwertwe_def_val;
+	saved_params.d_s.twetwertw = twetwertw_def_val;
+	saved_params.d_s.wertewrt = wertewrt_def_val;
 }
 
 #endif

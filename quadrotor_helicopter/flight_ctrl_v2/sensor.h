@@ -15,16 +15,18 @@ typedef struct sens_hist_
 	unsigned int res[sens_hist_len_max];
 	unsigned char cnt;
 	unsigned char last_cnt;
+	unsigned int latest;
 	double avg;
 	double offset;
 	double noise;
 } sens_hist;
 
 void sens_init();
-sens_hist sens_read(unsigned char, unsigned char);
+sens_hist sens_proc(unsigned char, unsigned char);
 void sens_calibrate(unsigned char);
 void adc_start(unsigned char, unsigned char);
 void adc_wait_stop();
+unsigned int sens_read(unsigned char);
 double sens_avg(unsigned char);
 double sens_noise(unsigned char);
 double sens_offset(unsigned char);

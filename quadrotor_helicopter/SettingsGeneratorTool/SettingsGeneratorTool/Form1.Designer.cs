@@ -29,12 +29,12 @@ namespace SettingsGeneratorTool
         private void InitializeComponent()
         {
             this.ListGrid = new System.Windows.Forms.DataGridView();
-            this.NameCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DefaultValueCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.SaveListBut = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.OutputText = new System.Windows.Forms.TextBox();
             this.GenBut = new System.Windows.Forms.Button();
+            this.NameCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DefaultValueCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.ListGrid)).BeginInit();
             this.SuspendLayout();
             // 
@@ -50,18 +50,6 @@ namespace SettingsGeneratorTool
             this.ListGrid.Name = "ListGrid";
             this.ListGrid.Size = new System.Drawing.Size(326, 472);
             this.ListGrid.TabIndex = 0;
-            // 
-            // NameCol
-            // 
-            this.NameCol.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.NameCol.HeaderText = "Name";
-            this.NameCol.Name = "NameCol";
-            // 
-            // DefaultValueCol
-            // 
-            this.DefaultValueCol.HeaderText = "Default Value";
-            this.DefaultValueCol.MinimumWidth = 100;
-            this.DefaultValueCol.Name = "DefaultValueCol";
             // 
             // SaveListBut
             // 
@@ -110,6 +98,19 @@ namespace SettingsGeneratorTool
             this.GenBut.UseVisualStyleBackColor = true;
             this.GenBut.Click += new System.EventHandler(this.GenBut_Click);
             // 
+            // NameCol
+            // 
+            this.NameCol.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.NameCol.HeaderText = "Name";
+            this.NameCol.Name = "NameCol";
+            // 
+            // DefaultValueCol
+            // 
+            this.DefaultValueCol.HeaderText = "Default Value";
+            this.DefaultValueCol.MinimumWidth = 100;
+            this.DefaultValueCol.Name = "DefaultValueCol";
+            this.DefaultValueCol.Width = 125;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -131,12 +132,12 @@ namespace SettingsGeneratorTool
         #endregion
 
         private System.Windows.Forms.DataGridView ListGrid;
-        private System.Windows.Forms.DataGridViewTextBoxColumn NameCol;
-        private System.Windows.Forms.DataGridViewTextBoxColumn DefaultValueCol;
         private System.Windows.Forms.Button SaveListBut;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.TextBox OutputText;
         private System.Windows.Forms.Button GenBut;
+        private System.Windows.Forms.DataGridViewTextBoxColumn NameCol;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DefaultValueCol;
     }
 }
 

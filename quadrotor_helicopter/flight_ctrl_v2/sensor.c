@@ -7,14 +7,16 @@ static volatile unsigned char sens_proc_busy;
 
 ISR(ADC_vect)
 {
+	tog(LED_port, LED1_pin);
 	adc_chan = ADMUX & 0b00000111;
 	if(sens_proc_busy - 1 != adc_chan)
 	{
 		sens_res[adc_chan].res[sens_res[adc_chan].cnt % sens_hist_len] = ADC;
+		sens_res[adc_chan].latest = ADC;
 		sens_res[adc_chan].cnt++;
+		adc_chan++;
 	}
-	adc_chan++;
-	adc_chan %= 8;
+	adc_chan %= 6;
 	ADMUX = (ADMUX & 0b11100000) | adc_chan;
 	ADCSRA = _BV(ADEN) | _BV(ADSC) | _BV(ADIE) | _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0);
 }
@@ -46,45 +48,48 @@ void sens_init()
 	adc_start(0, _BV(ADIE));
 }
 
-sens_hist sens_read(unsigned char index, unsigned char calc_noise)
+sens_hist sens_proc(unsigned char index, unsigned char calc_noise)
 {
 	sens_proc_busy = index + 1;
 	unsigned long sum = 0;
 	unsigned char cnt = 0;
-	for(unsigned char i = 0; i < sens_res[index].cnt && i < sens_hist_len; i++)
+	unsigned char scnt = sens_res[index].cnt;
+	if(scnt == 0) goto end_label;
+	for(unsigned char i = 0; i < scnt && i < sens_hist_len; i++)
 	{
 		sum += sens_res[index].res[i];
 		cnt++;
 	}
-	for(unsigned char i = sens_res[index].cnt + sens_hist_len, j = 0; j < sens_hist_len / 2 && j < sens_res[index].cnt; j++, i--)
-	{
-		sum += sens_res[index].res[i % sens_hist_len];
-		cnt++;
-	}
 	sens_res[index].avg = (double)sum / (double)cnt;
-	signed long avg = lround(sens_res[index].avg);
 
+	#ifdef enable_calc_noise
+	signed long avg = lround(sens_res[index].avg);
 	if(calc_noise != 0)
 	{
 		sum = 0;
 		cnt = 0;
-		for(unsigned char i = 0; i < sens_res[index].cnt && i < sens_hist_len; i++)
+		for(unsigned char i = 0; i < scnt && i < sens_hist_len; i++)
 		{
 			sum += calc_abs((signed long)sens_res[index].res[i] - avg);
 			cnt++;
 		}
 		sens_res[index].noise = (double)sum / (double)cnt;
 	}
+	#endif
 
-	if(sens_res[index].cnt > sens_hist_len / 2)
-	{
-		sens_res[index].last_cnt = sens_res[index].cnt;
-		sens_res[index].cnt = 0;
-	}
+	sens_res[index].last_cnt = sens_res[index].cnt;
+	sens_res[index].cnt = 0;
+
+	end_label:
 
 	sens_proc_busy = 0;
 
 	return sens_res[index];
+}
+
+unsigned int sens_read(unsigned char i)
+{
+	return sens_res[i].latest;
 }
 
 double sens_avg(unsigned char i)
