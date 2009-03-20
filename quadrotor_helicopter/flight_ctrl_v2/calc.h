@@ -12,19 +12,15 @@
 
 typedef struct PID_const_
 {
-	double kp;
-	double ki;
-	double kd;
-	double err_low_thresh;
-	double delta_err_low_thresh;
-	double err_dec;
+	double p;
+	double i;
+	double d;
 } PID_const;
 
 typedef struct PID_data_
 {
 	double err_sum;
 	double err_last;
-	PID_const constants;
 } PID_data;
 
 typedef struct kalman_data_
@@ -43,7 +39,7 @@ signed long calc_max(signed long, signed long);
 signed long calc_min(signed long, signed long);
 signed long calc_map_long(signed long, signed long, signed long, signed long, signed long);
 double calc_map_double(double, double, double, double, double);
-double PID_mv(PID_data *, double, double);
+double PID_mv(PID_data *, PID_const, double, double);
 double complementary_filter(double *, double, double, double, double);
 double kalman_filter(kalman_data *, double, double, double);
 double calc_atan2(double, double);

@@ -44,81 +44,104 @@ int main()
 	double zero_G_val = (sens_offset(roll_accel_chan) + sens_offset(pitch_accel_chan)) / 2;
 	double one_G_val = sens_offset(vert_accel_chan) - zero_G_val;
 
-	double roll_ang_kf = 0; 
-	double pitch_ang_kf = 0;
-
-	double roll_ang_cf = 0;
-	double pitch_ang_cf = 0;
+	double roll_ang = 0; 
+	double pitch_ang = 0;
 
 	while(1)
 	{
-		//if(start_proc())
+		tog(LED_port, LED2_pin);
+
+		if(ppm_tx_is_good(3) == 2)
 		{
-			tog(LED_port, LED2_pin);
-
-			if(ppm_tx_is_good(3) == 2)
-			{
-				//sbi(LED_port, LED1_pin);
-			}
-			else
-			{
-				//cbi(LED_port, LED1_pin);
-			}
-
-			//for(unsigned char i = 0; i < 6; i++)
-			{
-			//	sens_read(i, 0);
-			}
-
-			double roll_accel_val = sens_read(roll_accel_chan) - sens_offset(roll_accel_chan);
-			double pitch_accel_val = sens_read(pitch_accel_chan) - sens_offset(pitch_accel_chan);
-			double vert_accel_val = sens_read(vert_accel_chan) - sens_offset(vert_accel_chan);
-
-			double roll_atan = calc_atan2(roll_accel_val, vert_accel_val);
-			double pitch_atan = calc_atan2(pitch_accel_val, vert_accel_val);
-
-			//double roll_asin = calc_asin(roll_accel_val / one_G_val);
-			//double pitch_asin = calc_asin(pitch_accel_val / one_G_val);
-
-			double roll_gyro_val = sens_avg(roll_gyro_chan) - sens_offset(roll_gyro_chan);
-			double pitch_gyro_val = sens_avg(pitch_gyro_chan) - sens_offset(pitch_gyro_chan);
-			double yaw_gyro_val = sens_avg(yaw_gyro_chan) - sens_offset(yaw_gyro_chan);
-
-			roll_ang_cf = complementary_filter(&roll_ang_cf, roll_atan, roll_gyro_val * gyro_to_rad_per_sec, accel_gyro_w_ratio, frame_delta_time);
-			pitch_ang_cf = complementary_filter(&pitch_ang_cf, pitch_atan, pitch_gyro_val * gyro_to_rad_per_sec, accel_gyro_w_ratio, frame_delta_time);
-
-			//roll_ang_kf = kalman_filter(&roll_kalman, roll_gyro_val * gyro_to_rad_per_sec, roll_atan, frame_delta_time);
-			//pitch_ang_kf = kalman_filter(&pitch_kalman, pitch_gyro_val * gyro_to_rad_per_sec, pitch_atan, frame_delta_time);
-
-			double roll_cmd = ppm_chan_width(0);
-
-			if(ser_tx_is_busy() == 0 && 1 == 0)
-			{
-				for(unsigned char i = 8, k = 16, h = 24, j = 0; j < 8; i++, j++, k++, h++)
-				{
-					sens_hist t_sh = sens_proc(j, 1);
-					debug_tx(i, PSTR("sensor avg    "), t_sh.avg);
-					debug_tx(h, PSTR("sensor offset "), t_sh.offset);
-					debug_tx(k, PSTR("sensor noise  "), t_sh.noise);
-				}
-
-				for(unsigned char i = 0, j = 0; j < 8; i++, j++)
-				{
-					debug_tx(i, PSTR("ppm pulse     "), ppm_chan_width(j));
-				}
-			}
-
-			//tog(LED_port, LED2_pin);
-
-			//while(start_proc());
+			//sbi(LED_port, LED1_pin);
+		}
+		else
+		{
+			//cbi(LED_port, LED1_pin);
 		}
 
-		if(start_proc())
+		double roll_accel_val = (double)sens_read(roll_accel_chan) - sens_offset(roll_accel_chan);
+		double pitch_accel_val = (double)sens_read(pitch_accel_chan) - sens_offset(pitch_accel_chan);
+		double vert_accel_val = (double)sens_read(vert_accel_chan) - sens_offset(vert_accel_chan);
+
+		double roll_gyro_val = sens_read(roll_gyro_chan) - sens_offset(roll_gyro_chan);
+		double pitch_gyro_val = sens_read(pitch_gyro_chan) - sens_offset(pitch_gyro_chan);
+
+		double roll_trig = 0;
+		double pitch_trig = 0;
+
+		double delta_time = timer1_elapsed();
+
+		#ifdef use_atan
+		roll_trig += calc_atan2(roll_accel_val, vert_accel_val);
+		pitch_trig += calc_atan2(pitch_accel_val, vert_accel_val);
+		#endif
+
+		#ifdef use_asin
+		roll_trig += calc_asin(roll_accel_val / one_G_val);
+		pitch_trig += calc_asin(pitch_accel_val / one_G_val);
+		#endif
+
+		#ifdef use_comp_filter
+		roll_ang = complementary_filter(&roll_ang, roll_trig, roll_gyro_val * param_get_d(0), param_get_d(0), delta_time);
+		pitch_ang = complementary_filter(&pitch_ang, pitch_trig, pitch_gyro_val * param_get_d(0), param_get_d(0), delta_time);
+		#endif
+
+		#ifdef use_kalman_filter
+		roll_kalman.Q[0] = param_get_d(0);
+		pitch_kalman.Q[0] = roll_kalman.Q[0];
+		roll_kalman.Q[1] = param_get_d(0);
+		pitch_kalman.Q[1] = roll_kalman.Q[1];
+		roll_kalman.R = param_get_d(0);
+		pitch_kalman.R = roll_kalman.R;
+
+		roll_ang = kalman_filter(&roll_kalman, roll_gyro_val * param_get_d(0), roll_trig, delta_time);
+		pitch_ang = kalman_filter(&pitch_kalman, pitch_gyro_val * param_get_d(0), pitch_trig, delta_time);
+		#endif
+
+		if(esc_is_done())
 		{
-			for(unsigned char i = 0; i < 6; i++)
-			{
-				esc_set_width(i, ppm_chan_width(i) + ticks_500us * 3);
-			}
+			PID_const pid_k;
+
+			pid_k.p = param_get_d(0);
+			pid_k.i = param_get_d(0);
+			pid_k.d = param_get_d(0);
+
+			double roll_cmd = (double)ppm_chan_width(roll_ppm_chan) * param_get_d(0);
+			double roll_mot = PID_mv(&roll_pid, pid_k, roll_ang, roll_cmd);
+
+			pid_k.p = param_get_d(0);
+			pid_k.i = param_get_d(0);
+			pid_k.d = param_get_d(0);
+
+			double pitch_cmd = (double)ppm_chan_width(pitch_ppm_chan) * param_get_d(0);
+			double pitch_mot = PID_mv(&pitch_pid, pid_k, pitch_ang, pitch_cmd);
+
+			pid_k.p = param_get_d(0);
+			pid_k.i = param_get_d(0);
+			pid_k.d = param_get_d(0);
+
+			double yaw_gyro_val = sens_read(yaw_gyro_chan) - sens_offset(yaw_gyro_chan);
+			double yaw_cmd = (double)ppm_chan_width(yaw_ppm_chan) * param_get_d(0);
+			double yaw_mot = PID_mv(&yaw_pid, pid_k, yaw_gyro_val, yaw_cmd);
+
+			double throttle_cmd = (double)ppm_chan_width(throttle_ppm_chan) * param_get_d(0);
+
+			double throttle_min = param_get_d(0);
+
+			double f_mot = calc_map_double(throttle_cmd + yaw_cmd + pitch_cmd, -100, 100, param_get_d(0), param_get_d(0));
+			double b_mot = calc_map_double(throttle_cmd + yaw_cmd - pitch_cmd, -100, 100, param_get_d(0), param_get_d(0));
+			double l_mot = calc_map_double(throttle_cmd - yaw_cmd + roll_cmd, -100, 100, param_get_d(0), param_get_d(0));
+			double r_mot = calc_map_double(throttle_cmd - yaw_cmd - roll_cmd, -100, 100, param_get_d(0), param_get_d(0));
+
+			esc_set_width(f_mot_chan, lround(f_mot + throttle_min));
+			esc_set_width(b_mot_chan, lround(b_mot + throttle_min));
+			esc_set_width(l_mot_chan, lround(l_mot + throttle_min));
+			esc_set_width(r_mot_chan, lround(r_mot + throttle_min));
+
+			esc_is_done_clear();
+		}
+			
 		}
 	}
 

@@ -63,20 +63,27 @@ ISR(USART0_RX_vect)
 		ser_rx_data_dot = 0;
 		ser_rx_state = 1;
 	}
-	else if(c == '#' && ser_rx_state == 1)
+	else if((c == 'D' || c == 'L') && ser_rx_state == 1)
 	{
 		for(signed char i = 0; i < ser_rx_data_dot - 1; i++)
 		{
 			ser_rx_data /= 10;
 		}
-
-		param_set_d(ser_rx_addr % 128, ser_rx_data * (double)ser_rx_data_sign);
+		
+		if(c == 'D')
+		{
+			param_set_d(ser_rx_addr % 128, ser_rx_data * (double)ser_rx_data_sign);
+		}
+		else
+		{
+			param_set_sl(ser_rx_addr % 128, lround(ser_rx_data) * ser_rx_data_sign);
+		}
 	}
-	else if(c == 'S')
+	else if(c == 'R')
 	{
 		param_save(ser_rx_addr);
 	}
-	else if(c == 'L')
+	else if(c == 'W')
 	{
 		param_load(ser_rx_addr);
 	}

@@ -2,6 +2,7 @@
 #define ser_h_inc
 
 #include <avr/io.h>
+#include <math.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 

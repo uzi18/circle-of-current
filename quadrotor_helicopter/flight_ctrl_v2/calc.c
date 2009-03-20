@@ -239,7 +239,7 @@ double complementary_filter(double * ang, double accel_ang, double gyro_r, doubl
 	return *ang;
 }
 
-double PID_mv(PID_data * pid, double current, double target)
+double PID_mv(PID_data * pid, PID_const k, double current, double target)
 {
 	double err = target - current;
 
@@ -247,13 +247,7 @@ double PID_mv(PID_data * pid, double current, double target)
 
 	double delta_err = err - pid->err_last;
 
-	if(fabs(pid->err_sum) < pid->constants.err_low_thresh && fabs(delta_err) < pid->constants.delta_err_low_thresh)
-	{
-		pid->err_sum = 0;
-	}
-	double mv = err * pid->constants.kp + pid->err_sum * pid->constants.ki + delta_err * pid->constants.kd;
-
-	pid->err_sum *= pid->constants.err_dec;
+	double mv = err * k.p + pid->err_sum * k.i + delta_err * k.d;
 
 	pid->err_last = err;
 

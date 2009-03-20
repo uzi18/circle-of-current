@@ -14,6 +14,11 @@
 #define esc_clk_pin 5
 #define esc_dat_pin 3
 
+#define f_mot_chan 0
+#define b_mot_chan 1
+#define l_mot_chan 2
+#define r_mot_chan 3
+
 #define ppm_port PORTD
 #define ppm_ddr DDRD
 #define ppm_pin 6

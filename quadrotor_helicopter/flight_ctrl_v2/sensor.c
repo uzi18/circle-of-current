@@ -9,10 +9,10 @@ ISR(ADC_vect)
 {
 	tog(LED_port, LED1_pin);
 	adc_chan = ADMUX & 0b00000111;
+	sens_res[adc_chan].latest = ADC;
 	if(sens_proc_busy - 1 != adc_chan)
 	{
 		sens_res[adc_chan].res[sens_res[adc_chan].cnt % sens_hist_len] = ADC;
-		sens_res[adc_chan].latest = ADC;
 		sens_res[adc_chan].cnt++;
 		adc_chan++;
 	}
@@ -89,6 +89,7 @@ sens_hist sens_proc(unsigned char index, unsigned char calc_noise)
 
 unsigned int sens_read(unsigned char i)
 {
+	while(adc_chan == i);
 	return sens_res[i].latest;
 }
 

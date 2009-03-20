@@ -3,7 +3,6 @@
 static volatile unsigned int esc_chan_width[8];
 static volatile unsigned char esc_chan;
 static volatile unsigned char esc_done;
-static volatile unsigned char esc_extra_chan_num;
 static volatile unsigned char esc_safety;
 
 ISR(TIMER1_COMPA_vect)
@@ -14,13 +13,13 @@ ISR(TIMER1_COMPA_vect)
 
 	esc_chan++;
 
-	if(esc_chan > 4 + esc_extra_chan_num)
+	if(esc_chan == 4)
 	{
 		esc_done = 1;
-		if(esc_chan == 8)
-		{
-			esc_chan = 7;
-		}
+	}
+	else if(esc_chan == 8)
+	{
+		esc_chan = 7;
 	}
 }
 
@@ -32,7 +31,6 @@ void esc_init()
 	}
 
 	esc_safety = 1;
-	esc_extra_chan_num = esc_extra_chan_num_default;
 
 	cbi(esc_port, esc_rst_pin);
 	cbi(esc_port, esc_clk_pin);
@@ -87,19 +85,19 @@ void esc_start_next()
 	esc_shift_rst();
 }
 
-volatile unsigned char esc_is_done()
+unsigned char esc_is_done()
 {
 	return esc_done;
+}
+
+void esc_is_done_clear()
+{
+	esc_done = 0;
 }
 
 void esc_safe(unsigned char c)
 {
 	esc_safety = c;
-}
-
-void esc_set_extra_chan(unsigned char c)
-{
-	esc_extra_chan_num = c;
 }
 
 void esc_set_width(unsigned char c, unsigned int w)
@@ -110,7 +108,7 @@ void esc_set_width(unsigned char c, unsigned int w)
 unsigned long esc_get_total()
 {
 	unsigned long sum = 0;
-	for(unsigned char i = 0; i < 4 + esc_extra_chan_num; i++)
+	for(unsigned char i = 0; i < 4; i++)
 	{
 		sum += esc_chan_width[i];
 	}
