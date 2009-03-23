@@ -3,7 +3,6 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include <util/atomic.h>
 
 #include "config.h"
 #include "pindef.h"
@@ -19,5 +18,6 @@ void esc_is_done_clear();
 void esc_safe(unsigned char);
 void esc_set_width(unsigned char, unsigned int);
 unsigned long esc_get_total();
+void esc_set_extra_chan(unsigned char);
 
 #endif

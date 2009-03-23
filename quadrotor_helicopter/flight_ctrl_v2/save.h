@@ -10,16 +10,16 @@
 
 #include "settings_autogen.h"
 
-double param_get_d(unsigned char);
-unsigned long param_get_ul(unsigned char);
-signed long param_get_sl(unsigned char);
-void param_set_d(unsigned char, double);
-void param_set_ul(unsigned char, unsigned long);
-void param_set_sl(unsigned char, signed long);
-void param_save(unsigned char);
-void param_load(unsigned char);
-void param_save_all();
-void param_load_all();
-void param_init();
+double param_get_d(saved_params_s *, unsigned char);
+unsigned long param_get_ul(saved_params_s *, unsigned char);
+signed long param_get_sl(saved_params_s *, unsigned char);
+void param_set_d(saved_params_s *, unsigned char, double);
+void param_set_ul(saved_params_s *, unsigned char, unsigned long);
+void param_set_sl(saved_params_s *, unsigned char, signed long);
+void param_save(saved_params_s *, unsigned char);
+void param_load(saved_params_s *, unsigned char);
+void param_save_all(saved_params_s *);
+void param_load_all(saved_params_s *);
+void param_init(saved_params_s *);
 
 #endif

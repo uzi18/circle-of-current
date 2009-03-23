@@ -2,24 +2,30 @@
 
 static volatile unsigned int esc_chan_width[8];
 static volatile unsigned char esc_chan;
+static volatile signed long esc_elapsed;
 static volatile unsigned char esc_done;
 static volatile unsigned char esc_safety;
+static volatile unsigned char esc_extra_servo;
 
 ISR(TIMER1_COMPA_vect)
 {
 	sbi(TCCR1C, FOC1A);
 
 	OCR1A += esc_chan_width[esc_chan]; // calculate next alarm considering overflow
+	esc_elapsed += esc_chan_width[esc_chan];
 
 	esc_chan++;
 
-	if(esc_chan == 4)
+	if(esc_chan == 4 + esc_extra_servo)
 	{
-		esc_done = 1;
-	}
-	else if(esc_chan == 8)
-	{
-		esc_chan = 7;
+		if(esc_elapsed > ticks_10ms)
+		{
+			esc_done = 1;
+		}
+		else
+		{
+			esc_chan--;
+		}
 	}
 }
 
@@ -81,6 +87,7 @@ void esc_start_next()
 
 	esc_chan = 0;
 	esc_done = 0;
+	esc_elapsed = 0;
 
 	esc_shift_rst();
 }
@@ -110,19 +117,21 @@ void esc_set_width(unsigned char c, unsigned int w)
 	{
 		w = ticks_500us * 4;
 	}
-
-	ATOMIC_BLOCK(ATOMIC_FORCEON)
-	{
-		esc_chan_width[c] = w;
-	}
+	
+	esc_chan_width[c] = w;
 }
 
 unsigned long esc_get_total()
 {
 	unsigned long sum = 0;
-	for(unsigned char i = 0; i < 4; i++)
+	for(unsigned char i = 0; i < 4 + esc_extra_servo; i++)
 	{
 		sum += esc_chan_width[i];
 	}
 	return sum;
+}
+
+void esc_set_extra_chan(unsigned char n)
+{
+	esc_extra_servo = n;
 }
