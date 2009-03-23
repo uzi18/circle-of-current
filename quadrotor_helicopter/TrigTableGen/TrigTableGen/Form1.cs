@@ -16,57 +16,45 @@ namespace TrigTableGen
             InitializeComponent();
         }
 
-        private void GenAtan(object sender, EventArgs e)
+        private void GenTable(object sender, EventArgs e)
         {
-            TableBox.Text = "#define atan_multiplier " + NumOfEntries.Value + "\r\n";
-            TableBox.Text += "const double atan_tbl [atan_multiplier + 1] PROGMEM = {";
+            TableBox.Text = "#ifndef trig_tbl_inc\r\n#define trig_tbl_inc\r\n\r\n#include <avr/pgmspace.h>\r\n#include \"config.h\"\r\n\r\n";
+            TableBox.Text += "#ifdef use_atan\r\n\r\n#define atan_multiplier " + NumOfAtanEntries.Value + "\r\n";
+            TableBox.Text += "const signed long atan_tbl [atan_multiplier + 1] PROGMEM = {";
             string str = "";
-            GenProgress.Maximum = Convert.ToInt32(NumOfEntries.Value);
-            for (int i = 0, j = 0; i <= Convert.ToInt32(NumOfEntries.Value); i++, j++)
+            for (int i = 0, j = 0; i <= Convert.ToInt32(NumOfAtanEntries.Value); i++, j++)
             {
                 if (j % 5 == 0)
                 {
                     str += "\r\n\t";
                     j = 0;
                 }
-                double val = Math.Atan((double)i / (double)NumOfEntries.Value);
-                if (DegreeSwitch.Checked)
-                {
-                    val *= 57.2957795130823;
-                }
-                str += string.Format("{0,18:F15}, ", val);
+                double val = Math.Atan((double)i / (double)NumOfAtanEntries.Value);
+                val *= 57.2957795130823;
+                val *= (double)MATH_MULTIPLIER.Value;
+                str += string.Format("{0,6}, ", Math.Round(val));
 
-                GenProgress.Value = i;
             }
-            TableBox.Text += str + "\r\n};\r\n\r\n";
+            TableBox.Text += str + "\r\n};\r\n\r\n#endif\r\n\r\n";
 
-            TableBox.Focus();
-            TableBox.SelectAll();
-        }
+            str = "";
 
-        private void GenAsin(object sender, EventArgs e)
-        {
-            TableBox.Text = "#define asin_multiplier " + NumOfEntries.Value + "\r\n";
-            TableBox.Text += "const double asin_tbl [asin_multiplier + 1] PROGMEM = {";
-            string str = "";
-            GenProgress.Maximum = Convert.ToInt32(NumOfEntries.Value);
-            for (int i = 0, j = 0; i <= Convert.ToInt32(NumOfEntries.Value); i++, j++)
+            TableBox.Text += "#ifdef use_asin\r\n\r\n#define asin_multiplier " + NumOfAsinEntries.Value + "\r\n";
+            TableBox.Text += "const signed long asin_tbl [asin_multiplier + 1] PROGMEM = {";
+
+            for (int i = 0, j = 0; i <= Convert.ToInt32(NumOfAsinEntries.Value); i++, j++)
             {
                 if (j % 5 == 0)
                 {
                     str += "\r\n\t";
                     j = 0;
                 }
-                double val = Math.Asin((double)i / (double)NumOfEntries.Value);
-                if (DegreeSwitch.Checked)
-                {
-                    val *= 57.2957795130823;
-                }
-                str += string.Format("{0,18:F15}, ", val);
-
-                GenProgress.Value = i;
+                double val = Math.Asin((double)i / (double)NumOfAsinEntries.Value);
+                val *= 57.2957795130823;
+                val *= (double)MATH_MULTIPLIER.Value;
+                str += string.Format("{0,6}, ", Math.Round(val));
             }
-            TableBox.Text += str + "\r\n};\r\n\r\n";
+            TableBox.Text += str + "\r\n};\r\n\r\n#endif\r\n\r\n#endif\r\n";
 
             TableBox.Focus();
             TableBox.SelectAll();

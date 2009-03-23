@@ -13,6 +13,7 @@ namespace SettingsGeneratorTool
     {
         string[] val_name;
         string[] val_data;
+        string[] val_type;
         string output_str;
 
         public Form1()
@@ -21,6 +22,7 @@ namespace SettingsGeneratorTool
 
             val_name = new string[128];
             val_data = new string[128];
+            val_type = new string[128];
         }
 
         private void SaveListBut_Click(object sender, EventArgs e)
@@ -28,7 +30,25 @@ namespace SettingsGeneratorTool
             StreamWriter sw = new StreamWriter("savedlist");
             for (int i = 0; i < ListGrid.RowCount - 1; i++)
             {
-                sw.WriteLine((string)ListGrid.Rows[i].Cells[0].Value + "#" + (string)ListGrid.Rows[i].Cells[1].Value);
+                val_type[i] = "d";
+
+                if (ListGrid.Rows[i].Cells[2].Value.ToString() != null)
+                {
+                    if (ListGrid.Rows[i].Cells[2].Value.ToString().Length > 0)
+                    {
+                        val_type[i] = ListGrid.Rows[i].Cells[2].Value.ToString();
+                    }
+                    else
+                    {
+                        ListGrid.Rows[i].Cells[2].Value = "d";
+                    }
+                }
+                else
+                {
+                    ListGrid.Rows[i].Cells[2].Value = "d";
+                }
+
+                sw.WriteLine((string)ListGrid.Rows[i].Cells[0].Value + "#" + (string)ListGrid.Rows[i].Cells[1].Value + "#" + (string)ListGrid.Rows[i].Cells[2].Value);
             }
             sw.Close();
         }
@@ -51,6 +71,7 @@ namespace SettingsGeneratorTool
                     ListGrid.Rows.Add();
                     ListGrid.Rows[cnt].Cells[0].Value = parts[0];
                     ListGrid.Rows[cnt].Cells[1].Value = parts[1];
+                    ListGrid.Rows[cnt].Cells[2].Value = parts[2];
                     cnt++;
                 }
                 catch { }
@@ -83,6 +104,24 @@ namespace SettingsGeneratorTool
                 {
                     val_data[i] = "0";
                 }
+
+                val_type[i] = "d";
+
+                if (ListGrid.Rows[i].Cells[2].Value.ToString() != null)
+                {
+                    if (ListGrid.Rows[i].Cells[2].Value.ToString().Length > 0)
+                    {
+                        val_type[i] = ListGrid.Rows[i].Cells[2].Value.ToString();
+                    }
+                    else
+                    {
+                        ListGrid.Rows[i].Cells[2].Value = "d";
+                    }
+                }
+                else
+                {
+                    ListGrid.Rows[i].Cells[2].Value = "d";
+                }
             }
 
             output_str = "";
@@ -101,7 +140,139 @@ namespace SettingsGeneratorTool
                 output_str += "#define " + val_name[i] + "_addr " + i + "\r\n";
             }
 
-            output_str += "\r\n// make union\r\n\r\n";
+            output_str += "\r\n\r\n// variable getting\r\n\r\n/*\r\n";
+
+            for (int i = 0; i < ListGrid.RowCount - 1; i++)
+            {
+                string t = "unknown_type";
+                string s = "?";
+                if (val_type[i] == "d")
+                {
+                    t = "double";
+                    s = "d";
+                }
+                else if (val_type[i] == "ul")
+                {
+                    t = "unsigned long";
+                    s = "ul";
+                }
+                else if (val_type[i] == "sl")
+                {
+                    t = "signed long";
+                    s = "sl";
+                }
+                else if (val_type[i] == "ui")
+                {
+                    t = "unsigned int";
+                    s = "ul";
+                }
+                else if (val_type[i] == "si")
+                {
+                    t = "signed int";
+                    s = "sl";
+                }
+                else if (val_type[i] == "uc")
+                {
+                    t = "unsigned char";
+                    s = "ul";
+                }
+                else if (val_type[i] == "sc")
+                {
+                    t = "signed char";
+                    s = "sl";
+                }
+                output_str += t + " " + val_name[i] + "_ = param_get_" + s + "(" + val_name[i] + "_addr);\r\n";
+            }
+
+            output_str += "\r\n";
+
+            for (int i = 0; i < ListGrid.RowCount - 1; i++)
+            {
+                string t = "unknown_type";
+                string s = "?";
+                if (val_type[i] == "d")
+                {
+                    t = "double";
+                    s = "d";
+                }
+                else if (val_type[i] == "ul")
+                {
+                    t = "unsigned long";
+                    s = "ul";
+                }
+                else if (val_type[i] == "sl")
+                {
+                    t = "signed long";
+                    s = "sl";
+                }
+                else if (val_type[i] == "ui")
+                {
+                    t = "unsigned int";
+                    s = "ul";
+                }
+                else if (val_type[i] == "si")
+                {
+                    t = "signed int";
+                    s = "sl";
+                }
+                else if (val_type[i] == "uc")
+                {
+                    t = "unsigned char";
+                    s = "ul";
+                }
+                else if (val_type[i] == "sc")
+                {
+                    t = "signed char";
+                    s = "sl";
+                }
+                output_str += t + " " + val_name[i] + "_;\r\n";
+            }
+
+            output_str += "\r\n";
+
+            for (int i = 0; i < ListGrid.RowCount - 1; i++)
+            {
+                string t = "unknown_type";
+                string s = "?";
+                if (val_type[i] == "d")
+                {
+                    t = "double";
+                    s = "d";
+                }
+                else if (val_type[i] == "ul")
+                {
+                    t = "unsigned long";
+                    s = "ul";
+                }
+                else if (val_type[i] == "sl")
+                {
+                    t = "signed long";
+                    s = "sl";
+                }
+                else if (val_type[i] == "ui")
+                {
+                    t = "unsigned int";
+                    s = "ul";
+                }
+                else if (val_type[i] == "si")
+                {
+                    t = "signed int";
+                    s = "sl";
+                }
+                else if (val_type[i] == "uc")
+                {
+                    t = "unsigned char";
+                    s = "ul";
+                }
+                else if (val_type[i] == "sc")
+                {
+                    t = "signed char";
+                    s = "sl";
+                }
+                output_str += val_name[i] + "_ = param_get_" + s + "(" + val_name[i] + "_addr);\r\n";
+            }
+
+            output_str += "\r\n// */\r\n\r\n// make union\r\n\r\n";
 
             output_str += "typedef union saved_params_s_ {\r\n";
 
@@ -143,15 +314,52 @@ namespace SettingsGeneratorTool
 
             output_str += "void params_set_default();\r\n\r\n";
 
-            output_str += "#ifdef COMING_FROM_SAVE_C\r\n\r\n";
-            output_str += "static saved_params_s saved_params;\r\n\r\n";
+            output_str += "#ifdef COMING_FROM_SAVE_C\r\n#undef COMING_FROM_SAVE_C\r\n\r\n";
+            output_str += "static volatile saved_params_s saved_params;\r\n\r\n";
             output_str += "// set default\r\n\r\n";
 
             output_str += "void params_set_default()\r\n{\r\n";
 
             for (int i = 0; i < ListGrid.RowCount - 1; i++)
             {
-                output_str += "\tsaved_params.d_s." + val_name[i] + " = " + val_name[i] + "_def_val;\r\n";
+                string t = "unknown_type";
+                string s = "?";
+                if (val_type[i] == "d")
+                {
+                    t = "double";
+                    s = "d";
+                }
+                else if (val_type[i] == "ul")
+                {
+                    t = "unsigned long";
+                    s = "ul";
+                }
+                else if (val_type[i] == "sl")
+                {
+                    t = "signed long";
+                    s = "sl";
+                }
+                else if (val_type[i] == "ui")
+                {
+                    t = "unsigned int";
+                    s = "ul";
+                }
+                else if (val_type[i] == "si")
+                {
+                    t = "signed int";
+                    s = "sl";
+                }
+                else if (val_type[i] == "uc")
+                {
+                    t = "unsigned char";
+                    s = "ul";
+                }
+                else if (val_type[i] == "sc")
+                {
+                    t = "signed char";
+                    s = "sl";
+                }
+                output_str += "\tsaved_params." + s + "_s." + val_name[i] + " = " + val_name[i] + "_def_val;\r\n";
             }
 
             output_str += "}\r\n\r\n#endif\r\n\r\n";

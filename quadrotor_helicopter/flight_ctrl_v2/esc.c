@@ -102,7 +102,19 @@ void esc_safe(unsigned char c)
 
 void esc_set_width(unsigned char c, unsigned int w)
 {
-	esc_chan_width[c] = w;
+	if(w < ticks_500us * 2)
+	{
+		w = ticks_500us * 2;
+	}
+	else if(w > ticks_500us * 4)
+	{
+		w = ticks_500us * 4;
+	}
+
+	ATOMIC_BLOCK(ATOMIC_FORCEON)
+	{
+		esc_chan_width[c] = w;
+	}
 }
 
 unsigned long esc_get_total()

@@ -6,3 +6,11 @@ C:\Documents and Settings\Administrator\My Documents\Projects\quadrotor_helicopt
 C:\Documents and Settings\Administrator\My Documents\Projects\quadrotor_helicopter\ArctanTableGen\ArctanTableGen\obj\Debug\TrigTableGen.csproj.GenerateResource.Cache
 C:\Documents and Settings\Administrator\My Documents\Projects\quadrotor_helicopter\ArctanTableGen\ArctanTableGen\obj\Debug\TrigTableGen.exe
 C:\Documents and Settings\Administrator\My Documents\Projects\quadrotor_helicopter\ArctanTableGen\ArctanTableGen\obj\Debug\TrigTableGen.pdb
+C:\Documents and Settings\Administrator\My Documents\Projects\quadrotor_helicopter\TrigTableGen\TrigTableGen\obj\Debug\TrigTableGen.exe
+C:\Documents and Settings\Administrator\My Documents\Projects\quadrotor_helicopter\TrigTableGen\TrigTableGen\obj\Debug\TrigTableGen.pdb
+C:\Documents and Settings\Administrator\My Documents\Projects\quadrotor_helicopter\TrigTableGen\TrigTableGen\bin\Debug\TrigTableGen.exe
+C:\Documents and Settings\Administrator\My Documents\Projects\quadrotor_helicopter\TrigTableGen\TrigTableGen\bin\Debug\TrigTableGen.pdb
+C:\Documents and Settings\Administrator\My Documents\Projects\quadrotor_helicopter\TrigTableGen\TrigTableGen\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\Administrator\My Documents\Projects\quadrotor_helicopter\TrigTableGen\TrigTableGen\obj\Debug\TrigTableGen.Form1.resources
+C:\Documents and Settings\Administrator\My Documents\Projects\quadrotor_helicopter\TrigTableGen\TrigTableGen\obj\Debug\TrigTableGen.Properties.Resources.resources
+C:\Documents and Settings\Administrator\My Documents\Projects\quadrotor_helicopter\TrigTableGen\TrigTableGen\obj\Debug\TrigTableGen.csproj.GenerateResource.Cache

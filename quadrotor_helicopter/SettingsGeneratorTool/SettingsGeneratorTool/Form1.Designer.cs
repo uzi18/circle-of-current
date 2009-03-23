@@ -30,11 +30,12 @@ namespace SettingsGeneratorTool
         {
             this.ListGrid = new System.Windows.Forms.DataGridView();
             this.SaveListBut = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
+            this.LoadListBut = new System.Windows.Forms.Button();
             this.OutputText = new System.Windows.Forms.TextBox();
             this.GenBut = new System.Windows.Forms.Button();
             this.NameCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DefaultValueCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.TypeCol = new System.Windows.Forms.DataGridViewComboBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.ListGrid)).BeginInit();
             this.SuspendLayout();
             // 
@@ -45,10 +46,11 @@ namespace SettingsGeneratorTool
             this.ListGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.ListGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.NameCol,
-            this.DefaultValueCol});
+            this.DefaultValueCol,
+            this.TypeCol});
             this.ListGrid.Location = new System.Drawing.Point(12, 12);
             this.ListGrid.Name = "ListGrid";
-            this.ListGrid.Size = new System.Drawing.Size(326, 472);
+            this.ListGrid.Size = new System.Drawing.Size(381, 472);
             this.ListGrid.TabIndex = 0;
             // 
             // SaveListBut
@@ -62,16 +64,16 @@ namespace SettingsGeneratorTool
             this.SaveListBut.UseVisualStyleBackColor = true;
             this.SaveListBut.Click += new System.EventHandler(this.SaveListBut_Click);
             // 
-            // button1
+            // LoadListBut
             // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button1.Location = new System.Drawing.Point(93, 490);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 2;
-            this.button1.Text = "LoadList";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.LoadBut_Click);
+            this.LoadListBut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.LoadListBut.Location = new System.Drawing.Point(93, 490);
+            this.LoadListBut.Name = "LoadListBut";
+            this.LoadListBut.Size = new System.Drawing.Size(75, 23);
+            this.LoadListBut.TabIndex = 2;
+            this.LoadListBut.Text = "LoadList";
+            this.LoadListBut.UseVisualStyleBackColor = true;
+            this.LoadListBut.Click += new System.EventHandler(this.LoadBut_Click);
             // 
             // OutputText
             // 
@@ -79,18 +81,19 @@ namespace SettingsGeneratorTool
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.OutputText.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.OutputText.Location = new System.Drawing.Point(344, 12);
+            this.OutputText.Location = new System.Drawing.Point(399, 12);
             this.OutputText.Multiline = true;
             this.OutputText.Name = "OutputText";
             this.OutputText.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.OutputText.Size = new System.Drawing.Size(365, 472);
+            this.OutputText.Size = new System.Drawing.Size(441, 472);
             this.OutputText.TabIndex = 3;
             this.OutputText.Text = "Output Goes Here";
             this.OutputText.WordWrap = false;
             // 
             // GenBut
             // 
-            this.GenBut.Location = new System.Drawing.Point(263, 490);
+            this.GenBut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.GenBut.Location = new System.Drawing.Point(318, 490);
             this.GenBut.Name = "GenBut";
             this.GenBut.Size = new System.Drawing.Size(75, 23);
             this.GenBut.TabIndex = 5;
@@ -111,14 +114,30 @@ namespace SettingsGeneratorTool
             this.DefaultValueCol.Name = "DefaultValueCol";
             this.DefaultValueCol.Width = 125;
             // 
+            // TypeCol
+            // 
+            this.TypeCol.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.TypeCol.HeaderText = "Type";
+            this.TypeCol.Items.AddRange(new object[] {
+            "d",
+            "ul",
+            "sl",
+            "ui",
+            "si",
+            "uc",
+            "sc"});
+            this.TypeCol.MinimumWidth = 50;
+            this.TypeCol.Name = "TypeCol";
+            this.TypeCol.Width = 50;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(721, 525);
+            this.ClientSize = new System.Drawing.Size(852, 525);
             this.Controls.Add(this.GenBut);
             this.Controls.Add(this.OutputText);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.LoadListBut);
             this.Controls.Add(this.SaveListBut);
             this.Controls.Add(this.ListGrid);
             this.Name = "Form1";
@@ -133,11 +152,12 @@ namespace SettingsGeneratorTool
 
         private System.Windows.Forms.DataGridView ListGrid;
         private System.Windows.Forms.Button SaveListBut;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button LoadListBut;
         private System.Windows.Forms.TextBox OutputText;
         private System.Windows.Forms.Button GenBut;
         private System.Windows.Forms.DataGridViewTextBoxColumn NameCol;
         private System.Windows.Forms.DataGridViewTextBoxColumn DefaultValueCol;
+        private System.Windows.Forms.DataGridViewComboBoxColumn TypeCol;
     }
 }
 

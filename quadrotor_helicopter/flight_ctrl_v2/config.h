@@ -4,15 +4,15 @@
 #define DEBUG_MSG
 #define BAUD 19200
 
+#define MATH_MULTIPLIER 1000
+
 #define use_atan
-#define use_asin
+//#define use_asin
 #define use_comp_filter
-#define use_kalman_filter
+//#define use_kalman_filter
 
 #define ticks_500us ((F_CPU * 5) / 10000)
 #define ticks_10ms (ticks_500us * 20)
-#define loop_frame ((F_CPU / 1024) / 100)
-#define process_time ((loop_frame * 3) / 4)
 
 #define gyro_to_rad_per_sec 1
 #define accel_gyro_w_ratio 0.2

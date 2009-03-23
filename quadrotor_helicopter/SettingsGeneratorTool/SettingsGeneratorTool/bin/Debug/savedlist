@@ -1,8 +1,52 @@
-test1#1
-wetwet#2
-wertwet#3
-wetwertw#4
-terwtwertwe#5
-rtwertwe#6
-twetwertw#7
-wertewrt#8
+f_mot_bot#(F_CPU / 1000)#sl
+b_mot_bot#(F_CPU / 1000)#sl
+l_mot_bot#(F_CPU / 1000)#sl
+r_mot_bot#(F_CPU / 1000)#sl
+f_mot_scale#100#sl
+b_mot_scale#100#sl
+l_mot_scale#100#sl
+r_mot_scale#100#sl
+roll_gyro_center#(1024 / 2)#sl
+pitch_gyro_center#(1024 / 2)#sl
+yaw_gyro_center#(1024 / 2)#sl
+yaw_scale#1#sl
+roll_accel_bot#0#sl
+pitch_accel_bot#0#sl
+vert_accel_bot#0#sl
+roll_accel_top#1023#sl
+pitch_accel_top#1023#sl
+vert_accel_top#1023#sl
+roll_offset#0#sl
+pitch_offset#0#sl
+roll_ppm_scale#1#sl
+pitch_ppm_scale#1#sl
+roll_gyro_to_rate#1#sl
+pitch_gyro_to_rate#1#sl
+roll_level_kp#1#sl
+roll_level_ki#1#sl
+roll_level_kd#1#sl
+pitch_level_kp#1#sl
+pitch_level_ki#1#sl
+pitch_level_kd#1#sl
+roll_rate_kp#1#sl
+roll_rate_ki#1#sl
+roll_rate_kd#1#sl
+pitch_rate_kp#1#sl
+pitch_rate_ki#1#sl
+pitch_rate_kd#1#sl
+yaw_kp#1#sl
+yaw_ki#1#sl
+yaw_kd#1#sl
+comp_filter_w#0.5#sl
+kalman_q_ang#0.01#sl
+kalman_q_gyro#0.01#sl
+kalman_r_ang#0.01#sl
+throttle_hover#((F_CPU * 3) / 4000)#sl
+throttle_scale#100#sl
+period_ticks#(F_CPU / 102400)#uc
+when_to_update_esc#((period_ticks_def_val * 3) / 5)#uc
+roll_ppm_chan#0#uc
+pitch_ppm_chan#1#uc
+yaw_ppm_chan#3#uc
+throttle_ppm_chan#2#uc
+params_updated#1#uc

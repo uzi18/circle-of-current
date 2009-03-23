@@ -6,66 +6,20 @@ signed long calc_multi(signed long in, signed long numer, signed long denom)
 	{
 		if(in * numer > 0)
 		{
-			return 0x7FFFFFFF;
+			return INT32_MAX;
 		}
 		else if(in * numer < 0)
 		{
-			return 0x80000000;
+			return INT32_MIN;
 		}
 		else
 		{
 			return 0;
 		}
 	}
-	else if(denom == 1 || denom == -1)
-	{
-		return in * numer * denom;
-	}
-
-	signed long t_ = in * numer;
-
-	if(t_ == 0)
-	{
-		return 0;
-	}
-
-	signed long t = t_ / denom;
-	signed long _t = t * denom;
-	signed long diff = t_ - _t;
-
-	signed long one;
-	if(denom < 0 && numer >= 0)
-	{
-		one = -1;
-	}
-	else
-	{
-		one = 1;
-	}
-
-	if(bit_is_set(denom, 0))
-	{
-		if(diff >= denom / 2)
-		{
-			t += one;
-		}
-		else if(-diff >= denom / 2)
-		{
-			t -= one;
-		}
-	}
-	else
-	{
-		if(diff > denom / 2)
-		{
-			t += one;
-		}
-		else if(-diff > denom / 2)
-		{
-			t -= one;
-		}
-	}
-	return t;
+	
+	signed long r = (in * numer) + (denom / 2);
+	return r / denom;
 }
 
 signed long calc_abs(signed long in)
@@ -80,14 +34,22 @@ signed long calc_abs(signed long in)
 	}
 }
 
+signed long calc_sign(signed long in)
+{
+	if(in < 0)
+	{
+		return -1;
+	}
+	else
+	{
+		return 1;
+	}
+}
+
+
 signed long calc_map_long(signed long in, signed long old_min, signed long old_max, signed long new_min, signed long new_max)
 {
 	return new_min + calc_multi(in - old_min, new_max - new_min, old_max - old_min);
-}
-
-double calc_map_double(double in, double old_min, double old_max, double new_min, double new_max)
-{
-	return new_min + (((new_max - new_min) * (in - old_min)) / (old_max - old_min));
 }
 
 signed long calc_max(signed long a, signed long b)
@@ -114,35 +76,15 @@ signed long calc_min(signed long a, signed long b)
 	}
 }
 
-double calc_pow(double x, signed char n)
-{
-	if(n == 0)
-	{
-		return 1;
-	}
-	else if(bit_is_set(n, 0))
-	{
-		return x * calc_pow(x, n - 1);
-	}
-	else
-	{
-		double z = calc_pow(x, n / 2);
-		return z * z;
-	}
-}
-
 #include "trig_tbl.h"
 
-double calc_asin(double x)
+#ifdef use_asin
+
+signed long calc_asin(signed long a, signed long b)
 {
-	unsigned long addr = lround(fabs(calc_constrain_double(x, -1, 1) * asin_multiplier));
-	union float__ {
-		unsigned long l;
-		double d;
-	} _float_;
-	_float_.l = pgm_read_dword(&(asin_tbl[addr])); 
-	double r = _float_.d;
-	if(x < 0)
+	signed long addr = calc_multi(a, asin_multiplier, b);
+	signed long r = pgm_read_dword(&(asin_tbl[calc_abs(addr)]));
+	if(addr < 0)
 	{
 		return -r;
 	}
@@ -152,16 +94,21 @@ double calc_asin(double x)
 	}
 }
 
-double calc_atan2(double y, double x)
+#endif
+
+
+#ifdef use_atan
+
+signed long calc_atan2(signed long y, signed long x)
 {
-	double z = 0;
-	if(fabs(x) > fabs(y))
+	signed long z = 0;
+	if(calc_abs(x) > calc_abs(y))
 	{
-		z = y / x;
+		z = calc_multi(y, atan_multiplier, x);
 	}
-	else if(fabs(x) < fabs(y))
+	else if(calc_abs(x) < calc_abs(y))
 	{
-		z = x / y;
+		z = calc_multi(x, atan_multiplier, y);
 	}
 	else if(x == 0 && y == 0)
 	{
@@ -169,58 +116,57 @@ double calc_atan2(double y, double x)
 	}
 	else if(x == y)
 	{
-		z = 1;
+		z = atan_multiplier;
 	}
 
-	z *= atan_multiplier;
+	signed long r_ = pgm_read_dword(&(atan_tbl[calc_abs(z)]));
+	signed long _r = r_;
+	signed long r;
 
-	unsigned long addr = lround(fabs(z));
-
-	union float__ {
-		unsigned long l;
-		double d;
-	} _float_;
-
-	_float_.l = pgm_read_dword(&(atan_tbl[addr])); 
-	double r = _float_.d;
-
-	if(fabs(x) < fabs(y))
+	if(calc_abs(x) < calc_abs(y))
 	{
-		r = (M_PI / 2) - r;
+		_r = (90 * MATH_MULTIPLIER) - r_;
 	}
 
-	if(x > 0)
+	if(x >= 0)
 	{
-		if(y > 0)
+		if(y < 0)
 		{
-			return r;
+			_r *= -1;
 		}
-		else
-		{
-			return -r;
-		}
+		r = _r;
 	}
 	else
 	{
-		if(y > 0)
+		if(y >= 0)
 		{
-			return M_PI - r;
+			r = (180 * MATH_MULTIPLIER) - _r;
 		}
 		else
 		{
-			return 0 - M_PI + r;
+			r = (-180 * MATH_MULTIPLIER) + _r;
 		}
 	}
+
+	return r;
 }
 
-double calc_rad_to_deg(double x)
-{
-	return x * rad_to_deg_const;
-}
+#endif
 
-double calc_deg_to_rad(double x)
+signed long calc_ang_range(signed long ang)
 {
-	return x / rad_to_deg_const;
+	if(ang > (180 * MATH_MULTIPLIER))
+	{
+		return (-180 * MATH_MULTIPLIER) + ang - (180 * MATH_MULTIPLIER);
+	}
+	else if(ang < (-180 * MATH_MULTIPLIER))
+	{
+		return (180 * MATH_MULTIPLIER) + ang - (-180 * MATH_MULTIPLIER);
+	}
+	else
+	{
+		return ang;
+	}
 }
 
 signed long calc_constrain_long(signed long in, signed long min_, signed long max_)
@@ -228,31 +174,40 @@ signed long calc_constrain_long(signed long in, signed long min_, signed long ma
 	return calc_min(calc_max(in, min_), max_);
 }
 
-double calc_constrain_double(double in, double min_, double max_)
+signed long PID_mv(PID_data * pid, PID_const k, signed long current, signed long target)
 {
-	return fmin(fmax(in, min_), max_);
-}
+	signed long err = target - current;
 
-double complementary_filter(double * ang, double accel_ang, double gyro_r, double w, double dt)
-{
-	*ang = (1 - w) * (*ang + (gyro_r * dt)) + (w * accel_ang);
-	return *ang;
-}
+	pid->err_sum = calc_constrain_long(pid->err_sum + err, -1000000, 1000000);
 
-double PID_mv(PID_data * pid, PID_const k, double current, double target)
-{
-	double err = target - current;
+	signed long delta_err = err - pid->err_last;
 
-	pid->err_sum = calc_constrain_double(pid->err_sum + err, -1000000, 1000000);
-
-	double delta_err = err - pid->err_last;
-
-	double mv = err * k.p + pid->err_sum * k.i + delta_err * k.d;
+	signed long mv = err * k.p + pid->err_sum * k.i + delta_err * k.d;
 
 	pid->err_last = err;
 
-	return mv;
+	return calc_multi(mv, 1, MATH_MULTIPLIER);
 }
+
+PID_data PID_init()
+{
+	PID_data r;
+	r.err_sum = 0;
+	r.err_last = 0;
+	return r;
+}
+
+#ifdef use_comp_filter
+
+signed long complementary_filter(signed long * ang, signed long accel_ang, signed long gyro_r, signed long w, signed long dt)
+{
+	*ang = calc_multi((MATH_MULTIPLIER - w), (*ang + (calc_multi(gyro_r, dt, MATH_MULTIPLIER))), MATH_MULTIPLIER) + calc_multi(w, accel_ang, MATH_MULTIPLIER);
+	return *ang;
+}
+
+#endif
+
+#ifdef use_kalman_filter
 
 double kalman_filter(kalman_data * kd, double gyro_r, double ang, double dt)
 {
@@ -291,3 +246,5 @@ void kalman_init(kalman_data * kd, double Q_accel, double Q_gyro, double R_accel
 	kd->Q[1] = Q_gyro;
 	kd->R = R_accel;
 }
+
+#endif
