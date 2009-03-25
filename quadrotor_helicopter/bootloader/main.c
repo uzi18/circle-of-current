@@ -1,164 +1,179 @@
-#include <avr/io.h>
-#include <avr/boot.h>
-#include <avr/pgmspace.h>
-#include <avr/eeprom.h>
+#define BAUD 19200 // set baud rate here
 
-#define BAUD 19200
-#include <util/setbaud.h>
+#include <avr/io.h> // IO definitions
+#include <avr/boot.h> // bootloader macros and functions
+#include <avr/pgmspace.h> // for reading from flash program space
+#include <util/setbaud.h> // utility to calculate UBRR value
 
-#define TIMEOUT (SPM_PAGESIZE * 2 * 10 * F_CPU) / (BAUD * 1024)
+// serial receive time out constant
+#define TIMEOUT 0x7FFF // ((SPM_PAGESIZE * 2 * 10 * F_CPU) / (BAUD * 1024))
 
-#define LSB_FIRST
+// bootloader invoking jumper
+#define SWITCH_INPUT PINB
+#define SWITCH_PIN 0
 
-#define SWITCH_INPUT PINC
-#define SWITCH_PIN PINC
+// address to start of bootloader
+#define BOOTLOADER_START 0x7000
 
-#define BOOTLOADER_START 0x7C00
+// union for char access of short integers
+typedef union {
+	unsigned char c[2];
+	unsigned short d;
+} u16;
 
+// location of application flash space
 void (*app_start)(void) = 0x0000;
 
-void ser_init()
-{
-	UBRR0 = UBRR_VALUE;
-	UCSR0B = _BV(RXEN0) | _BV(TXEN0);
-}
-
+// send char out serial port and wait for finish
 void ser_tx(unsigned char c)
 {
+	UDR0 = c;
 	loop_until_bit_is_set(UCSR0A, TXC0);
 	UCSR0A = _BV(TXC0);
-	UDR0 = c;
 }
 
-void timer_rst()
+// send short integer out serial port
+void ser_tx_short(unsigned short d)
 {
-	TCCR1B = 0;
-	TCNT1 = 0;
-	TCCR1B = _BV(CS10) | _BV(CS12);
-}
-
-void ser_tx_short(unsigned int d)
-{
-	union {
-		struct {
-		unsigned char c0;
-		unsigned char c1;
-
-		} s;
-		unsigned int d;
-	} data;
+	u16 data;
 	data.d = d;
-	ser_tx(data.s.c0);
-	ser_tx(data.s.c1);
-}
-
-unsigned char ser_rx_short(unsigned int * cnt, unsigned int * d, unsigned int * cs)
-{
-	if(bit_is_set(UCSR0A, RXC0))
-	{
-		unsigned char c = UDR0;
-		*cs += c;
-		
-		if((*cnt & 0x01) == 0x00)
-		{
-			#ifdef LSB_FIRST
-			*d += (unsigned int)c << 8;
-			#else
-			*d <<= 8;
-			*d += c;
-			#endif
-		}
-		else
-		{
-			*d = c;
-		}
-
-		*cnt++;
-
-		return *cnt;
-	}
-
-	return 0;
+	ser_tx(data.c[0]);
+	ser_tx(data.c[1]);
 }
 
 int main()
 {
-	if(bit_is_set(SWITCH_INPUT, SWITCH_PIN))
+	// jump to application if bootloader not active
+	if(bit_is_clear(SWITCH_INPUT, SWITCH_PIN))
 	{
 		app_start();
 	}
 
-	ser_init();
+	// start serial port
+	UBRR0 = UBRR_VALUE;
+	UCSR0B = _BV(RXEN0) | _BV(TXEN0);
 
-	unsigned int holder;
+	unsigned short cnts;
+	unsigned char cntc;
 
-	unsigned int page_num;
-	unsigned int cnt = 0;
+	// send sync signal
+	ser_tx_short(0xFFFF);
 
-	do
+	// get number of pages from serial port
+	u16 page_num;
+	page_num.d = 0;
+	cntc = 0;
+	while(cntc < 2)
 	{
-		ser_tx('B'); ser_tx('O'); ser_tx('O'); ser_tx('T');
-
-		page_num = 0;
-		timer_rst();
-		cnt = 0;
-		while(cnt < 2 && TCNT1 < TIMEOUT)
+		if(bit_is_set(UCSR0A, RXC0))
 		{
-			ser_rx_short(&cnt, &page_num, &holder);
+			unsigned char c = UDR0;
+			page_num.c[cntc] = c;
+			cntc++;
 		}
 	}
-	while(cnt < 2);
 
-	for(unsigned int i = 0; i < page_num; i++)
+	// start timeout timer
+	TCCR1B = _BV(CS10) | _BV(CS12);
+
+	for(unsigned short i = 0; i < page_num.d; i++)
 	{
 		while(1)
 		{
+			// request page
 			ser_tx_short(i);
 
-			timer_rst();
+			// reset timeout timer
+			TCNT1 = 0;
 
-			unsigned int checksum_a = 0;
-			unsigned char data = 0;
-
-			cnt = 0;
-			while(cnt < SPM_PAGESIZE && TCNT1 < TIMEOUT)
+			// read into buffer from computer
+			unsigned short checksum_a = 0;
+			unsigned char buff[SPM_PAGESIZE];
+			cnts = 0;
+			while(cnts < SPM_PAGESIZE && TCNT1 < TIMEOUT)
 			{
-				unsigned char t = ser_rx_short(&cnt, &data, &checksum_a);
-				if(t != 0 && (t % 2) == 0)
+				if(bit_is_set(UCSR0A, RXC0))
 				{
-					boot_page_fill_safe(cnt - 2, data);
+					unsigned char c = UDR0;
+					buff[cnts] = c;
+					checksum_a += c;
+					cnts++;
 				}
 			}
 
-			unsigned int checksum_b = 0;
-
-			cnt = 0;
-			while(cnt < 2 && TCNT1 < TIMEOUT)
+			// get checksum from computer
+			u16 checksum_b;
+			cntc = 0;
+			while(cntc < 2 && TCNT1 < TIMEOUT)
 			{
-				ser_rx_short(&cnt, &checksum_b, &holder);
+				if(bit_is_set(UCSR0A, RXC0))
+				{
+					unsigned char c = UDR0;
+					checksum_b.c[cntc] = c;
+					cntc++;
+				}
 			}
 
-			if(checksum_a == checksum_b)
+			// if checksum match then serial port bytes = buffered bytes
+			if(checksum_a == checksum_b.d)
 			{
-				boot_page_erase_safe(i * SPM_PAGESIZE);
-				boot_page_write_safe(i * SPM_PAGESIZE);
+				u16 data;
 
+				// erase the flash page
+				boot_page_erase(i * SPM_PAGESIZE);
+				boot_spm_busy_wait();
+
+				// fill temporary buffer
+				for(unsigned short j = 0; j < SPM_PAGESIZE; j += 2)
+				{
+					data.c[0] = buff[j];
+					data.c[1] = buff[j + 1];
+					boot_page_fill(j, data.d);
+				}
+
+				// write the entire page from buffer
+				boot_page_write(i * SPM_PAGESIZE);
+				boot_spm_busy_wait(); // wait until done
+
+				// allow flash to be verified
+				boot_rww_enable();
+
+				// verify by reading flash and calculating checksum
 				unsigned int checksum_c = 0;
-
-				for(unsigned int j = 0; j < SPM_PAGESIZE; j++)
+				for(unsigned short j = 0; j < SPM_PAGESIZE; j++)
 				{
-					checksum_c += pgm_read_byte((i * SPM_PAGESIZE) + j);
+					unsigned char k = pgm_read_byte((i * SPM_PAGESIZE) + j);
+					checksum_c += k;
 				}
 
-				if(checksum_c == checksum_a)
+				// if checksum match, then next page, or else try again
+				if(checksum_c == checksum_b.d)
 				{
 					break;
 				}
+
+				#ifdef TX_BAD_CHECKSUM
+				else
+				{
+					ser_tx_short(checksum_c);
+					while(1);
+				}
 			}
+			else
+			{
+				ser_tx_short(checksum_a);
+				while(1);
+			}
+			#else
+			}
+			#endif
 		}
 	}
 
-	ser_tx_short(page_num);
+	// indicate finished
+	ser_tx_short(page_num.d);
+
+	while(1); // freeze program
 
 	return 0;
 }
