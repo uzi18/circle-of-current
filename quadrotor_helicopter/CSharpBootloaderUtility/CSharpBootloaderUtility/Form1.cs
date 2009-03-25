@@ -76,11 +76,11 @@ namespace CSharpBootloaderUtility
                     {
                         if (addr == 0xFFFF)
                         {
-                            byte[] b = new byte[2] { (byte)(page_num >> 8), (byte)(page_num % 256), };
+                            byte[] b = new byte[2] { (byte)(page_num % 256), (byte)(page_num >> 8), };
                             SerPort.Write(b, 0, 2);
                             Log("Replied Number of Pages: " + Convert.ToString(page_num, 10));
                         }
-                        else
+                        else if (addr < 256)
                         {
                             Log("MCU Requested Page # " + Convert.ToString(addr, 10));
                             if (addr == page_num)
@@ -101,12 +101,19 @@ namespace CSharpBootloaderUtility
                                     b[0] = (byte)flash_data[i];
                                     checksum += flash_data[i];
                                     SerPort.Write(b, 0, 1);
+                                    while (SerPort.BytesToWrite > SerPort.WriteBufferSize / 2) ;
                                     LoadProgress.Value = Convert.ToInt32(Math.Min(i, LoadProgress.Maximum));
                                 }
-                                b[0] = (byte)(checksum >> 8);
-                                b[1] = (byte)(checksum % 256);
+                                b[0] = (byte)(checksum % 256);
+                                b[1] = (byte)(checksum >> 8);
                                 SerPort.Write(b, 0, 2);
+
+                                Log("Checksum Sent: 0x" + Convert.ToString(checksum, 16).ToUpper());
                             }
+                        }
+                        else
+                        {
+                            Log("Unexpected Number Returned: 0x" + Convert.ToString(addr, 16).ToUpper());
                         }
                     }
                 }
@@ -164,6 +171,8 @@ namespace CSharpBootloaderUtility
 
         private void StartBtn_Click(object sender, EventArgs e)
         {
+            LoadProgress.Value = 0;
+
             if (!File.Exists(FilePathTxt.Text))
             {
                 Log("File Does Not Exist");
@@ -201,12 +210,12 @@ namespace CSharpBootloaderUtility
                     {
                         int byte_cnt = Convert.ToInt32(str.Substring(1, 2), 16);
                         int addr = Convert.ToInt32(str.Substring(3, 4), 16);
-                        for (int i = 0, j = 9, k = 0; i < byte_cnt - 11; i += 2, j += 2, k++)
+                        for (int i = 0, j = 9; i < byte_cnt; i++, j += 2)
                         {
-                            flash_data[addr + k] = Convert.ToInt16(str.Substring(j, 2), 16);
-                            if ((addr + k) > last_addr)
+                            flash_data[addr + i] = Convert.ToInt16(str.Substring(j, 2), 16);
+                            if ((addr + i) > last_addr)
                             {
-                                last_addr = (Int16)(addr + k);
+                                last_addr = (Int16)(addr + i);
                             }
                         }
                     }
@@ -243,8 +252,8 @@ namespace CSharpBootloaderUtility
                 CancelBtn.Enabled = true;
 
                 page_num = (Int16)((last_addr + 256) / 256);
-                page_num += 1;
                 LoadProgress.Maximum = page_num * 256;
+                page_num++;
 
                 if (SerPort.IsOpen)
                 {
