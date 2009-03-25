@@ -15,6 +15,8 @@ namespace BaseConverter
         {
             InitializeComponent();
 
+            NotiIcon.BalloonTipTitle = "Base Converter";
+
             Process selfproc = Process.GetCurrentProcess();
             Process[] proclist = Process.GetProcesses();
             foreach (Process i in proclist)
@@ -119,7 +121,6 @@ namespace BaseConverter
                 }
             }
 
-            NotiIcon.BalloonTipTitle = "Detected: " + DetectedLabel.Text;
             NotiIcon.BalloonTipText = "Detected: " + DetectedLabel.Text + "\r\n";
 
             if (DetectedLabel.Text != "Error")
@@ -131,7 +132,7 @@ namespace BaseConverter
                 }
 
                 rb = Convert.ToString(r, 2);
-                while (rb.Length % 8 != 0)
+                while (rb.Length % 4 != 0 || rb.Length < 8)
                 {
                     rb = "0" + rb;
                 }
