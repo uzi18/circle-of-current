@@ -1,0 +1,632 @@
+
+TVremote.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         000002c2  00000000  00000000  00000074  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         00000058  00800060  000002c2  00000336  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .debug_aranges 00000020  00000000  00000000  0000038e  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  3 .debug_pubnames 00000088  00000000  00000000  000003ae  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  4 .debug_info   000004cf  00000000  00000000  00000436  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_abbrev 00000240  00000000  00000000  00000905  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_line   000002f4  00000000  00000000  00000b45  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_frame  00000090  00000000  00000000  00000e3c  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_str    00000167  00000000  00000000  00000ecc  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_loc    0000015d  00000000  00000000  00001033  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_ranges 00000030  00000000  00000000  00001190  2**0
+                  CONTENTS, READONLY, DEBUGGING
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	0e c0       	rjmp	.+28     	; 0x1e <__ctors_end>
+   2:	26 c0       	rjmp	.+76     	; 0x50 <__bad_interrupt>
+   4:	25 c0       	rjmp	.+74     	; 0x50 <__bad_interrupt>
+   6:	24 c0       	rjmp	.+72     	; 0x50 <__bad_interrupt>
+   8:	23 c0       	rjmp	.+70     	; 0x50 <__bad_interrupt>
+   a:	22 c0       	rjmp	.+68     	; 0x50 <__bad_interrupt>
+   c:	21 c0       	rjmp	.+66     	; 0x50 <__bad_interrupt>
+   e:	20 c0       	rjmp	.+64     	; 0x50 <__bad_interrupt>
+  10:	1f c0       	rjmp	.+62     	; 0x50 <__bad_interrupt>
+  12:	1e c0       	rjmp	.+60     	; 0x50 <__bad_interrupt>
+  14:	1d c0       	rjmp	.+58     	; 0x50 <__bad_interrupt>
+  16:	1c c0       	rjmp	.+56     	; 0x50 <__bad_interrupt>
+  18:	1b c0       	rjmp	.+54     	; 0x50 <__bad_interrupt>
+  1a:	1a c0       	rjmp	.+52     	; 0x50 <__bad_interrupt>
+  1c:	19 c0       	rjmp	.+50     	; 0x50 <__bad_interrupt>
+
+0000001e <__ctors_end>:
+  1e:	11 24       	eor	r1, r1
+  20:	1f be       	out	0x3f, r1	; 63
+  22:	cf ed       	ldi	r28, 0xDF	; 223
+  24:	cd bf       	out	0x3d, r28	; 61
+
+00000026 <__do_copy_data>:
+  26:	10 e0       	ldi	r17, 0x00	; 0
+  28:	a0 e6       	ldi	r26, 0x60	; 96
+  2a:	b0 e0       	ldi	r27, 0x00	; 0
+  2c:	e2 ec       	ldi	r30, 0xC2	; 194
+  2e:	f2 e0       	ldi	r31, 0x02	; 2
+  30:	02 c0       	rjmp	.+4      	; 0x36 <.do_copy_data_start>
+
+00000032 <.do_copy_data_loop>:
+  32:	05 90       	lpm	r0, Z+
+  34:	0d 92       	st	X+, r0
+
+00000036 <.do_copy_data_start>:
+  36:	a8 3b       	cpi	r26, 0xB8	; 184
+  38:	b1 07       	cpc	r27, r17
+  3a:	d9 f7       	brne	.-10     	; 0x32 <.do_copy_data_loop>
+
+0000003c <__do_clear_bss>:
+  3c:	10 e0       	ldi	r17, 0x00	; 0
+  3e:	a8 eb       	ldi	r26, 0xB8	; 184
+  40:	b0 e0       	ldi	r27, 0x00	; 0
+  42:	01 c0       	rjmp	.+2      	; 0x46 <.do_clear_bss_start>
+
+00000044 <.do_clear_bss_loop>:
+  44:	1d 92       	st	X+, r1
+
+00000046 <.do_clear_bss_start>:
+  46:	a8 3b       	cpi	r26, 0xB8	; 184
+  48:	b1 07       	cpc	r27, r17
+  4a:	e1 f7       	brne	.-8      	; 0x44 <.do_clear_bss_loop>
+  4c:	0c d1       	rcall	.+536    	; 0x266 <main>
+  4e:	37 c1       	rjmp	.+622    	; 0x2be <_exit>
+
+00000050 <__bad_interrupt>:
+  50:	d7 cf       	rjmp	.-82     	; 0x0 <__vectors>
+
+00000052 <on>:
+#include "typedefs.h"
+#include "codes.h"
+
+#define NOP __asm__ __volatile__ ("nop")
+
+void on(){
+  52:	12 be       	out	0x32, r1	; 50
+	TCNT0 = 0;//reset timer
+	PORTB = 0xFF;//Start with LEDs on
+  54:	8f ef       	ldi	r24, 0xFF	; 255
+  56:	88 bb       	out	0x18, r24	; 24
+	TCCR0A = _BV(COM0A0) | _BV(COM0B0) | _BV(WGM01);//0x52, use CTC mode and toggle OC0A and OC0B
+  58:	82 e5       	ldi	r24, 0x52	; 82
+  5a:	8a bd       	out	0x2a, r24	; 42
+}
+  5c:	08 95       	ret
+
+0000005e <off>:
+
+void off(){
+  5e:	82 e0       	ldi	r24, 0x02	; 2
+  60:	8a bd       	out	0x2a, r24	; 42
+	TCCR0A = 0x02;//CTC mode, but timer module does not touch PORTB
+	PORTB = 0x00;//Ensure PORTB is low
+  62:	18 ba       	out	0x18, r1	; 24
+}
+  64:	08 95       	ret
+
+00000066 <count>:
+
+void count (uint16_t n){
+  66:	ac 01       	movw	r20, r24
+  68:	20 e0       	ldi	r18, 0x00	; 0
+  6a:	30 e0       	ldi	r19, 0x00	; 0
+  6c:	08 c0       	rjmp	.+16     	; 0x7e <count+0x18>
+	for (int k=0;k<1;k++){//Each time i is incremented is only half 
+		for (uint16_t i=0;i<n;i++){//count n cycles of reaching TOP
+			TIFR |= _BV(OCF0A);	//Clear interrupt flag
+  6e:	88 b7       	in	r24, 0x38	; 56
+  70:	80 61       	ori	r24, 0x10	; 16
+  72:	88 bf       	out	0x38, r24	; 56
+			while(bit_is_clear(TIFR,OCF0A)); //wait for intterupt flag
+  74:	08 b6       	in	r0, 0x38	; 56
+  76:	04 fe       	sbrs	r0, 4
+  78:	fd cf       	rjmp	.-6      	; 0x74 <count+0xe>
+	PORTB = 0x00;//Ensure PORTB is low
+}
+
+void count (uint16_t n){
+	for (int k=0;k<1;k++){//Each time i is incremented is only half 
+		for (uint16_t i=0;i<n;i++){//count n cycles of reaching TOP
+  7a:	2f 5f       	subi	r18, 0xFF	; 255
+  7c:	3f 4f       	sbci	r19, 0xFF	; 255
+  7e:	24 17       	cp	r18, r20
+  80:	35 07       	cpc	r19, r21
+  82:	a8 f3       	brcs	.-22     	; 0x6e <count+0x8>
+			TIFR |= _BV(OCF0A);	//Clear interrupt flag
+			while(bit_is_clear(TIFR,OCF0A)); //wait for intterupt flag
+		}
+	}
+	//Interrupt flag doesn't need to be cleared since it is only used in this function and gets cleared before
+}
+  84:	08 95       	ret
+
+00000086 <sendBurstPair>:
+
+void sendBurstPair (struct burstPair bp, uint16_t timerValue){
+  86:	fc 01       	movw	r30, r24
+	OCR0A = OCR0B = timerValue;
+  88:	48 bd       	out	0x28, r20	; 40
+  8a:	88 b5       	in	r24, 0x28	; 40
+  8c:	89 bd       	out	0x29, r24	; 41
+#include "codes.h"
+
+#define NOP __asm__ __volatile__ ("nop")
+
+void on(){
+	TCNT0 = 0;//reset timer
+  8e:	12 be       	out	0x32, r1	; 50
+	PORTB = 0xFF;//Start with LEDs on
+  90:	8f ef       	ldi	r24, 0xFF	; 255
+  92:	88 bb       	out	0x18, r24	; 24
+	TCCR0A = _BV(COM0A0) | _BV(COM0B0) | _BV(WGM01);//0x52, use CTC mode and toggle OC0A and OC0B
+  94:	82 e5       	ldi	r24, 0x52	; 82
+  96:	8a bd       	out	0x2a, r24	; 42
+  98:	20 e0       	ldi	r18, 0x00	; 0
+  9a:	30 e0       	ldi	r19, 0x00	; 0
+  9c:	08 c0       	rjmp	.+16     	; 0xae <sendBurstPair+0x28>
+}
+
+void count (uint16_t n){
+	for (int k=0;k<1;k++){//Each time i is incremented is only half 
+		for (uint16_t i=0;i<n;i++){//count n cycles of reaching TOP
+			TIFR |= _BV(OCF0A);	//Clear interrupt flag
+  9e:	88 b7       	in	r24, 0x38	; 56
+  a0:	80 61       	ori	r24, 0x10	; 16
+  a2:	88 bf       	out	0x38, r24	; 56
+			while(bit_is_clear(TIFR,OCF0A)); //wait for intterupt flag
+  a4:	08 b6       	in	r0, 0x38	; 56
+  a6:	04 fe       	sbrs	r0, 4
+  a8:	fd cf       	rjmp	.-6      	; 0xa4 <sendBurstPair+0x1e>
+	PORTB = 0x00;//Ensure PORTB is low
+}
+
+void count (uint16_t n){
+	for (int k=0;k<1;k++){//Each time i is incremented is only half 
+		for (uint16_t i=0;i<n;i++){//count n cycles of reaching TOP
+  aa:	2f 5f       	subi	r18, 0xFF	; 255
+  ac:	3f 4f       	sbci	r19, 0xFF	; 255
+  ae:	26 17       	cp	r18, r22
+  b0:	37 07       	cpc	r19, r23
+  b2:	a8 f3       	brcs	.-22     	; 0x9e <sendBurstPair+0x18>
+	PORTB = 0xFF;//Start with LEDs on
+	TCCR0A = _BV(COM0A0) | _BV(COM0B0) | _BV(WGM01);//0x52, use CTC mode and toggle OC0A and OC0B
+}
+
+void off(){
+	TCCR0A = 0x02;//CTC mode, but timer module does not touch PORTB
+  b4:	82 e0       	ldi	r24, 0x02	; 2
+  b6:	8a bd       	out	0x2a, r24	; 42
+	PORTB = 0x00;//Ensure PORTB is low
+  b8:	18 ba       	out	0x18, r1	; 24
+  ba:	20 e0       	ldi	r18, 0x00	; 0
+  bc:	30 e0       	ldi	r19, 0x00	; 0
+  be:	08 c0       	rjmp	.+16     	; 0xd0 <sendBurstPair+0x4a>
+}
+
+void count (uint16_t n){
+	for (int k=0;k<1;k++){//Each time i is incremented is only half 
+		for (uint16_t i=0;i<n;i++){//count n cycles of reaching TOP
+			TIFR |= _BV(OCF0A);	//Clear interrupt flag
+  c0:	88 b7       	in	r24, 0x38	; 56
+  c2:	80 61       	ori	r24, 0x10	; 16
+  c4:	88 bf       	out	0x38, r24	; 56
+			while(bit_is_clear(TIFR,OCF0A)); //wait for intterupt flag
+  c6:	08 b6       	in	r0, 0x38	; 56
+  c8:	04 fe       	sbrs	r0, 4
+  ca:	fd cf       	rjmp	.-6      	; 0xc6 <sendBurstPair+0x40>
+	PORTB = 0x00;//Ensure PORTB is low
+}
+
+void count (uint16_t n){
+	for (int k=0;k<1;k++){//Each time i is incremented is only half 
+		for (uint16_t i=0;i<n;i++){//count n cycles of reaching TOP
+  cc:	2f 5f       	subi	r18, 0xFF	; 255
+  ce:	3f 4f       	sbci	r19, 0xFF	; 255
+  d0:	2e 17       	cp	r18, r30
+  d2:	3f 07       	cpc	r19, r31
+  d4:	a8 f3       	brcs	.-22     	; 0xc0 <sendBurstPair+0x3a>
+	on();		//Flash LED at carrier and wait n cycles
+	count(bp.on);
+
+	off();//Turn off LED for n cycles
+	count (bp.off);
+}
+  d6:	08 95       	ret
+
+000000d8 <my_bit_is_set>:
+
+int my_bit_is_set(uint8_t data,uint8_t bitNum){//Like bit_is_set but returns 1 or 0, not 0 or non-zero
+  d8:	28 2f       	mov	r18, r24
+  da:	30 e0       	ldi	r19, 0x00	; 0
+  dc:	02 c0       	rjmp	.+4      	; 0xe2 <__stack+0x3>
+  de:	35 95       	asr	r19
+  e0:	27 95       	ror	r18
+  e2:	6a 95       	dec	r22
+  e4:	e2 f7       	brpl	.-8      	; 0xde <my_bit_is_set+0x6>
+  e6:	21 70       	andi	r18, 0x01	; 1
+  e8:	30 70       	andi	r19, 0x00	; 0
+		return 1;
+	}
+	else{
+		return 0;
+	}
+}
+  ea:	c9 01       	movw	r24, r18
+  ec:	08 95       	ret
+
+000000ee <delay>:
+
+
+void delay (uint16_t dt){
+  ee:	ac 01       	movw	r20, r24
+	uint8_t _TCCR0A = TCCR0A;
+  f0:	6a b5       	in	r22, 0x2a	; 42
+	uint8_t _TCCR0B = TCCR0B;
+  f2:	93 b7       	in	r25, 0x33	; 51
+	uint16_t count = 0;
+	TCCR0A = 0;
+  f4:	1a bc       	out	0x2a, r1	; 42
+	TCCR0B = 3;
+  f6:	83 e0       	ldi	r24, 0x03	; 3
+  f8:	83 bf       	out	0x33, r24	; 51
+  fa:	20 e0       	ldi	r18, 0x00	; 0
+  fc:	30 e0       	ldi	r19, 0x00	; 0
+	while (count<dt){
+		if (TIFR & _BV(TOV0)){
+			TCNT0 = 255-125+15;
+  fe:	71 e9       	ldi	r23, 0x91	; 145
+ 100:	09 c0       	rjmp	.+18     	; 0x114 <delay+0x26>
+	uint8_t _TCCR0B = TCCR0B;
+	uint16_t count = 0;
+	TCCR0A = 0;
+	TCCR0B = 3;
+	while (count<dt){
+		if (TIFR & _BV(TOV0)){
+ 102:	08 b6       	in	r0, 0x38	; 56
+ 104:	01 fe       	sbrs	r0, 1
+ 106:	fd cf       	rjmp	.-6      	; 0x102 <delay+0x14>
+			TCNT0 = 255-125+15;
+ 108:	72 bf       	out	0x32, r23	; 50
+			count++;
+ 10a:	2f 5f       	subi	r18, 0xFF	; 255
+ 10c:	3f 4f       	sbci	r19, 0xFF	; 255
+			TIFR |= _BV(TOV0);
+ 10e:	88 b7       	in	r24, 0x38	; 56
+ 110:	82 60       	ori	r24, 0x02	; 2
+ 112:	88 bf       	out	0x38, r24	; 56
+	uint8_t _TCCR0A = TCCR0A;
+	uint8_t _TCCR0B = TCCR0B;
+	uint16_t count = 0;
+	TCCR0A = 0;
+	TCCR0B = 3;
+	while (count<dt){
+ 114:	24 17       	cp	r18, r20
+ 116:	35 07       	cpc	r19, r21
+ 118:	a0 f3       	brcs	.-24     	; 0x102 <delay+0x14>
+			count++;
+			TIFR |= _BV(TOV0);
+		}
+	}
+
+	TCCR0A = _TCCR0A;
+ 11a:	6a bd       	out	0x2a, r22	; 42
+	TCCR0B = _TCCR0B;
+ 11c:	93 bf       	out	0x33, r25	; 51
+}
+ 11e:	08 95       	ret
+
+00000120 <sendCode>:
+
+void sendCode (struct codeSet *tvType, uint8_t function){
+ 120:	af 92       	push	r10
+ 122:	bf 92       	push	r11
+ 124:	cf 92       	push	r12
+ 126:	df 92       	push	r13
+ 128:	ef 92       	push	r14
+ 12a:	ff 92       	push	r15
+ 12c:	0f 93       	push	r16
+ 12e:	1f 93       	push	r17
+ 130:	df 93       	push	r29
+ 132:	cf 93       	push	r28
+ 134:	cd b7       	in	r28, 0x3d	; 61
+ 136:	de b7       	in	r29, 0x3e	; 62
+ 138:	27 97       	sbiw	r28, 0x07	; 7
+ 13a:	0f b6       	in	r0, 0x3f	; 63
+ 13c:	f8 94       	cli
+ 13e:	de bf       	out	0x3e, r29	; 62
+ 140:	0f be       	out	0x3f, r0	; 63
+ 142:	cd bf       	out	0x3d, r28	; 61
+ 144:	7c 01       	movw	r14, r24
+ 146:	86 2f       	mov	r24, r22
+	struct code codeToUse=tvType->functions[function];	
+ 148:	90 e0       	ldi	r25, 0x00	; 0
+ 14a:	67 e0       	ldi	r22, 0x07	; 7
+ 14c:	70 e0       	ldi	r23, 0x00	; 0
+ 14e:	a5 d0       	rcall	.+330    	; 0x29a <__mulhi3>
+ 150:	f7 01       	movw	r30, r14
+ 152:	e8 0f       	add	r30, r24
+ 154:	f9 1f       	adc	r31, r25
+ 156:	de 01       	movw	r26, r28
+ 158:	11 96       	adiw	r26, 0x01	; 1
+ 15a:	3a 96       	adiw	r30, 0x0a	; 10
+ 15c:	87 e0       	ldi	r24, 0x07	; 7
+ 15e:	01 90       	ld	r0, Z+
+ 160:	0d 92       	st	X+, r0
+ 162:	81 50       	subi	r24, 0x01	; 1
+ 164:	e1 f7       	brne	.-8      	; 0x15e <sendCode+0x3e>
+ 166:	d9 80       	ldd	r13, Y+1	; 0x01
+ 168:	00 e0       	ldi	r16, 0x00	; 0
+ 16a:	10 e0       	ldi	r17, 0x00	; 0
+ 16c:	12 c0       	rjmp	.+36     	; 0x192 <sendCode+0x72>
+	for (int i=0;i<tvType->leadInSize;i++){
+		sendBurstPair(tvType->leadData[i], tvType->frequency);//Send lead in data
+ 16e:	d7 01       	movw	r26, r14
+ 170:	4d 91       	ld	r20, X+
+ 172:	5c 91       	ld	r21, X
+ 174:	f8 01       	movw	r30, r16
+ 176:	ee 0f       	add	r30, r30
+ 178:	ff 1f       	adc	r31, r31
+ 17a:	ee 0f       	add	r30, r30
+ 17c:	ff 1f       	adc	r31, r31
+ 17e:	ee 0d       	add	r30, r14
+ 180:	ff 1d       	adc	r31, r15
+ 182:	fd 96       	adiw	r30, 0x3d	; 61
+ 184:	60 81       	ld	r22, Z
+ 186:	71 81       	ldd	r23, Z+1	; 0x01
+ 188:	82 81       	ldd	r24, Z+2	; 0x02
+ 18a:	93 81       	ldd	r25, Z+3	; 0x03
+ 18c:	7c df       	rcall	.-264    	; 0x86 <sendBurstPair>
+	TCCR0B = _TCCR0B;
+}
+
+void sendCode (struct codeSet *tvType, uint8_t function){
+	struct code codeToUse=tvType->functions[function];	
+	for (int i=0;i<tvType->leadInSize;i++){
+ 18e:	0f 5f       	subi	r16, 0xFF	; 255
+ 190:	1f 4f       	sbci	r17, 0xFF	; 255
+ 192:	f7 01       	movw	r30, r14
+ 194:	83 ad       	ldd	r24, Z+59	; 0x3b
+ 196:	90 e0       	ldi	r25, 0x00	; 0
+ 198:	08 17       	cp	r16, r24
+ 19a:	19 07       	cpc	r17, r25
+ 19c:	44 f3       	brlt	.-48     	; 0x16e <sendCode+0x4e>
+ 19e:	00 e0       	ldi	r16, 0x00	; 0
+ 1a0:	10 e0       	ldi	r17, 0x00	; 0
+		sendBurstPair(tvType->leadData[i], tvType->frequency);//Send lead in data
+	}
+	for (int i=0;i<codeToUse.size;i++){
+ 1a2:	cd 2c       	mov	r12, r13
+ 1a4:	dd 24       	eor	r13, r13
+		sendBurstPair(tvType->bits[my_bit_is_set(codeToUse.data[i/8],i%8)], tvType->frequency); //send button code
+ 1a6:	42 e0       	ldi	r20, 0x02	; 2
+ 1a8:	a4 2e       	mov	r10, r20
+ 1aa:	b1 2c       	mov	r11, r1
+ 1ac:	ac 0e       	add	r10, r28
+ 1ae:	bd 1e       	adc	r11, r29
+ 1b0:	24 c0       	rjmp	.+72     	; 0x1fa <sendCode+0xda>
+ 1b2:	d7 01       	movw	r26, r14
+ 1b4:	4d 91       	ld	r20, X+
+ 1b6:	5c 91       	ld	r21, X
+ 1b8:	f8 01       	movw	r30, r16
+ 1ba:	33 e0       	ldi	r19, 0x03	; 3
+ 1bc:	f5 95       	asr	r31
+ 1be:	e7 95       	ror	r30
+ 1c0:	3a 95       	dec	r19
+ 1c2:	e1 f7       	brne	.-8      	; 0x1bc <sendCode+0x9c>
+ 1c4:	ea 0d       	add	r30, r10
+ 1c6:	fb 1d       	adc	r31, r11
+ 1c8:	e0 81       	ld	r30, Z
+ 1ca:	f0 e0       	ldi	r31, 0x00	; 0
+ 1cc:	80 2f       	mov	r24, r16
+ 1ce:	87 70       	andi	r24, 0x07	; 7
+ 1d0:	02 c0       	rjmp	.+4      	; 0x1d6 <sendCode+0xb6>
+ 1d2:	f5 95       	asr	r31
+ 1d4:	e7 95       	ror	r30
+ 1d6:	8a 95       	dec	r24
+ 1d8:	e2 f7       	brpl	.-8      	; 0x1d2 <sendCode+0xb2>
+ 1da:	e1 70       	andi	r30, 0x01	; 1
+ 1dc:	f0 70       	andi	r31, 0x00	; 0
+ 1de:	ee 0f       	add	r30, r30
+ 1e0:	ff 1f       	adc	r31, r31
+ 1e2:	31 96       	adiw	r30, 0x01	; 1
+ 1e4:	ee 0f       	add	r30, r30
+ 1e6:	ff 1f       	adc	r31, r31
+ 1e8:	ee 0d       	add	r30, r14
+ 1ea:	ff 1d       	adc	r31, r15
+ 1ec:	60 81       	ld	r22, Z
+ 1ee:	71 81       	ldd	r23, Z+1	; 0x01
+ 1f0:	82 81       	ldd	r24, Z+2	; 0x02
+ 1f2:	93 81       	ldd	r25, Z+3	; 0x03
+ 1f4:	48 df       	rcall	.-368    	; 0x86 <sendBurstPair>
+void sendCode (struct codeSet *tvType, uint8_t function){
+	struct code codeToUse=tvType->functions[function];	
+	for (int i=0;i<tvType->leadInSize;i++){
+		sendBurstPair(tvType->leadData[i], tvType->frequency);//Send lead in data
+	}
+	for (int i=0;i<codeToUse.size;i++){
+ 1f6:	0f 5f       	subi	r16, 0xFF	; 255
+ 1f8:	1f 4f       	sbci	r17, 0xFF	; 255
+ 1fa:	0c 15       	cp	r16, r12
+ 1fc:	1d 05       	cpc	r17, r13
+ 1fe:	cc f2       	brlt	.-78     	; 0x1b2 <sendCode+0x92>
+		sendBurstPair(tvType->bits[my_bit_is_set(codeToUse.data[i/8],i%8)], tvType->frequency); //send button code
+	}
+	for (int i=tvType->leadInSize;i<tvType->leadSize;i++){
+ 200:	f7 01       	movw	r30, r14
+ 202:	83 ad       	ldd	r24, Z+59	; 0x3b
+ 204:	00 e0       	ldi	r16, 0x00	; 0
+ 206:	10 e0       	ldi	r17, 0x00	; 0
+		sendBurstPair(tvType->leadData[i], tvType->frequency);	//send leadout data
+ 208:	c8 2e       	mov	r12, r24
+ 20a:	dd 24       	eor	r13, r13
+ 20c:	0f c0       	rjmp	.+30     	; 0x22c <sendCode+0x10c>
+ 20e:	d7 01       	movw	r26, r14
+ 210:	4d 91       	ld	r20, X+
+ 212:	5c 91       	ld	r21, X
+ 214:	ee 0f       	add	r30, r30
+ 216:	ff 1f       	adc	r31, r31
+ 218:	ee 0f       	add	r30, r30
+ 21a:	ff 1f       	adc	r31, r31
+ 21c:	ee 0d       	add	r30, r14
+ 21e:	ff 1d       	adc	r31, r15
+ 220:	fd 96       	adiw	r30, 0x3d	; 61
+ 222:	60 81       	ld	r22, Z
+ 224:	71 81       	ldd	r23, Z+1	; 0x01
+ 226:	82 81       	ldd	r24, Z+2	; 0x02
+ 228:	93 81       	ldd	r25, Z+3	; 0x03
+ 22a:	2d df       	rcall	.-422    	; 0x86 <sendBurstPair>
+ 22c:	f8 01       	movw	r30, r16
+ 22e:	ec 0d       	add	r30, r12
+ 230:	fd 1d       	adc	r31, r13
+ 232:	0f 5f       	subi	r16, 0xFF	; 255
+ 234:	1f 4f       	sbci	r17, 0xFF	; 255
+		sendBurstPair(tvType->leadData[i], tvType->frequency);//Send lead in data
+	}
+	for (int i=0;i<codeToUse.size;i++){
+		sendBurstPair(tvType->bits[my_bit_is_set(codeToUse.data[i/8],i%8)], tvType->frequency); //send button code
+	}
+	for (int i=tvType->leadInSize;i<tvType->leadSize;i++){
+ 236:	d7 01       	movw	r26, r14
+ 238:	dc 96       	adiw	r26, 0x3c	; 60
+ 23a:	8c 91       	ld	r24, X
+ 23c:	90 e0       	ldi	r25, 0x00	; 0
+ 23e:	e8 17       	cp	r30, r24
+ 240:	f9 07       	cpc	r31, r25
+ 242:	2c f3       	brlt	.-54     	; 0x20e <sendCode+0xee>
+		sendBurstPair(tvType->leadData[i], tvType->frequency);	//send leadout data
+	}
+}
+ 244:	27 96       	adiw	r28, 0x07	; 7
+ 246:	0f b6       	in	r0, 0x3f	; 63
+ 248:	f8 94       	cli
+ 24a:	de bf       	out	0x3e, r29	; 62
+ 24c:	0f be       	out	0x3f, r0	; 63
+ 24e:	cd bf       	out	0x3d, r28	; 61
+ 250:	cf 91       	pop	r28
+ 252:	df 91       	pop	r29
+ 254:	1f 91       	pop	r17
+ 256:	0f 91       	pop	r16
+ 258:	ff 90       	pop	r15
+ 25a:	ef 90       	pop	r14
+ 25c:	df 90       	pop	r13
+ 25e:	cf 90       	pop	r12
+ 260:	bf 90       	pop	r11
+ 262:	af 90       	pop	r10
+ 264:	08 95       	ret
+
+00000266 <main>:
+
+int main (void){
+ 266:	1f 93       	push	r17
+	DDRB = 0xFF;
+ 268:	8f ef       	ldi	r24, 0xFF	; 255
+ 26a:	87 bb       	out	0x17, r24	; 23
+	PORTB = 0x00;
+ 26c:	18 ba       	out	0x18, r1	; 24
+#include "codes.h"
+
+#define NOP __asm__ __volatile__ ("nop")
+
+void on(){
+	TCNT0 = 0;//reset timer
+ 26e:	12 be       	out	0x32, r1	; 50
+	PORTB = 0xFF;//Start with LEDs on
+ 270:	88 bb       	out	0x18, r24	; 24
+	TCCR0A = _BV(COM0A0) | _BV(COM0B0) | _BV(WGM01);//0x52, use CTC mode and toggle OC0A and OC0B
+ 272:	82 e5       	ldi	r24, 0x52	; 82
+ 274:	8a bd       	out	0x2a, r24	; 42
+
+int main (void){
+	DDRB = 0xFF;
+	PORTB = 0x00;
+	on();			//Use CTC mode and toggle OCR0A/B on match
+	TCCR0B = 1;
+ 276:	81 e0       	ldi	r24, 0x01	; 1
+ 278:	83 bf       	out	0x33, r24	; 51
+	TIMSK = _BV(OCIE0A) | _BV(OCIE0B);
+ 27a:	88 e1       	ldi	r24, 0x18	; 24
+ 27c:	89 bf       	out	0x39, r24	; 57
+void delay (uint16_t dt){
+	uint8_t _TCCR0A = TCCR0A;
+	uint8_t _TCCR0B = TCCR0B;
+	uint16_t count = 0;
+	TCCR0A = 0;
+	TCCR0B = 3;
+ 27e:	13 e0       	ldi	r17, 0x03	; 3
+	PORTB = 0x00;
+	on();			//Use CTC mode and toggle OCR0A/B on match
+	TCCR0B = 1;
+	TIMSK = _BV(OCIE0A) | _BV(OCIE0B);
+	while (1){
+		sendCode(codeSetList[0],POWER);
+ 280:	60 e0       	ldi	r22, 0x00	; 0
+ 282:	80 91 b5 00 	lds	r24, 0x00B5
+ 286:	90 91 b6 00 	lds	r25, 0x00B6
+ 28a:	4a df       	rcall	.-364    	; 0x120 <sendCode>
+	}
+}
+
+
+void delay (uint16_t dt){
+	uint8_t _TCCR0A = TCCR0A;
+ 28c:	8a b5       	in	r24, 0x2a	; 42
+	uint8_t _TCCR0B = TCCR0B;
+ 28e:	93 b7       	in	r25, 0x33	; 51
+	uint16_t count = 0;
+	TCCR0A = 0;
+ 290:	1a bc       	out	0x2a, r1	; 42
+	TCCR0B = 3;
+ 292:	13 bf       	out	0x33, r17	; 51
+			count++;
+			TIFR |= _BV(TOV0);
+		}
+	}
+
+	TCCR0A = _TCCR0A;
+ 294:	8a bd       	out	0x2a, r24	; 42
+	TCCR0B = _TCCR0B;
+ 296:	93 bf       	out	0x33, r25	; 51
+ 298:	f3 cf       	rjmp	.-26     	; 0x280 <main+0x1a>
+
+0000029a <__mulhi3>:
+ 29a:	55 27       	eor	r21, r21
+ 29c:	00 24       	eor	r0, r0
+
+0000029e <__mulhi3_loop>:
+ 29e:	80 ff       	sbrs	r24, 0
+ 2a0:	02 c0       	rjmp	.+4      	; 0x2a6 <__mulhi3_skip1>
+ 2a2:	06 0e       	add	r0, r22
+ 2a4:	57 1f       	adc	r21, r23
+
+000002a6 <__mulhi3_skip1>:
+ 2a6:	66 0f       	add	r22, r22
+ 2a8:	77 1f       	adc	r23, r23
+ 2aa:	61 15       	cp	r22, r1
+ 2ac:	71 05       	cpc	r23, r1
+ 2ae:	21 f0       	breq	.+8      	; 0x2b8 <__mulhi3_exit>
+ 2b0:	96 95       	lsr	r25
+ 2b2:	87 95       	ror	r24
+ 2b4:	00 97       	sbiw	r24, 0x00	; 0
+ 2b6:	99 f7       	brne	.-26     	; 0x29e <__mulhi3_loop>
+
+000002b8 <__mulhi3_exit>:
+ 2b8:	95 2f       	mov	r25, r21
+ 2ba:	80 2d       	mov	r24, r0
+ 2bc:	08 95       	ret
+
+000002be <_exit>:
+ 2be:	f8 94       	cli
+
+000002c0 <__stop_program>:
+ 2c0:	ff cf       	rjmp	.-2      	; 0x2c0 <__stop_program>
