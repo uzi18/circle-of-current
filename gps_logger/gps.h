@@ -8,8 +8,6 @@
 #include <avr/wdt.h>
 #include <util/delay.h>
 
-#define GPSBaud 4800
-
 typedef struct _GPSData
 {
 	unsigned char valid;

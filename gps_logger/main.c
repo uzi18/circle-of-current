@@ -1,6 +1,5 @@
 #include "gpslogger.h"
 
-#include "printDouble.h"
 #include "timer.h"
 
 volatile unsigned char newLogButtonFlag = 0;
@@ -85,9 +84,9 @@ ISR(edge interrupt)
 */
 
 // function reads a string from a file, seperated with delimiters
-StringWord f_readWord(FIL * fil__)
+StringStruct f_readWord(FIL * fil__)
 {
-	StringWord result;
+	StringStruct result;
 	result.length = 0;
 	result.endOfFile = 0;
 	
@@ -135,13 +134,29 @@ StringWord f_readWord(FIL * fil__)
 	return result;
 }
 
+void f_printf_p(FIL * fil__, const char * addr)
+{
+	char c;
+
+	while ((c = pgm_read_byte(addr++)))
+	{
+		f_putc(c, fil__);
+	}
+}
+
 /* function checks if there's a error, if there is, show a message, freeze the program and wait for reset while flashing the LED */
 void f_checkErrorFreeze(unsigned int f_tffError, const char * s)
 {
 	if(f_tffError != 0)
 	{
 		#ifdef SerDebug
-		fprintf(&serStdout, "err, %s\n\n", s);
+		fprintf_P(&serStdout, PSTR("err, "));
+		char c;
+		while ((c = pgm_read_byte(s++)))
+		{
+			fputc(c, &serStdout);
+		}
+		fprintf_P(&serStdout, PSTR("\n\n"));
 		#endif
 
 		unsigned char flasher = 0;
@@ -172,16 +187,23 @@ int main()
 	FIL configFile;
 	#ifdef USE_KML
 	FIL pathFile;
-	#endif
 	FIL pointFile;
+	#endif
+	FIL csvFile;
 
 	GPSData GData;
 
 	unsigned long writeRate = defaultDelay;
 	signed long timeZone = defaultTimeZone;
 
-	StringWord tempS1;
-	StringWord tempS2;
+	char * temp1_str = calloc(2, sizeof(char));
+	char * temp2_str = calloc(2, sizeof(char));
+
+	char * long_str = calloc(16, sizeof(char));
+	char * lat_str = calloc(16, sizeof(char));
+	char * alt_str = calloc(8, sizeof(char));
+	char * speed_str = calloc(8, sizeof(char));
+	char * head_str = calloc(8, sizeof(char));
 
 	// enable interrupt
 	sei();
@@ -199,7 +221,7 @@ int main()
 	// TODO, edge interrupt for "new log" button
 
 	// start serial port
-	serInit(GPSBaud);
+	serInit();
 
 	// start timer2, interrupt every 10 ms
 	// these functions are found in timer.h
@@ -216,7 +238,7 @@ int main()
 		unsigned char flasher = 0;
 
 		#ifdef SerDebug
-		fprintf(&serStdout, "\n\n-Start");
+		fprintf_P(&serStdout, PSTR("\n\n-Start"));
 		#endif
 
 		// start the disk
@@ -224,7 +246,7 @@ int main()
 		f_tffError |= f_mount(0, &fatfs_);
 
 		#ifdef SerDebug
-		fprintf(&serStdout, " %d-\n", f_tffError);
+		fprintf_P(&serStdout, PSTR(" %d-\n"), f_tffError);
 		#endif
 
 		if(f_tffError == 0) break;
@@ -249,10 +271,10 @@ int main()
 		f_tffError = f_open(&configFile, "/config.txt", FA_WRITE | FA_OPEN_ALWAYS | FA_CREATE_ALWAYS);
 
 		#ifdef SerDebug
-		fprintf(&serStdout, "M c\n");
+		fprintf_P(&serStdout, PSTR("M c\n"));
 		#endif
 		
-		f_checkErrorFreeze(f_tffError, "cant M c");
+		f_checkErrorFreeze(f_tffError, PSTR("cant M c"));
 
 		// write default values to config file
 		f_printf(&configFile, "delay %d\ntimezone %d\nend", defaultDelay, defaultTimeZone);
@@ -261,17 +283,17 @@ int main()
 	}
 
 	#ifdef SerDebug
-	else fprintf(&serStdout, "c F\n");
+	else fprintf_P(&serStdout, PSTR("c F\n"));
 	#endif
 
 	f_tffError |= f_close(&configFile);
 
 	f_tffError = f_open(&configFile, "/config.txt", FA_READ);
 
-	f_checkErrorFreeze(f_tffError, "cant O c");
+	f_checkErrorFreeze(f_tffError, PSTR("cant O c"));
 
 	#ifdef SerDebug
-	fprintf(&serStdout, "R c\n");
+	fprintf_P(&serStdout, PSTR("R c\n"));
 	#endif
 
 	wdt_reset();
@@ -279,7 +301,7 @@ int main()
 	/* read in configuration */
 
 	unsigned char ts[5] = {0,0,0,0,0};
-	StringWord d;
+	StringStruct d;
 	do
 	{
 		// read next label, strip unwanted characters
@@ -296,7 +318,7 @@ int main()
 			writeRate = (unsigned long)strtod(d.c, &ts);
 
 			#ifdef SerDebug
-			fprintf(&serStdout, "i = %d\n", writeRate);
+			fprintf_P(&serStdout, PSTR("i = %d\n"), writeRate);
 			#endif
 		}
 		else if(strcmp(d.c, "timezone") == 0)
@@ -306,7 +328,7 @@ int main()
 			timeZone = (signed long)strtod(d.c, &ts);
 
 			#ifdef SerDebug
-			fprintf(&serStdout, "tz = %d\n", (signed int)timeZone);
+			fprintf_P(&serStdout, PSTR("tz = %d\n"), (signed int)timeZone);
 			#endif
 		}
 	}
@@ -322,13 +344,13 @@ int main()
 	cardSafeLED(0);
 
 	#ifdef SerDebug
-	fprintf(&serStdout, "I GPS\n");
+	fprintf_P(&serStdout, PSTR("I GPS\n"));
 	#endif
 
 	GPSInit(1, timeZone);
 
 	#ifdef SerDebug
-	fprintf(&serStdout, "GPS F\n");
+	fprintf_P(&serStdout, PSTR("GPS F\n"));
 	#endif
 
 	do
@@ -336,27 +358,27 @@ int main()
 		wdt_reset();
 		GPSRead(&GData);
 		#ifdef SerDebug
-		fprintf(&serStdout, "GPS R1\n");
+		fprintf_P(&serStdout, PSTR("GPS R1\n"));
 		#endif
 		wdt_reset();
 		GPSRead(&GData);
 		#ifdef SerDebug
-		fprintf(&serStdout, "GPS R2\n");
+		fprintf_P(&serStdout, PSTR("GPS R2\n"));
 		#endif
 	}
 	while(GData.valid == 0);
 
 	#ifdef SerDebug
-	fprintf(&serStdout, "GPS V\n");
+	fprintf_P(&serStdout, PSTR("GPS V\n"));
 	#endif
 
-	if(GData.minute < 10){tempS1.c[0] = '0'; tempS1.c[1] = 0;}else tempS1.c[0] = 0;
-	if(GData.second < 10){tempS2.c[0] = '0'; tempS2.c[1] = 0;}else tempS2.c[0] = 0;
+	if(GData.minute < 10){temp1_str[0] = '0'; temp1_str[1] = 0;} else temp1_str[0] = 0;
+	if(GData.second < 10){temp2_str[0] = '0'; temp2_str[1] = 0;} else temp2_str[0] = 0;
 
 	if(cardSafe() != 0)
 	{
 		#ifdef SerDebug
-		fprintf(&serStdout, "CS\n");
+		fprintf_P(&serStdout, PSTR("CS\n"));
 		#endif
 
 		/* this means the card has been removed, since this also 
@@ -379,58 +401,79 @@ int main()
 	if(f_tffError != 0)
 	{
 		#ifdef SerDebug
-		fprintf(&serStdout, "M pa\n");
+		fprintf_P(&serStdout, PSTR("M pa\n"));
 		#endif
 
 		f_tffError = f_open(&pathFile, "/path.txt", FA_READ | FA_WRITE | FA_OPEN_ALWAYS | FA_CREATE_ALWAYS);
 	}
 
 	#ifdef SerDebug
-	else fprintf(&serStdout, "path O\n");
+	else fprintf_P(&serStdout, PSTR("path O\n"));
 	#endif
 
-	f_checkErrorFreeze(f_tffError, "cant O pa");
+	f_checkErrorFreeze(f_tffError, PSTR("cant O pa"));
 
 	f_tffError = f_lseek(&pathFile, pathFile.fsize); // skip to end
 
-	f_printf(&pathFile, "\n\nRST DMY %d/%d/%d T %d:%s%d:%s%d Int %d\n\n", GData.day, GData.month, GData.year, GData.hour, tempS1.c, GData.minute, tempS2.c, GData.second, writeRate);
+	f_printf(&pathFile, "\n\nRST DMY %d/%d/%d T %d:%s%d:%s%d Int %d\n\n", GData.day, GData.month, GData.year, GData.hour, temp1_str, GData.minute, temp2_str, GData.second, writeRate);
 
 	f_tffError = f_sync(&pathFile);
 	f_tffError |= f_truncate(&pathFile);
-	f_checkErrorFreeze(f_tffError, "cant W pa");
-
-	#endif // ifdef USE_KML
+	f_checkErrorFreeze(f_tffError, PSTR("cant W pa"));
 
 	f_tffError = f_open(&pointFile, "/point.txt", FA_READ | FA_WRITE);
 	if(f_tffError != 0)
 	{
 		#ifdef SerDebug
-		fprintf(&serStdout, "M pt\n");
+		fprintf_P(&serStdout, PSTR("M pt\n"));
 		#endif
 
 		f_tffError = f_open(&pointFile, "/point.txt", FA_READ | FA_WRITE | FA_OPEN_ALWAYS | FA_CREATE_ALWAYS);
 	}
 
 	#ifdef SerDebug
-	else fprintf(&serStdout, "pt O\n");
+	else fprintf_P(&serStdout, PSTR("pt O\n"));
 	#endif
 
-	f_checkErrorFreeze(f_tffError, "cant O pt");
+	f_checkErrorFreeze(f_tffError, PSTR("cant O pt"));
 
 	f_tffError = f_lseek(&pointFile, pointFile.fsize);
 
-	#ifdef USE_KML
-	f_printf(&pointFile, "\n\nRST DMY %d/%d/%d T %d:%s%d:%s%d\n\n", GData.day, GData.month, GData.year, GData.hour, tempS1.c, GData.minute, tempS2.c, GData.second);
-	#else
-	f_printf(&pointFile, "D,M,Y,H,M,S,Lo,La,S,H,A,\n");
-	#endif
+	f_printf(&pointFile, "\n\nRST DMY %d/%d/%d T %d:%s%d:%s%d\n\n", GData.day, GData.month, GData.year, GData.hour, temp1_str, GData.minute, temp2_str, GData.second);
 
 	f_tffError = f_sync(&pointFile);
 	f_tffError |= f_truncate(&pointFile);
-	f_checkErrorFreeze(f_tffError, "cant W pt");
+	f_checkErrorFreeze(f_tffError, PSTR("cant W pt"));
+
+	#endif
+
+	f_tffError = f_open(&csvFile, "/csv.csv", FA_READ | FA_WRITE);
+	if(f_tffError != 0)
+	{
+		#ifdef SerDebug
+		fprintf_P(&serStdout, PSTR("M csv\n"));
+		#endif
+
+		f_tffError = f_open(&csvFile, "/csv.csv", FA_READ | FA_WRITE | FA_OPEN_ALWAYS | FA_CREATE_ALWAYS);
+	}
 
 	#ifdef SerDebug
-	fprintf(&serStdout, "log\n");
+	else fprintf_P(&serStdout, PSTR("csv O\n"));
+	#endif
+
+	f_checkErrorFreeze(f_tffError, PSTR("cant O csv"));
+
+	f_tffError = f_lseek(&csvFile, csvFile.fsize);
+
+	f_printf_p(&csvFile, PSTR("D,M,Y,H,M,S,Lo,La,S,H,A,\n"));
+
+	f_tffError = f_sync(&csvFile);
+	f_tffError |= f_truncate(&csvFile);
+	f_checkErrorFreeze(f_tffError, PSTR("cant W csv"));
+
+
+	#ifdef SerDebug
+	fprintf_P(&serStdout, PSTR("log\n"));
 	#endif
 
 	while(1)
@@ -458,11 +501,12 @@ int main()
 		if(GData.valid == 1) // only record if valid
 		{
 			/* stdio.h can't print decimal places so these functions saves the double variables as strings */
-			StringWord longSW = printDouble(GData.longitude, 8);
-			StringWord latSW = printDouble(GData.latitude, 8);
-			StringWord altSW = printDouble(GData.altitude, 1);
-			StringWord speedSW = printDouble(GData.speed, 1);
-			StringWord headingSW = printDouble(GData.heading, 1);
+
+			long_str = dtostrf(GData.longitude, 1, 8, long_str);
+			lat_str = dtostrf(GData.latitude, 1, 8, lat_str);
+			alt_str = dtostrf(GData.altitude, 1, 1, alt_str);
+			speed_str = dtostrf(GData.speed, 1, 1, speed_str);
+			head_str = dtostrf(GData.heading, 1, 1, head_str);
 
 			// if button not pressed
 			if(cardSafe() == 0)
@@ -470,89 +514,90 @@ int main()
 				cardSafeLED(1);
 
 				// make sure the minute and second of time data have two digits
-				if(GData.minute < 10){tempS1.c[0] = '0'; tempS1.c[1] = 0;}else tempS1.c[0] = 0;
-				if(GData.second < 10){tempS2.c[0] = '0'; tempS2.c[1] = 0;}else tempS2.c[0] = 0;
+				if(GData.minute < 10){temp1_str[0] = '0'; temp1_str[1] = 0;} else temp1_str[0] = 0;
+				if(GData.second < 10){temp2_str[0] = '0'; temp2_str[1] = 0;} else temp2_str[0] = 0;
 
 				// if new log button pressed, insert header
 				if(newLog())
 				{
 					#ifdef USE_KML
-					f_printf(&pointFile, "\n\nNL DMY %d/%d/%d T %d:%s%d:%s%d\n\n", GData.day, GData.month, GData.year, GData.hour, tempS1.c, GData.minute, tempS2.c, GData.second);
-					f_printf(&pathFile, "\n\nNL DMY %d/%d/%d T %d:%s%d:%s%d Int %d\n\n", GData.day, GData.month, GData.year, GData.hour, tempS1.c, GData.minute, tempS2.c, GData.second, writeRate);
-					#else
-					f_printf(&pointFile, "D,M,Y,H,M,S,Lo,La,S,H,A,\n");
+					f_printf(&pointFile, "\n\nNL DMY %d/%d/%d T %d:%s%d:%s%d\n\n", GData.day, GData.month, GData.year, GData.hour, temp1_str, GData.minute, temp2_str, GData.second);
+					f_printf(&pathFile, "\n\nNL DMY %d/%d/%d T %d:%s%d:%s%d Int %d\n\n", GData.day, GData.month, GData.year, GData.hour, temp1_str, GData.minute, temp2_str, GData.second, writeRate);
 					#endif
+					f_printf_p(&csvFile, PSTR("D,M,Y,H,M,S,Lo,La,S,H,A,\n"));
 
 					#ifdef SerDebug
-					fprintf(&serStdout, "NL\n");
+					fprintf_P(&serStdout, PSTR("NL\n"));
 					#endif
 				}
 
-				fprintf(&serStdout, "%d:%s%d:%s%d %s,%s,%s\n", GData.hour, tempS1.c, GData.minute, tempS2.c, GData.second, longSW.c, latSW.c, altSW.c);
+				fprintf_P(&serStdout, PSTR("%d:%s%d:%s%d %s,%s,%s\n"), GData.hour, temp1_str, GData.minute, temp2_str, GData.second, long_str, lat_str, alt_str);
 
 				#ifdef USE_KML
 
 				/* write to file, data will be in KML-ready format */				
 
-				f_printf(&pathFile, "%s,%s,%s\n", longSW.c, latSW.c, altSW.c);
+				f_printf(&pathFile, "%s,%s,%s\n", long_str, lat_str, alt_str);
 
 				f_tffError = f_sync(&pathFile);
 				f_tffError |= f_truncate(&pathFile);
 
-				f_printf(&pointFile, "<Placemark>\n");
-				f_printf(&pointFile, "\t<name></name>\n");
+				f_printf_p(&pointFile, PSTR("<Placemark>\n"));
+				f_printf_p(&pointFile, PSTR("\t<name></name>\n"));
 
-				f_printf(&pointFile, "\t<description>\n");
+				f_printf_p(&pointFile, PSTR("\t<description>\n"));
 				f_printf(&pointFile, "Day: %d  Month: %d  Year: %d\n", GData.day, GData.month, GData.year);
-				f_printf(&pointFile, "Time: %d:%s%d:%s%d\n", GData.hour, tempS1.c, GData.minute, tempS2.c, GData.second);
-				f_printf(&pointFile, "Speed: %sKMH\nHeading: %s\nAltitude: %sM\n", speedSW.c, headingSW.c, altSW.c);
-				f_printf(&pointFile, "\t</description>\n");
+				f_printf(&pointFile, "Time: %d:%s%d:%s%d\n", GData.hour, temp1_str, GData.minute, temp2_str, GData.second);
+				f_printf(&pointFile, "Speed: %sKMH\nHeading: %s\nAltitude: %sM\n", speed_str, head_str, alt_str);
+				f_printf_p(&pointFile, PSTR("\t</description>\n"));
 
-				f_printf(&pointFile, "\t<LookAt>\n");
+				f_printf_p(&pointFile, PSTR("\t<LookAt>\n"));
 
-				f_printf(&pointFile, "\t\t<longitude>");
-				f_printf(&pointFile, "%s", longSW.c);
-				f_printf(&pointFile, "</longitude>\n");
+				f_printf_p(&pointFile, PSTR("\t\t<longitude>"));
+				f_printf(&pointFile, "%s", long_str);
+				f_printf_p(&pointFile, PSTR("</longitude>\n"));
 
-				f_printf(&pointFile, "\t\t<latitude>");
-				f_printf(&pointFile, "%s", latSW.c);
-				f_printf(&pointFile, "</latitude>\n");
+				f_printf_p(&pointFile, PSTR("\t\t<latitude>"));
+				f_printf(&pointFile, "%s", lat_str);
+				f_printf_p(&pointFile, PSTR("</latitude>\n"));
 
-				f_printf(&pointFile, "\t\t<heading>");
+				f_printf_p(&pointFile, PSTR("\t\t<heading>"));
 				f_printf(&pointFile, "%d", (signed int)GData.heading);
-				f_printf(&pointFile, "</heading>\n");
+				f_printf_p(&pointFile, PSTR("</heading>\n"));
 
-				f_printf(&pointFile, "\t</LookAt>\n");
+				f_printf_p(&pointFile, PSTR("\t</LookAt>\n"));
 
-				f_printf(&pointFile, "\t<styleUrl>#msn_ylw-pushpin</styleUrl>\n");
+				f_printf_p(&pointFile, PSTR("\t<styleUrl>#msn_ylw-pushpin</styleUrl>\n"));
 
-				f_printf(&pointFile, "\t<Point>\n");
+				f_printf_p(&pointFile, PSTR("\t<Point>\n"));
 
-				f_printf(&pointFile, "\t\t<extrude>1</extrude>\n");
-				f_printf(&pointFile, "\t\t<altitudeMode>absolute</altitudeMode>\n");
+				f_printf_p(&pointFile, PSTR("\t\t<extrude>1</extrude>\n"));
+				f_printf_p(&pointFile, PSTR("\t\t<altitudeMode>absolute</altitudeMode>\n"));
 
-				f_printf(&pointFile, "\t\t<coordinates>");
+				f_printf_p(&pointFile, PSTR("\t\t<coordinates>"));
 
-				f_printf(&pointFile, "%s,%s,%s", longSW.c, latSW.c, altSW.c);
+				f_printf(&pointFile, "%s,%s,%s", long_str, lat_str, alt_str);
 
-				f_printf(&pointFile, "</coordinates>\n");
+				f_printf_p(&pointFile, PSTR("</coordinates>\n"));
 
-				f_printf(&pointFile, "\t</Point>\n");
-				f_printf(&pointFile, "</Placemark>\n");
-
-				#else // ifdef USE_KML
-
-				/* CSV format */
-
-				f_printf(&pointFile, "%d,%d,%d,", GData.day, GData.month, GData.year);
-				f_printf(&pointFile, "%d,%d,%d,", GData.hour, GData.minute, GData.second);
-				f_printf(&pointFile, "%s,%s,", longSW.c, latSW.c);
-				f_printf(&pointFile, "%s,%s,%s,\n", speedSW.c, headingSW.c, altSW.c);
-				
-				#endif // ifdef USE_KML
+				f_printf_p(&pointFile, PSTR("\t</Point>\n"));
+				f_printf_p(&pointFile, PSTR("</Placemark>\n"));
 
 				f_tffError |= f_sync(&pointFile);
 				f_tffError |= f_truncate(&pointFile);
+
+				#endif // ifdef USE_KML
+
+				/* CSV format */
+
+				f_printf(&csvFile, "%d,%d,%d,", GData.day, GData.month, GData.year);
+				f_printf(&csvFile, "%d,%d,%d,", GData.hour, GData.minute, GData.second);
+				f_printf(&csvFile, "%s,%s,", long_str, lat_str);
+				f_printf(&csvFile, "%s,%s,%s,\n", speed_str, head_str, alt_str);
+
+				f_tffError |= f_sync(&csvFile);
+				f_tffError |= f_truncate(&csvFile);
+				
 
 				_delay_ms(100); // delay to make LED visible
 
@@ -563,7 +608,7 @@ int main()
 				if(f_tffError != 0)
 				{
 					#ifdef SerDebug
-					fprintf(&serStdout, "rw err\n");
+					fprintf_P(&serStdout, PSTR("rw err\n"));
 					#endif
 
 					while(f_tffError != 0)
@@ -581,21 +626,22 @@ int main()
 						f_tffError = disk_initialize(0);
 						f_tffError |= f_mount(0, &fatfs_);
 
-						f_tffError = f_open(&pointFile, "/point.txt", FA_WRITE);
-
 						#ifdef USE_KML
 						f_tffError |= f_open(&pathFile, "/path.txt", FA_WRITE);
+						f_tffError = f_open(&pointFile, "/point.txt", FA_WRITE);
 						f_tffError |= f_lseek(&pathFile, pathFile.fsize);
+						f_tffError |= f_lseek(&pointFile, pointFile.fsize);
 						#endif
 
-						f_tffError |= f_lseek(&pointFile, pointFile.fsize);
+						f_tffError |= f_open(&csvFile, "/csv.csv", FA_WRITE);
+						f_tffError |= f_lseek(&csvFile, csvFile.fsize);
 					}
 				}
 			}
 			else
 			{
 				#ifdef SerDebug
-				fprintf(&serStdout, "CS\n");
+				fprintf_P(&serStdout, PSTR("CS\n"));
 				#endif
 
 				/* this means the card has been removed, since this also 
@@ -611,7 +657,7 @@ int main()
 		else if(GData.valid == 0)
 		{
 			#ifdef SerDebug
-			fprintf(&serStdout, "NV\n");
+			fprintf_P(&serStdout, PSTR("NV\n"));
 			#endif
 		}
 	}

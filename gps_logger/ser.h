@@ -1,10 +1,13 @@
 #ifndef ser_inc
 
+#define BAUD 4800L
+
 #include <avr/io.h>
 #include <avr/wdt.h>
 #include <avr/interrupt.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <util/setbaud.h>
 #include "macros.h"
 
 // Name Replacements
@@ -31,7 +34,7 @@ volatile unsigned char serRxBufferTail;
 
 // functions
 
-void serInit(unsigned long);
+void serInit();
 
 //void serFlush(void);
 

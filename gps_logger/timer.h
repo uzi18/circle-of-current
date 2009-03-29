@@ -26,20 +26,14 @@ void timerSetDivider(unsigned char timerNum, unsigned int divider)
 		case 8:
 			temp |= 2;
 			break;
-		case 32:
+		case 64:
 			temp |= 3;
 			break;
-		case 64:
+		case 256:
 			temp |= 4;
 			break;
-		case 128:
-			temp |= 5;
-			break;
-		case 256:
-			temp |= 6;
-			break;
 		case 1024:
-			temp |= 7;
+			temp |= 5;
 			break;
 		default:
 			abort();

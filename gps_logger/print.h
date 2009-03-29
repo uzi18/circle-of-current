@@ -3,6 +3,7 @@
 /* this .h handles printing formated strings to serial port, used mainly for debug */
 
 #include <stdio.h>
+#include <avr/pgmspace.h>
 #include "ser.h"
 
 static int ser_putchar(unsigned char c, FILE *stream);
