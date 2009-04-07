@@ -41,7 +41,7 @@ void LCDSend(unsigned char, unsigned char);
 
 void LCDSetPos(unsigned char, unsigned char);
 
-void LCDPrintTime(unsigned char, unsigned char);
+void LCDPrintTime(unsigned char, unsigned char, unsigned char);
 
 void LCDPrint_P(const char *, unsigned char, unsigned char);
 

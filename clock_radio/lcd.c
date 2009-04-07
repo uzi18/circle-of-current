@@ -182,9 +182,23 @@ void LCDSend(unsigned char data, unsigned char registerSelect)
 	_delay_us(40); // wait for command to execute
 }
 
-void LCDPrintTime(unsigned char h, unsigned char m)
+void LCDPrintTime(unsigned char h, unsigned char m, unsigned char ampm)
 {
 	unsigned char a[4];
+
+	if(h == 0)
+	{
+		h = 24;
+	}
+
+	if(ampm != 0)
+	{
+		h %= 12;
+		if(h == 0)
+		{
+			h = 12;
+		}
+	}
 
 	a[0] = h / 10;
 	a[1] = h % 10;

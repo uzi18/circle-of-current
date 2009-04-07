@@ -1,12 +1,36 @@
 #include "mp3.h"
 
+#define CODE_SIZE 89
+const unsigned char MP3Code_atab[CODE_SIZE] PROGMEM = { /* Register addresses */
+    0x7, 0x6, 0x6, 0x7, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6,
+    0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6,
+    0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6,
+    0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6,
+    0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6,
+    0x7, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6
+};
+const unsigned short MP3Code_dtab[CODE_SIZE] PROGMEM = { /* Data to write */
+    0x8030, 0x2a00, 0x0c40, 0x8031, 0x3613, 0x0024, 0x3e12, 0xb817,
+    0x3e12, 0x3815, 0x3e05, 0xb814, 0x3615, 0x0024, 0x0000, 0x800a,
+    0x3e10, 0xb803, 0x3e14, 0x7812, 0x3e13, 0xf80e, 0x4194, 0x380d,
+    0x0000, 0x0011, 0x2800, 0x1395, 0xf400, 0x4442, 0x6206, 0x0012,
+    0x0000, 0x0024, 0x2800, 0x1398, 0x4094, 0x0024, 0x2400, 0x1302,
+    0x3613, 0x0024, 0x3210, 0x3840, 0x2900, 0x15c0, 0x32f0, 0x7801,
+    0x4084, 0x4483, 0x3113, 0x1bc1, 0x6396, 0x9800, 0xf400, 0x40d5,
+    0x3d00, 0x8024, 0x3a20, 0x8024, 0x36f3, 0x0024, 0x36f3, 0x4024,
+    0x36f3, 0xd80e, 0x36f4, 0x5812, 0x36f0, 0x9803, 0x3405, 0x9014,
+    0x36f3, 0x0024, 0x36f2, 0x1815, 0x2000, 0x0000, 0x36f2, 0x9817,
+    0x8057, 0x4c02, 0x0024, 0xf1c2, 0x0024, 0x2000, 0x0000, 0xf7c0,
+    0x0024
+};
+
+
 // transfer data via SPI to SDI
 void MP3DataTx(unsigned char * d, unsigned char len)
 {
 	cbi(MP3_Port, MP3_xCDS_Pin);
 
-	unsigned char i;
-	for(i = 0; i < len; i++)
+	for(unsigned char i = 0; i < len; i++)
 	{
 		SPITx(d[i]);
 	}
@@ -405,6 +429,23 @@ void MP3WriteReg(unsigned char addr, unsigned char hC, unsigned char lC)
 	sbi(MP3_Port, MP3_xCS_Pin);
 }
 
+void MP3WriteRegS(unsigned char addr, unsigned short c)
+{
+	cbi(MP3_Port, MP3_xCS_Pin);
+	
+	SPITx(0b00000010);
+	
+	SPITx(addr);
+
+	unsigned char lC = c & 0xFF;
+	unsigned short hC = (c & 0xFF00) >> 8;
+	
+	SPITx((unsigned char)hC);
+	SPITx(lC);
+	
+	sbi(MP3_Port, MP3_xCS_Pin);
+}
+
 // read 2 bytes from register
 unsigned int MP3ReadReg(unsigned char addr)
 {
@@ -455,6 +496,40 @@ void MP3ChangeVol(signed char v)
 	MP3WriteReg(MP3_Reg_VOL, vol, vol);	
 }
 
+void MP3SineTest(unsigned char d, unsigned char p)
+{
+	unsigned int old_mode = MP3ReadReg(MP3_Reg_MODE);
+
+	if(d != 0)
+	{
+		old_mode |= _BV(5);
+
+		MP3WriteRegS(MP3_Reg_MODE, old_mode);
+
+		cbi(MP3_Port, MP3_xCDS_Pin);
+
+		SPITx(0x53);
+		SPITx(0xEF);
+		SPITx(0x6E);
+		SPITx(p);
+
+		for(unsigned char i = 0; i < 4; i++)
+		{
+			SPITx(0);
+		}
+
+		sbi(MP3_Port, MP3_xCDS_Pin);
+	}
+	else
+	{
+		old_mode &= ~_BV(5);
+
+		MP3WriteRegS(MP3_Reg_MODE, old_mode);
+	}
+
+	while(bit_is_clear(MP3_PinIn, MP3_DREQ_Pin));
+}
+
 volatile unsigned char MP3Play(MP3File * f)
 {
 	unsigned char d[MP3PacketSize + 1];
@@ -487,18 +562,17 @@ void MP3Init(unsigned char vol, unsigned char invert)
 	sbi(MP3_DDR, MP3_xCS_Pin);
 	sbi(MP3_DDR, MP3_xCDS_Pin);
 
-	sbi(DDRD, 4); // reset pin as output
+	sbi(MP3_DDR, MP3_RST_Pin); // reset pin as output
 
 	// reset the decoder
-	sbi(PORTD, 4);
+	sbi(MP3_Port, MP3_RST_Pin);
 	_delay_us(10);
-	cbi(PORTD, 4);
+	cbi(MP3_Port, MP3_RST_Pin);
 	_delay_us(10);
-	sbi(PORTD, 4);
-
-	_delay_ms(3);
+	sbi(MP3_Port, MP3_RST_Pin);
 
 	// wait for reset
+	while(bit_is_set(MP3_PinIn, MP3_DREQ_Pin));
 	while(bit_is_clear(MP3_PinIn, MP3_DREQ_Pin));
 
 	// initial setup
@@ -510,6 +584,15 @@ void MP3Init(unsigned char vol, unsigned char invert)
 	{
 		MP3WriteReg(MP3_Reg_MODE, 0x08, 0x00);
 	}
+
 	MP3WriteReg(MP3_Reg_CLOCKF, 0x98, 0x00);
+
+	for(unsigned int i = 0; i < CODE_SIZE; i++)
+	{
+		MP3WriteRegS(pgm_read_byte(&MP3Code_atab[i]), pgm_read_word(&MP3Code_dtab[i]));
+	}
+
+	MP3WriteRegS(MP3_Reg_AIADDR, 0x30);
+
 	MP3SetVol(vol, vol);
 }

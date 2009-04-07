@@ -2,8 +2,16 @@
 #include "misc.h"
 #include "print.h"
 
+#define eeprom_magic 45
+
+#define display_title_time ((5 * F_CPU)/(128*256))
+#define refresh_time ((15 * F_CPU)/(128*256))
+#define menu_timeout ((10 * F_CPU)/(128*256))
+#define vol_fade_speed ((1 * F_CPU)/(128*256))
+
 #define playflag 0
 #define continueflag 1
+#define alarmflag 2
 
 #define PLAYCMD 0
 #define NEXTCMD 1
@@ -11,6 +19,10 @@
 #define UPCMD 3
 #define DOWNCMD 4
 #define MENUCMD 5
+
+#define alarm_mode_default 3
+#define alarm_mode_daily 2
+#define alarm_mode_random 1
 
 #define normalmode 0
 #define loopmode 1
@@ -45,7 +57,28 @@ typedef struct {
 	unsigned char cur_h;
 	unsigned char cur_m;
 	unsigned char invert;
+	unsigned char alarm_mode;
+	unsigned char alarm_fade;
+	unsigned char ampm;
 } OP_STRUCT;
+
+void get_time(OP_STRUCT * o)
+{
+	cli();
+	o->cur_day = day_cnt;
+	o->cur_h = hour_cnt;
+	o->cur_m = min_cnt;
+	sei();
+}
+
+void set_time(OP_STRUCT * o)
+{
+	cli();
+	day_cnt = o->cur_day;
+	min_cnt = o->cur_m;
+	hour_cnt = o->cur_h;
+	sei();
+}
 
 unsigned char open_next(DIR * dh, MP3File * mf, char * p)
 {
@@ -229,20 +262,22 @@ unsigned char menu(OP_STRUCT * o, MP3File * mf)
 	LCDSetPos(16, 1);
 	LCDSend(126, 1);
 
-	while(1)
+	menu_timer = 0;
+
+	while(menu_timer < menu_timeout)
 	{
 		c = serRx(&a);
 		BL_on();
 		
 		if(a > 0)
 		{
-			fprintf_P(&serstdout, PSTR("a%d c%d m%d s%d\n"), a, c, mode, submode);
+			menu_timer = 0;
 
 			if(c == PREVCMD)
 			{
 				if(mode == 0)
 				{
-					mode = 9;
+					mode = 13;
 				}
 				else
 				{
@@ -251,7 +286,7 @@ unsigned char menu(OP_STRUCT * o, MP3File * mf)
 			}
 			else if(c == NEXTCMD)
 			{
-				if(mode == 9)
+				if(mode == 13)
 				{
 					mode = 0;
 				}
@@ -513,8 +548,128 @@ unsigned char menu(OP_STRUCT * o, MP3File * mf)
 					//                          23456789012345
 					fprintf_P(&LCDstdout, PSTR(" > Minute: %d  "), o->cur_m);
 				}
+
+				set_time(o);
 			}
 			else if(mode == 9)
+			{
+				//               23456789012345
+				LCDPrint_P(PSTR("  Alarm Mode   "), 2, 1);
+
+				if(c == UPCMD || c == PLAYCMD)
+				{
+					if(o->alarm_mode == 3)
+					{
+						o->alarm_mode = 0;
+					}
+					else
+					{
+						o->alarm_mode++;
+					}
+				}
+				else if(c == DOWNCMD)
+				{
+					if(o->alarm_mode == 0)
+					{
+						o->alarm_mode = 3;
+					}
+					else
+					{
+						o->alarm_mode--;
+					}
+				}
+
+				if(o->alarm_mode == 0)
+				{
+					//               23456789012345
+					LCDPrint_P(PSTR(" All Off       "), 2, 2);
+				}
+				else if(o->alarm_mode == alarm_mode_random)
+				{
+					//               23456789012345
+					LCDPrint_P(PSTR(" Random        "), 2, 2);
+				}
+				else if(o->alarm_mode == alarm_mode_daily)
+				{
+					//               23456789012345
+					LCDPrint_P(PSTR(" Daily         "), 2, 2);
+				}
+				else if(o->alarm_mode == alarm_mode_default)
+				{
+					//               23456789012345
+					LCDPrint_P(PSTR(" Predefined    "), 2, 2);
+				}
+			}
+			else if(mode == 10)
+			{
+				//               23456789012345
+				LCDPrint_P(PSTR(" Time Display  "), 2, 1);
+
+				if(c == UPCMD || c == PLAYCMD || c == DOWNCMD)
+				{
+					if(o->ampm == 0)
+					{
+						o->ampm = 1;
+					}
+					else
+					{
+						o->ampm = 0;
+					}
+				}
+
+				if(o->ampm == 0)
+				{
+					//               23456789012345
+					LCDPrint_P(PSTR(" > 24 Hour     "), 2, 2);
+				}
+				else
+				{
+					//               23456789012345
+					LCDPrint_P(PSTR(" > AM / PM     "), 2, 2);
+				}
+			}
+			else if(mode == 11)
+			{
+				//               23456789012345
+				LCDPrint_P(PSTR("  Alarm Fade  "), 2, 1);
+
+				if(c == UPCMD || c == PLAYCMD || c == DOWNCMD)
+				{
+					if(o->alarm_fade == 0)
+					{
+						o->alarm_fade = 1;
+					}
+					else
+					{
+						o->alarm_fade = 0;
+					}
+				}
+
+				if(o->alarm_fade == 0)
+				{
+					//               23456789012345
+					LCDPrint_P(PSTR(" > Off         "), 2, 2);
+				}
+				else
+				{
+					//               23456789012345
+					LCDPrint_P(PSTR(" > On         "), 2, 2);
+				}
+			}
+			else if(mode == 12)
+			{
+				//               23456789012345
+				LCDPrint_P(PSTR("  Sine  Test  "), 2, 1);
+
+				if(c == PLAYCMD)
+				{
+					MP3SineTest(1, 128);
+				}
+
+				//               23456789012345
+				LCDPrint_P(PSTR(" > Press Play  "), 2, 2);
+			}
+			else if(mode == 13)
 			{
 				//               23456789012345
 				LCDPrint_P(PSTR("Invert  Output "), 2, 1);
@@ -543,11 +698,18 @@ unsigned char menu(OP_STRUCT * o, MP3File * mf)
 				}
 			}
 
+			if(mode != 11)
+			{
+				MP3SineTest(0, 0);
+			}
+
 			LCDSetPos(16, 2);
 			LCDSend(downcharaddr, 1);
 			LCDSetPos(16, 1);
 			LCDSend(126, 1);
 		}
+
+		MP3SineTest(0, 0);
 
 		if(o->invert != 0)
 		{
@@ -579,7 +741,7 @@ unsigned char menu(OP_STRUCT * o, MP3File * mf)
 		*/
 	}
 
-	LCDPrintTime(o->cur_h, o->cur_m);
+	LCDPrintTime(o->cur_h, o->cur_m, o->ampm);
 
 	union {
 		unsigned char d[sizeof(OP_STRUCT)];
@@ -588,11 +750,13 @@ unsigned char menu(OP_STRUCT * o, MP3File * mf)
 
 	memcpy(&savedata.o, o, sizeof(OP_STRUCT));
 
+	eeprom_write_byte(0, eeprom_magic);
+
 	for(unsigned int i = 0; i < sizeof(OP_STRUCT); i++)
 	{
-		if(eeprom_read_byte(i) != savedata.d[i])
+		if(eeprom_read_byte(i + 1) != savedata.d[i])
 		{
-			eeprom_write_byte(i, savedata.d[i]);
+			eeprom_write_byte(i + 1, savedata.d[i]);
 		}
 	}
 }
@@ -618,9 +782,19 @@ int main()
 		OP_STRUCT o;
 	} savedata;
 
-	for(unsigned int i = 0; i < sizeof(OP_STRUCT); i++)
+	if(eeprom_read_byte(0) == eeprom_magic)
 	{
-		savedata.d[i] = eeprom_read_byte(i);
+		for(unsigned int i = 0; i < sizeof(OP_STRUCT); i++)
+		{
+			savedata.d[i] = eeprom_read_byte(i + 1);
+		}
+	}
+	else
+	{
+		for(unsigned int i = 0; i < sizeof(OP_STRUCT); i++)
+		{
+			savedata.d[i] = 0;
+		}
 	}
 
 	memcpy(&ops, &savedata.o, sizeof(OP_STRUCT));
@@ -641,7 +815,7 @@ int main()
 		if(a != 0)
 		{
 			BL_on();
-			fprintf_P(&serstdout, PSTR("a%d c%d\n"), a, c);
+
 			if(c == PLAYCMD)
 			{
 				tog(ops.flags, playflag);
@@ -748,20 +922,103 @@ int main()
 			}
 		}
 
-		if(song_timer >= 1220 && song_timer < 1220 + 100)
+		if(song_timer >= display_title_time && song_timer < display_title_time + 100)
 		{
-			song_timer = 1220 + 100;
-			LCDPrintTime(ops.cur_h, ops.cur_m);
+			song_timer = display_title_time + 100;
+			LCDPrintTime(ops.cur_h, ops.cur_m, ops.ampm);
 		}
-		else if(song_timer >= 1220 + 100)
+		else if(song_timer >= display_title_time + 100)
 		{
-			song_timer = 1220 + 100;
+			song_timer = display_title_time + 100;
 		}
 
-		if(clk_timer >= 14892 / 2 && song_timer >= 1220 + 100)
+		if(clk_timer >= refresh_time && song_timer >= display_title_time + 100)
 		{
-			clk_timer = 0;			
-			LCDPrintTime(ops.cur_h, ops.cur_m);
+			get_time(&ops);
+			LCDPrintTime(ops.cur_h, ops.cur_m, ops.ampm);
+
+			clk_timer = 0;
+
+			unsigned int cur_t = ops.cur_h * 60 + ops.cur_m;
+			unsigned int alarm_t = ops.alarm_h[ops.cur_day] * 60 + ops.alarm_m[ops.cur_day];
+
+			if((ops.alarm_mode != 0 && ops.alarm_on[ops.cur_day] != 0) && cur_t >= alarm_t && bit_is_clear(ops.flags, alarmflag))
+			{
+				sbi(ops.flags, alarmflag);
+
+				unsigned char alarm_err;
+
+				if(ops.alarm_fade == 0)
+				{
+					MP3SetVol(255, 255);
+				}
+
+				MP3File alarm_handle;
+
+				if(ops.alarm_mode == alarm_mode_random)
+				{
+					alarm_err = shuffle(&dir_handle, &alarm_handle, "/mp3", 16);
+				}
+				else if(ops.alarm_mode == alarm_mode_default)
+				{
+					alarm_err = MP3Open(0, &alarm_handle, "/alarm/default.mp3");
+				}
+				else if(ops.alarm_mode == alarm_mode_daily)
+				{
+					char * alarm_path = calloc(20, sizeof(char));
+					alarm_path = "/alarm/";
+					strcat(alarm_path, day_array[ops.cur_day]);
+					strcat(alarm_path, ".mp3");
+
+					alarm_err = MP3Open(0, &alarm_handle, alarm_path);
+
+					free(alarm_path);
+
+					if(alarm_err != 0)
+					{
+						alarm_err = MP3Open(0, &alarm_handle, "/alarm/default.mp3");
+					}
+				}
+
+				if(alarm_err != 0)
+				{
+					MP3SineTest(1, 128);
+				}
+
+				vol_timer = 0;
+				
+				while(1)
+				{
+					BL_on();
+
+					if(clk_timer >= refresh_time)
+					{
+						clk_timer = 0;
+						get_time(&ops);
+						LCDPrintTime(ops.cur_h, ops.cur_m, ops.ampm);
+					}
+
+					if(ops.alarm_fade != 0 && vol_timer >= vol_fade_speed)
+					{
+						vol_timer = 0;
+						
+						MP3ChangeVol(8);
+					}
+
+					if(alarm_err != 0)
+					{
+						if(MP3Play(&alarm_handle) == 2)
+						{
+							rewind(&alarm_handle);
+						}
+					}
+				}
+
+				if(alarm_err != 0)
+				{
+					MP3SineTest(0, 0);
+				}
+			}
 		}
 	}
 

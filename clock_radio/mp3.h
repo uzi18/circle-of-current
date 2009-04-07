@@ -2,6 +2,7 @@
 
 #include "ser.h"
 #include "ff.h"
+#include "pindef.h"
 #include "macros.h"
 #include "spi.h"
 #include "lcd.h"
@@ -9,14 +10,8 @@
 #include <stdio.h>
 #include <util/delay.h>
 #include <avr/wdt.h>
+#include <avr/pgmspace.h>
 #include <avr/interrupt.h>
-
-#define MP3_Port PORTB
-#define MP3_PinIn PINB
-#define MP3_DDR DDRB
-#define MP3_xCDS_Pin 1
-#define MP3_xCS_Pin 2
-#define MP3_DREQ_Pin 0
 
 #define MP3PacketSize 32
 
@@ -69,11 +64,15 @@ volatile unsigned char MP3Open(FILINFO *, MP3File *, char *);
 
 void MP3WriteReg(unsigned char, unsigned char, unsigned char);
 
+void MP3WriteRegS(unsigned char, unsigned short);
+
 unsigned int MP3ReadReg(unsigned char);
 
 void MP3SetVol(unsigned char, unsigned char);
 
 volatile unsigned char MP3Play(MP3File *);
+
+void MP3SineTest(unsigned char, unsigned char);
 
 void MP3PlayToEnd(MP3File *);
 
