@@ -6,6 +6,7 @@
 #include "macros.h"
 #include "spi.h"
 #include "lcd.h"
+#include "config.h"
 #include <string.h>
 #include <stdio.h>
 #include <util/delay.h>
@@ -49,9 +50,11 @@ typedef struct {
 	unsigned char title[31];
 	unsigned char titleLen;
 
+	#ifdef calc_song_length
 	unsigned long bps;
 	unsigned long duration;
 	unsigned long headerLoc;
+	#endif
 
 	FIL fh;
 
@@ -60,7 +63,7 @@ typedef struct {
 
 void MP3DataTx(unsigned char *, unsigned char);
 
-volatile unsigned char MP3Open(FILINFO *, MP3File *, char *);
+unsigned char MP3Open(FILINFO *, MP3File *, char *);
 
 void MP3WriteReg(unsigned char, unsigned char, unsigned char);
 

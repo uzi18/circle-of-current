@@ -1,16 +1,5 @@
 #include "lcd.h"
 
-#define upperlineaddr 0
-#define ulc upperlineaddr
-#define lowerlineaddr 1
-#define llc lowerlineaddr
-#define bothlineaddr 2
-#define blc bothlineaddr
-#define largecolonleftaddr 3
-#define largecolonrightaddr 4
-#define xxc 0xFF
-#define ssc 0x20
-
 const unsigned char upperlinechar[8] PROGMEM = {
 	0b00011111,
 	0b00011111,

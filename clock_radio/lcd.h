@@ -7,35 +7,8 @@
 #include <avr/pgmspace.h>
 #include <util/delay.h>
 #include "macros.h"
-
-/*
-Port and Pin Definitions (below, x indicates what may be changed)
-LCD_Port is the PORTx Register, changes pin states (0 = low, 1 = high)
-LCD_DDR is the DDRx Register, selects pin as input(0)/output(1)
-LCD_In is the PINx Register, unused in this case
-LCDData_ connects the 8 bit data bus of the LCD
-LCDCtrl_ is the port connected to the E, RS, and RW pins of the LCD
-LCDBL_ is connected to the backlight of the LCD
-LCD_Pin defines which pin is connected to what
-*/
-
-// EDIT ME
-#define LCDDataPort PORTA
-#define LCDDataDDR DDRA
-#define LCDDataIn PINA
-#define LCDCtrlPort PORTA
-#define LCDCtrlDDR DDRA
-#define LCDRSPin 2
-#define LCDRWPin 1
-#define LCDEPin 3
-#define LCDBLPort PORTD
-#define LCDBLDDR DDRD
-#define LCDBLPin 7
-
-#define LCDDataBit0 4
-#define LCDDataBit1 5
-#define LCDDataBit2 6
-#define LCDDataBit3 7
+#include "pindef.h"
+#include "config.h"
 
 void LCDSend(unsigned char, unsigned char);
 
@@ -59,6 +32,16 @@ void LCDInit(void);
 
 int LCD_putc(char, FILE *);
 
+#define upperlineaddr 0
+#define ulc upperlineaddr
+#define lowerlineaddr 1
+#define llc lowerlineaddr
+#define bothlineaddr 2
+#define blc bothlineaddr
+#define largecolonleftaddr 3
+#define largecolonrightaddr 4
+#define xxc 0xFF
+#define ssc 0x20
 #define upcharaddr 5
 #define downcharaddr 6
 

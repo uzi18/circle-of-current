@@ -39,7 +39,8 @@ void MP3DataTx(unsigned char * d, unsigned char len)
 	sbi(MP3_Port, MP3_xCDS_Pin);
 }
 
-volatile unsigned char MP3Open(FILINFO * fno, MP3File * mf, char * p)
+// opens a MP3 file, using FILINFO and a folder path, or use a null for FILINFO and use a file path
+unsigned char MP3Open(FILINFO * fno, MP3File * mf, char * p)
 {
 	mf->open = 0;
 
@@ -56,7 +57,7 @@ volatile unsigned char MP3Open(FILINFO * fno, MP3File * mf, char * p)
 			p++;
 		}
 		r.p[r.pLen] = 0;
-		if(fno != 0)
+		if(fno != 0) // FILINFO provided, using folder path
 		{
 			if(r.p[r.pLen - 1] != '/')
 			{
@@ -112,7 +113,7 @@ volatile unsigned char MP3Open(FILINFO * fno, MP3File * mf, char * p)
 				else break;
 			}
 		}
-		else
+		else // using file path
 		{
 			unsigned char slash = 0;
 			unsigned char slashpos = 0;
@@ -146,6 +147,7 @@ volatile unsigned char MP3Open(FILINFO * fno, MP3File * mf, char * p)
 				else break;
 			}
 
+			// ensure file name is formated 8.3
 			if(r.nLen > 8)
 			{
 				for(unsigned char i = 0; i < 6; i++, slashpos++)
@@ -170,19 +172,23 @@ volatile unsigned char MP3Open(FILINFO * fno, MP3File * mf, char * p)
 		r.a[r.aLen] = 0;
 		r.p[r.pLen] = 0;
 
+		// must be mp3 file
 		if(r.e[0] != 'm' || r.e[1] != 'p' || r.e[2] != '3') return 255;
 
 		memmove(&(mf->fn), &r, sizeof(FileName83));
+	}
 
+	{
+		// open file
 		FIL temp_fh;
 		unsigned char err = f_open(&temp_fh, mf->fn.p, FA_READ);
 		if(err != 0) return err;
 		memcpy(&(mf->fh), &temp_fh, sizeof(FIL));
 	}
 
-	if(mf->fh.fsize < 128) return 253;
-	else
 	{
+		// get song title from ID3 tags
+
 		unsigned char id3v2[5];
 
 		f_lseek(&(mf->fh), 0);
@@ -268,6 +274,7 @@ volatile unsigned char MP3Open(FILINFO * fno, MP3File * mf, char * p)
 		}
 	}
 
+	#ifdef calc_song_length
 	{
 		// finished reading title, now calculate song length
 
@@ -408,6 +415,7 @@ volatile unsigned char MP3Open(FILINFO * fno, MP3File * mf, char * p)
 			else if(c[1] == 0) return 254; // end of file
 		}
 	}
+	#endif
 
 	f_lseek(&(mf->fh), 0);
 
@@ -432,19 +440,9 @@ void MP3WriteReg(unsigned char addr, unsigned char hC, unsigned char lC)
 
 void MP3WriteRegS(unsigned char addr, unsigned short c)
 {
-	cbi(MP3_Port, MP3_xCS_Pin);
-	
-	SPITx(0b00000010);
-	
-	SPITx(addr);
-
 	unsigned char lC = c & 0xFF;
 	unsigned short hC = (c & 0xFF00) >> 8;
-	
-	SPITx((unsigned char)hC);
-	SPITx(lC);
-	
-	sbi(MP3_Port, MP3_xCS_Pin);
+	MP3WriteReg(addr, hC, lC);
 }
 
 // read 2 bytes from register

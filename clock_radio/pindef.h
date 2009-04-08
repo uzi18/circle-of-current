@@ -16,3 +16,27 @@
 #define MP3_xCS_Pin 	PB2
 #define MP3_DREQ_Pin 	PB0
 #define MP3_RST_Pin 	PB4
+
+#define LCDDataPort 	PORTA
+#define LCDDataDDR 		DDRA
+#define LCDDataIn 		PINA
+#define LCDCtrlPort 	PORTA
+#define LCDCtrlDDR 		DDRA
+#define LCDRSPin 		2
+#define LCDRWPin 		1
+#define LCDEPin 		3
+#define LCDBLPort 		PORTD
+#define LCDBLDDR 		DDRD
+#define LCDBLPin 		7
+
+#define LCDDataBit0 4
+#define LCDDataBit1 5
+#define LCDDataBit2 6
+#define LCDDataBit3 7
+
+#define btn_A_dir_reg 		DDRC
+#define btn_B_dir_reg 		DDRD
+#define btn_A_output_reg 	PORTC
+#define btn_B_output_reg 	PORTD
+#define btn_A_input_reg 	PINC
+#define btn_B_input_reg 	PIND

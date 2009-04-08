@@ -1,45 +1,5 @@
 #include "main.h"
 
-#define F_OSC 32768
-
-#define eeprom_magic 45
-
-#define display_title_time ((5 * F_OSC)/(1*256))
-#define BL_timeout ((5 * F_OSC)/(1*256))
-#define refresh_time ((15 * F_OSC)/(1*256))
-#define menu_timeout ((10 * F_OSC)/(1*256))
-#define vol_fade_speed ((1 * F_OSC)/(1*256))
-
-#define shuffle_factor 16
-
-#define playflag 0
-#define continueflag 1
-#define alarmflag 2
-#define showerrflag 3
-
-#define PLAYCMD 0
-#define NEXTCMD 1
-#define PREVCMD 2
-#define UPCMD 3
-#define DOWNCMD 4
-#define MENUCMD 5
-#define BADCMD 255
-
-#define alarm_mode_default 3
-#define alarm_mode_daily 2
-#define alarm_mode_random 1
-
-#define normalmode 0
-#define loopmode 1
-#define shufflemode 2
-
-#define cur_time_menu 0
-#define alarm_mode_menu 9
-#define alarm_fade_menu 10
-#define play_mode_menu 13
-#define display_mode_menu 12
-#define invert_output_menu 11
-
 const char day_monday[] = "Mon";
 const char day_tuesday[] = "Tues";
 const char day_wednesday[] = "Wed";
@@ -58,24 +18,10 @@ const char * day_array[7] = {
 	day_sunday
 };
 
-
-typedef struct {
-	unsigned char flags;
-	unsigned char mode;
-	unsigned char alarm_on[7];
-	unsigned char alarm_h[7];
-	unsigned char alarm_m[7];
-	unsigned char cur_day;
-	unsigned char cur_h;
-	unsigned char cur_m;
-	unsigned char invert;
-	unsigned char alarm_mode;
-	unsigned char alarm_fade;
-	unsigned char ampm;
-} OP_STRUCT;
+FILE LCDstdout = FDEV_SETUP_STREAM(LCD_putc, NULL, _FDEV_SETUP_WRITE);
+FILE serstdout = FDEV_SETUP_STREAM(ser_putc, NULL, _FDEV_SETUP_WRITE);
 
 #include "misc.h"
-#include "print.h"
 
 void get_time(OP_STRUCT * o)
 {
@@ -119,7 +65,7 @@ unsigned char open_next(DIR * dh, MP3File * mf, char * p)
 			if(MP3Open(&fno, mf, p) == 0)
 			{
 				fprintf_P(&LCDstdout, PSTR("%s\n"), mf->title);
-				song_timer = 0;
+				song_title_timer = 0;
 				
 				return 0;
 			}
@@ -192,7 +138,7 @@ unsigned char open_prev(DIR * dh, MP3File * mf, char * p)
 						memcpy(dh, &ldir, sizeof(DIR));
 						memcpy(mf, &lmf, sizeof(MP3File));
 						fprintf_P(&LCDstdout, PSTR("%s\n"), mf->title);
-						song_timer = 0;
+						song_title_timer = 0;
 
 						return 0;
 					}
@@ -219,7 +165,7 @@ unsigned char open_prev(DIR * dh, MP3File * mf, char * p)
 		memcpy(dh, &ldir, sizeof(DIR));
 		memcpy(mf, &lmf, sizeof(MP3File));
 		fprintf_P(&LCDstdout, PSTR("%s\n"), mf->title);
-		song_timer = 0;
+		song_title_timer = 0;
 
 		return 0;
 	}
@@ -791,7 +737,7 @@ int main()
 				fprintf_P(&LCDstdout, PSTR("Current Song:\n"));
 				LCDSetPos(1, 2);
 				fprintf_P(&LCDstdout, PSTR("%s\n"), mp3_handle.title);
-				song_timer = 0;
+				song_title_timer = 0;
 			}
 			else if(c == NEXTCMD)
 			{
@@ -888,21 +834,21 @@ int main()
 				fprintf_P(&LCDstdout, PSTR("Disk Error\n"));
 				LCDSetPos(1, 2);
 				fprintf_P(&LCDstdout, PSTR("Error = %d\n"), err);
-				song_timer = 0;
+				song_title_timer = 0;
 			}
 		}
 
-		if(song_timer >= display_title_time && song_timer < display_title_time + 100)
+		if(song_title_timer >= display_title_time && song_title_timer < display_title_time + 100)
 		{
-			song_timer = display_title_time + 100;
+			song_title_timer = display_title_time + 100;
 			LCDPrintTime(ops.cur_h, ops.cur_m, ops.ampm);
 		}
-		else if(song_timer >= display_title_time + 100)
+		else if(song_title_timer >= display_title_time + 100)
 		{
-			song_timer = display_title_time + 100;
+			song_title_timer = display_title_time + 100;
 		}
 
-		if(clk_timer >= refresh_time && song_timer >= display_title_time + 100)
+		if(clk_timer >= refresh_time && song_title_timer >= display_title_time + 100)
 		{
 			get_time(&ops);
 			LCDPrintTime(ops.cur_h, ops.cur_m, ops.ampm);

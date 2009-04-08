@@ -16,6 +16,22 @@
 #include "diskio.h"
 #include "mp3.h"
 #include "pindef.h"
+#include "config.h"
+
+typedef struct {
+	unsigned char flags;
+	unsigned char mode;
+	unsigned char alarm_on[7];
+	unsigned char alarm_h[7];
+	unsigned char alarm_m[7];
+	unsigned char cur_day;
+	unsigned char cur_h;
+	unsigned char cur_m;
+	unsigned char invert;
+	unsigned char alarm_mode;
+	unsigned char alarm_fade;
+	unsigned char ampm;
+} OP_STRUCT;
 
 #define main_inc
 #endif
