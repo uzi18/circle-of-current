@@ -12,6 +12,7 @@ volatile unsigned char sec_cnt;
 volatile unsigned char min_cnt;
 volatile unsigned char hour_cnt;
 volatile unsigned char day_cnt;
+volatile unsigned char new_day_flag;
 #define BL_on_speed 0
 #define BL_off_speed 2
 
@@ -33,10 +34,10 @@ ISR(TIMER2_OVF_vect)
 	menu_timer++;
 	vol_timer++;
 
-	if(BL_timer >= 2441)
+	if(BL_timer >= BL_timeout)
 	{
 		BL_mode = 0;
-		BL_timer = 2441;
+		BL_timer = BL_timeout;
 	}
 
 	if(BL_mode == 0 && fade_timer >= BL_off_speed)
@@ -62,7 +63,7 @@ ISR(TIMER2_OVF_vect)
 
 	rtc_cnt++;
 
-	if(rtc_cnt == 128)
+	if(rtc_cnt == F_OSC / 256)
 	{
 		rtc_cnt = 0;
 		sec_cnt++;
@@ -84,6 +85,7 @@ ISR(TIMER2_OVF_vect)
 	{
 		hour_cnt = 0;
 		day_cnt++;
+		new_day_flag = 1;
 	}
 
 	if(day_cnt == 7)
@@ -91,12 +93,12 @@ ISR(TIMER2_OVF_vect)
 		day_cnt = 0;
 	}
 
-
 	disk_timerproc();
 }
 
 void timer_init()
 {
+	new_day_flag = 1;
 	rtc_cnt = 0;
 	sec_cnt = 0;
 	min_cnt = 0;
@@ -112,7 +114,6 @@ void timer_init()
 	menu_timer = 0;
 	vol_timer = 0;
 	sbi(ASSR, AS2);
-	TCNT2 = 0;
 	TCCR2A = 0b10000011;
 	OCR2A = 0;
 	TCCR2B = 0b00000001;

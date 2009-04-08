@@ -1,5 +1,6 @@
 #include "mp3.h"
 
+#ifdef MP3_Custom_Code
 #define CODE_SIZE 89
 const unsigned char MP3Code_atab[CODE_SIZE] PROGMEM = { /* Register addresses */
     0x7, 0x6, 0x6, 0x7, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6, 0x6,
@@ -23,7 +24,7 @@ const unsigned short MP3Code_dtab[CODE_SIZE] PROGMEM = { /* Data to write */
     0x8057, 0x4c02, 0x0024, 0xf1c2, 0x0024, 0x2000, 0x0000, 0xf7c0,
     0x0024
 };
-
+#endif
 
 // transfer data via SPI to SDI
 void MP3DataTx(unsigned char * d, unsigned char len)
@@ -171,12 +172,12 @@ volatile unsigned char MP3Open(FILINFO * fno, MP3File * mf, char * p)
 
 		if(r.e[0] != 'm' || r.e[1] != 'p' || r.e[2] != '3') return 255;
 
-		mf->fn = r;
+		memmove(&(mf->fn), &r, sizeof(FileName83));
 
 		FIL temp_fh;
 		unsigned char err = f_open(&temp_fh, mf->fn.p, FA_READ);
 		if(err != 0) return err;
-		mf->fh = temp_fh;
+		memcpy(&(mf->fh), &temp_fh, sizeof(FIL));
 	}
 
 	if(mf->fh.fsize < 128) return 253;
@@ -496,48 +497,14 @@ void MP3ChangeVol(signed char v)
 	MP3WriteReg(MP3_Reg_VOL, vol, vol);	
 }
 
-void MP3SineTest(unsigned char d, unsigned char p)
-{
-	unsigned int old_mode = MP3ReadReg(MP3_Reg_MODE);
-
-	if(d != 0)
-	{
-		old_mode |= _BV(5);
-
-		MP3WriteRegS(MP3_Reg_MODE, old_mode);
-
-		cbi(MP3_Port, MP3_xCDS_Pin);
-
-		SPITx(0x53);
-		SPITx(0xEF);
-		SPITx(0x6E);
-		SPITx(p);
-
-		for(unsigned char i = 0; i < 4; i++)
-		{
-			SPITx(0);
-		}
-
-		sbi(MP3_Port, MP3_xCDS_Pin);
-	}
-	else
-	{
-		old_mode &= ~_BV(5);
-
-		MP3WriteRegS(MP3_Reg_MODE, old_mode);
-	}
-
-	while(bit_is_clear(MP3_PinIn, MP3_DREQ_Pin));
-}
-
-volatile unsigned char MP3Play(MP3File * f)
+unsigned char MP3Play(MP3File * f)
 {
 	unsigned char d[MP3PacketSize + 1];
 
 	if(bit_is_set(MP3_PinIn, MP3_DREQ_Pin))
 	{
 		// read then forward to decoder
-		f_read(&(f->fh), d, MP3PacketSize, &d[MP3PacketSize]);
+		unsigned char err = f_read(&(f->fh), d, MP3PacketSize, &d[MP3PacketSize]);
 		MP3DataTx(d, d[MP3PacketSize]);
 
 		if(d[MP3PacketSize] != MP3PacketSize) return 2; else return 0;
@@ -587,12 +554,15 @@ void MP3Init(unsigned char vol, unsigned char invert)
 
 	MP3WriteReg(MP3_Reg_CLOCKF, 0x98, 0x00);
 
+	#ifdef MP3_Custom_Code
 	for(unsigned int i = 0; i < CODE_SIZE; i++)
 	{
+		while(bit_is_clear(MP3_PinIn, MP3_DREQ_Pin));
 		MP3WriteRegS(pgm_read_byte(&MP3Code_atab[i]), pgm_read_word(&MP3Code_dtab[i]));
 	}
 
 	MP3WriteRegS(MP3_Reg_AIADDR, 0x30);
+	#endif
 
 	MP3SetVol(vol, vol);
 }

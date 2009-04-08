@@ -70,9 +70,7 @@ unsigned int MP3ReadReg(unsigned char);
 
 void MP3SetVol(unsigned char, unsigned char);
 
-volatile unsigned char MP3Play(MP3File *);
-
-void MP3SineTest(unsigned char, unsigned char);
+unsigned char MP3Play(MP3File *);
 
 void MP3PlayToEnd(MP3File *);
 

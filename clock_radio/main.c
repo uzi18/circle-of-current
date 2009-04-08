@@ -1,17 +1,21 @@
 #include "main.h"
-#include "misc.h"
-#include "print.h"
+
+#define F_OSC 32768
 
 #define eeprom_magic 45
 
-#define display_title_time ((5 * F_CPU)/(128*256))
-#define refresh_time ((15 * F_CPU)/(128*256))
-#define menu_timeout ((10 * F_CPU)/(128*256))
-#define vol_fade_speed ((1 * F_CPU)/(128*256))
+#define display_title_time ((5 * F_OSC)/(1*256))
+#define BL_timeout ((5 * F_OSC)/(1*256))
+#define refresh_time ((15 * F_OSC)/(1*256))
+#define menu_timeout ((10 * F_OSC)/(1*256))
+#define vol_fade_speed ((1 * F_OSC)/(1*256))
+
+#define shuffle_factor 16
 
 #define playflag 0
 #define continueflag 1
 #define alarmflag 2
+#define showerrflag 3
 
 #define PLAYCMD 0
 #define NEXTCMD 1
@@ -19,6 +23,7 @@
 #define UPCMD 3
 #define DOWNCMD 4
 #define MENUCMD 5
+#define BADCMD 255
 
 #define alarm_mode_default 3
 #define alarm_mode_daily 2
@@ -27,6 +32,13 @@
 #define normalmode 0
 #define loopmode 1
 #define shufflemode 2
+
+#define cur_time_menu 0
+#define alarm_mode_menu 9
+#define alarm_fade_menu 10
+#define play_mode_menu 13
+#define display_mode_menu 12
+#define invert_output_menu 11
 
 const char day_monday[] = "Mon";
 const char day_tuesday[] = "Tues";
@@ -61,6 +73,9 @@ typedef struct {
 	unsigned char alarm_fade;
 	unsigned char ampm;
 } OP_STRUCT;
+
+#include "misc.h"
+#include "print.h"
 
 void get_time(OP_STRUCT * o)
 {
@@ -228,45 +243,27 @@ unsigned char rewind(MP3File * mf)
 
 unsigned char menu(OP_STRUCT * o, MP3File * mf)
 {
-	unsigned char a = 0;
-	unsigned char c = 255;
+	unsigned char a;
+	unsigned char c = BADCMD;
+	unsigned char firstloopflag = 1;
 
 	unsigned char mode = 0;
 	unsigned char submode = 0;
-
-	LCDSetPos(1, 1);
-	LCDSend(127, 1);
-	LCDSetPos(1, 2);
-	LCDSend(upcharaddr, 1);
-
-	//               23456789012345
-	LCDPrint_P(PSTR(" Mode         "), 2, 1);
-	if(o->mode == 0)
-	{
-		//               23456789012345
-		LCDPrint_P(PSTR(" Normal       "), 2, 2);
-	}
-	else if(o->mode == 1)
-	{
-		//               23456789012345
-		LCDPrint_P(PSTR(" Loop         "), 2, 2);
-	}
-	else if(o->mode == 2)
-	{
-		//               23456789012345
-		LCDPrint_P(PSTR(" Shuffle      "), 2, 2);
-	}
-
-	LCDSetPos(16, 2);
-	LCDSend(downcharaddr, 1);
-	LCDSetPos(16, 1);
-	LCDSend(126, 1);
 
 	menu_timer = 0;
 
 	while(menu_timer < menu_timeout)
 	{
-		c = serRx(&a);
+		if(firstloopflag != 0)
+		{
+			firstloopflag = 0;
+			a = 1;
+		}
+		else
+		{
+			c = serRx(&a);
+		}
+
 		BL_on();
 		
 		if(a > 0)
@@ -275,20 +272,13 @@ unsigned char menu(OP_STRUCT * o, MP3File * mf)
 
 			if(c == PREVCMD)
 			{
-				if(mode == 0)
-				{
-					mode = 13;
-				}
-				else
-				{
-					mode--;
-				}
+				mode--;
 			}
 			else if(c == NEXTCMD)
 			{
-				if(mode == 13)
+				if(mode == 0)
 				{
-					mode = 0;
+					mode = o->cur_day + 2;
 				}
 				else
 				{
@@ -305,7 +295,9 @@ unsigned char menu(OP_STRUCT * o, MP3File * mf)
 			LCDSetPos(1, 2);
 			LCDSend(upcharaddr, 1);
 
-			if(mode == 0)
+			showmenu:
+
+			if(mode == play_mode_menu)
 			{
 				//               23456789012345
 				LCDPrint_P(PSTR(" Mode         "), 2, 1);
@@ -448,7 +440,7 @@ unsigned char menu(OP_STRUCT * o, MP3File * mf)
 					fprintf_P(&LCDstdout, PSTR(" > Minute: %d  "), o->alarm_m[daycnt]);
 				}
 			}
-			else if(mode == 8)
+			else if(mode == cur_time_menu)
 			{
 				//               23456789012345
 				LCDPrint_P(PSTR(" Current Time "), 2, 1);
@@ -551,7 +543,7 @@ unsigned char menu(OP_STRUCT * o, MP3File * mf)
 
 				set_time(o);
 			}
-			else if(mode == 9)
+			else if(mode == alarm_mode_menu)
 			{
 				//               23456789012345
 				LCDPrint_P(PSTR("  Alarm Mode   "), 2, 1);
@@ -600,7 +592,7 @@ unsigned char menu(OP_STRUCT * o, MP3File * mf)
 					LCDPrint_P(PSTR(" Predefined    "), 2, 2);
 				}
 			}
-			else if(mode == 10)
+			else if(mode == display_mode_menu)
 			{
 				//               23456789012345
 				LCDPrint_P(PSTR(" Time Display  "), 2, 1);
@@ -628,7 +620,7 @@ unsigned char menu(OP_STRUCT * o, MP3File * mf)
 					LCDPrint_P(PSTR(" > AM / PM     "), 2, 2);
 				}
 			}
-			else if(mode == 11)
+			else if(mode == alarm_fade_menu)
 			{
 				//               23456789012345
 				LCDPrint_P(PSTR("  Alarm Fade  "), 2, 1);
@@ -656,20 +648,7 @@ unsigned char menu(OP_STRUCT * o, MP3File * mf)
 					LCDPrint_P(PSTR(" > On         "), 2, 2);
 				}
 			}
-			else if(mode == 12)
-			{
-				//               23456789012345
-				LCDPrint_P(PSTR("  Sine  Test  "), 2, 1);
-
-				if(c == PLAYCMD)
-				{
-					MP3SineTest(1, 128);
-				}
-
-				//               23456789012345
-				LCDPrint_P(PSTR(" > Press Play  "), 2, 2);
-			}
-			else if(mode == 13)
+			else if(mode == invert_output_menu)
 			{
 				//               23456789012345
 				LCDPrint_P(PSTR("Invert  Output "), 2, 1);
@@ -697,10 +676,18 @@ unsigned char menu(OP_STRUCT * o, MP3File * mf)
 					LCDPrint_P(PSTR(" > On         "), 2, 2);
 				}
 			}
-
-			if(mode != 11)
+			else
 			{
-				MP3SineTest(0, 0);
+				if(c == PREVCMD)
+				{
+					mode--;
+				}
+				else if(c == NEXTCMD)
+				{
+					mode++;
+				}
+
+				goto showmenu;
 			}
 
 			LCDSetPos(16, 2);
@@ -708,8 +695,6 @@ unsigned char menu(OP_STRUCT * o, MP3File * mf)
 			LCDSetPos(16, 1);
 			LCDSend(126, 1);
 		}
-
-		MP3SineTest(0, 0);
 
 		if(o->invert != 0)
 		{
@@ -719,26 +704,6 @@ unsigned char menu(OP_STRUCT * o, MP3File * mf)
 		{
 			MP3WriteReg(MP3_Reg_MODE, 0x08, 0x00);
 		}
-
-		/*
-		if(bit_is_set(o->flags, playflag))
-		{
-			if(mf->open != 0)
-			{
-				if(MP3Play(mf) == 2)
-				{
-					if(bit_is_set(o->flags, continueflag))
-					{
-						rewind(mf);
-					}
-					else
-					{
-						cbi(o->flags, playflag);
-					}
-				}
-			}
-		}
-		*/
 	}
 
 	LCDPrintTime(o->cur_h, o->cur_m, o->ampm);
@@ -757,7 +722,7 @@ unsigned char menu(OP_STRUCT * o, MP3File * mf)
 		if(eeprom_read_byte(i + 1) != savedata.d[i])
 		{
 			eeprom_write_byte(i + 1, savedata.d[i]);
-		}
+		}		
 	}
 }
 
@@ -794,6 +759,7 @@ int main()
 		for(unsigned int i = 0; i < sizeof(OP_STRUCT); i++)
 		{
 			savedata.d[i] = 0;
+			eeprom_write_byte(i + 1, 0);
 		}
 	}
 
@@ -804,10 +770,11 @@ int main()
 	ops.flags = 0;
 
 	sbi(ops.flags, continueflag);
+	sbi(ops.flags, showerrflag);
 
 	while(1)
 	{
-		unsigned char a = 0;
+		static unsigned char a = 0;
 		unsigned char c = 255;
 		
 		c = serRx(&a);
@@ -834,7 +801,7 @@ int main()
 				}
 				else
 				{
-					err = shuffle(&dir_handle, &mp3_handle, "/mp3", 16);
+					err = shuffle(&dir_handle, &mp3_handle, "/mp3", shuffle_factor);
 				}
 			}
 			else if(c == PREVCMD)
@@ -852,7 +819,7 @@ int main()
 					}
 					else
 					{
-						err = shuffle(&dir_handle, &mp3_handle, "/mp3", 16);
+						err = shuffle(&dir_handle, &mp3_handle, "/mp3", shuffle_factor);
 					}
 				}
 			}
@@ -868,6 +835,8 @@ int main()
 			{
 				menu(&ops, &mp3_handle);
 			}
+
+			sbi(ops.flags, showerrflag);
 		}
 
 		if(err == 0)
@@ -882,7 +851,7 @@ int main()
 						{
 							if(ops.mode == shufflemode)
 							{
-								err = shuffle(&dir_handle, &mp3_handle, "/mp3", 16);
+								err = shuffle(&dir_handle, &mp3_handle, "/mp3", shuffle_factor);
 							}
 							else if(ops.mode == normalmode)
 							{
@@ -912,8 +881,9 @@ int main()
 			
 			err = open_next(&dir_handle, &mp3_handle, "/mp3");
 
-			if(err != 0)
+			if(err != 0 && bit_is_set(ops.flags, showerrflag))
 			{
+				cbi(ops.flags, showerrflag);
 				LCDSetPos(1, 1);
 				fprintf_P(&LCDstdout, PSTR("Disk Error\n"));
 				LCDSetPos(1, 2);
@@ -952,12 +922,16 @@ int main()
 				{
 					MP3SetVol(255, 255);
 				}
+				else if(bit_is_clear(ops.flags, playflag))
+				{
+					MP3SetVol(0, 0);
+				}
 
-				MP3File alarm_handle;
+				static MP3File alarm_handle;
 
 				if(ops.alarm_mode == alarm_mode_random)
 				{
-					alarm_err = shuffle(&dir_handle, &alarm_handle, "/mp3", 16);
+					alarm_err = shuffle(&dir_handle, &alarm_handle, "/mp3", shuffle_factor);
 				}
 				else if(ops.alarm_mode == alarm_mode_default)
 				{
@@ -980,15 +954,12 @@ int main()
 					}
 				}
 
-				if(alarm_err != 0)
-				{
-					MP3SineTest(1, 128);
-				}
-
 				vol_timer = 0;
-				
+
 				while(1)
 				{
+					c = serRx(&a);
+
 					BL_on();
 
 					if(clk_timer >= refresh_time)
@@ -1005,19 +976,25 @@ int main()
 						MP3ChangeVol(8);
 					}
 
-					if(alarm_err != 0)
+					if(alarm_err == 0)
 					{
 						if(MP3Play(&alarm_handle) == 2)
 						{
 							rewind(&alarm_handle);
 						}
 					}
-				}
 
-				if(alarm_err != 0)
-				{
-					MP3SineTest(0, 0);
+					if(a != 0)
+					{
+						break;
+					}
 				}
+			}
+
+			if(cur_t < alarm_t || new_day_flag != 0)
+			{
+				cbi(ops.flags, alarmflag);
+				new_day_flag = 0;
 			}
 		}
 	}

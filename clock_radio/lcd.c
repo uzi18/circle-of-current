@@ -348,7 +348,7 @@ void LCDInit()
 	cbi(LCDCtrlPort, LCDEPin);
 
 	sbi(LCDBLDDR, LCDBLPin);
-	sbi(LCDBLPort, LCDBLPin);
+	cbi(LCDBLPort, LCDBLPin);
 
 	_delay_ms(125); // wait for LCD driver to warm up
 
