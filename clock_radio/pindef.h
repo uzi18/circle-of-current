@@ -12,7 +12,7 @@
 #define MP3_Port 		PORTB
 #define MP3_PinIn 		PINB
 #define MP3_DDR 		DDRB
-#define MP3_xCDS_Pin 	PB1
+#define MP3_xDCS_Pin 	PB1
 #define MP3_xCS_Pin 	PB2
 #define MP3_DREQ_Pin 	PB0
 #define MP3_RST_Pin 	PB4
@@ -40,3 +40,10 @@
 #define btn_B_output_reg 	PORTD
 #define btn_A_input_reg 	PINC
 #define btn_B_input_reg 	PIND
+
+#define play_btn 0
+#define left_btn 0
+#define right_btn 0
+#define plus_btn 0
+#define minus_btn 0
+#define menu_btn 0

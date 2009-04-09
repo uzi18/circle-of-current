@@ -29,14 +29,14 @@ const unsigned short MP3Code_dtab[CODE_SIZE] PROGMEM = { /* Data to write */
 // transfer data via SPI to SDI
 void MP3DataTx(unsigned char * d, unsigned char len)
 {
-	cbi(MP3_Port, MP3_xCDS_Pin);
+	cbi(MP3_Port, MP3_xDCS_Pin);
 
 	for(unsigned char i = 0; i < len; i++)
 	{
 		SPITx(d[i]);
 	}
 
-	sbi(MP3_Port, MP3_xCDS_Pin);
+	sbi(MP3_Port, MP3_xDCS_Pin);
 }
 
 // opens a MP3 file, using FILINFO and a folder path, or use a null for FILINFO and use a file path
@@ -523,9 +523,9 @@ void MP3Init(unsigned char vol, unsigned char invert)
 
 	// chip select both output and high
 	sbi(MP3_Port, MP3_xCS_Pin);
-	sbi(MP3_Port, MP3_xCDS_Pin);
+	sbi(MP3_Port, MP3_xDCS_Pin);
 	sbi(MP3_DDR, MP3_xCS_Pin);
-	sbi(MP3_DDR, MP3_xCDS_Pin);
+	sbi(MP3_DDR, MP3_xDCS_Pin);
 
 	sbi(MP3_DDR, MP3_RST_Pin); // reset pin as output
 

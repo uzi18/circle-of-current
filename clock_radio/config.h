@@ -9,8 +9,6 @@
 #define refresh_time ((15 * F_OSC)/(1*256))
 #define menu_timeout ((10 * F_OSC)/(1*256))
 #define vol_fade_speed ((1 * F_OSC)/(1*256))
-#define BL_on_speed 0
-#define BL_off_speed 2
 
 #define shuffle_factor 16
 
@@ -42,12 +40,18 @@
 #define display_mode_menu 12
 #define invert_output_menu 11
 
-#define MP3PacketSize 32
-
 #define last_state_flag 0
 #define fixed_state_flag 1
 #define click_flag 2
-#define btn_debounce_time 5
+
+#define btn_debounce_time 4
+
+#define BL_on_speed 0
+#define BL_off_speed 2
+
+#define MP3PacketSize 32
+
+//#define calc_song_length
 
 #define config_inc
 #endif

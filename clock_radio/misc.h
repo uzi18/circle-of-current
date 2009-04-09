@@ -122,10 +122,8 @@ void BL_on()
 	BL_timer = 0;
 }
 
-volatile unsigned char btn_A_flags[8];
-volatile unsigned char btn_A_timer[8];
-volatile unsigned char btn_B_flags[8];
-volatile unsigned char btn_B_timer[8];
+volatile unsigned char btn_flags[16];
+volatile unsigned char btn_timer[16];
 
 void btn_port_init()
 {
@@ -137,82 +135,82 @@ void check_btns()
 {
 	for(unsigned char i = 0; i < 8; i++)
 	{
-		if(bit_is_set(btn_A_input_reg, i) && bit_is_clear(btn_A_flags[i], last_state_flag))
+		if(bit_is_set(btn_A_input_reg, i) && bit_is_clear(btn_flags[i], last_state_flag))
 		{
-			btn_A_timer[i] = 0;
+			btn_timer[i] = 0;
 		}
-		else if(bit_is_clear(btn_A_input_reg, i) && bit_is_set(btn_A_flags[i], last_state_flag))
+		else if(bit_is_clear(btn_A_input_reg, i) && bit_is_set(btn_flags[i], last_state_flag))
 		{
-			btn_A_timer[i] = 0;
+			btn_timer[i] = 0;
 		}
 		else
 		{
-			if(btn_A_timer[i] < 255)
+			if(btn_timer[i] < 255)
 			{
-				btn_A_timer[i]++;
+				btn_timer[i]++;
 			}
-			if(btn_A_timer[i] > btn_debounce_time)
+			if(btn_timer[i] > btn_debounce_time)
 			{
 				if(bit_is_clear(btn_A_input_reg, i))
 				{
-					if(bit_is_set(btn_A_flags[i], fixed_state_flag))
+					if(bit_is_set(btn_flags[i], fixed_state_flag))
 					{
-						sbi(btn_A_flags[i], click_flag);
+						sbi(btn_flags[i], click_flag);
 					}
-					cbi(btn_A_flags[i], fixed_state_flag);
+					cbi(btn_flags[i], fixed_state_flag);
 				}
 				else
 				{
-					sbi(btn_A_flags[i], fixed_state_flag);
+					sbi(btn_flags[i], fixed_state_flag);
 				}
 			}
 		}
 		if(bit_is_clear(btn_A_input_reg, i))
 		{
-			cbi(btn_A_flags[i], last_state_flag);
+			cbi(btn_flags[i], last_state_flag);
 		}
 		else
 		{
-			sbi(btn_A_flags[i], last_state_flag);
+			sbi(btn_flags[i], last_state_flag);
 		}
 
-		if(bit_is_set(btn_B_input_reg, i) && bit_is_clear(btn_B_flags[i], last_state_flag))
+		if(bit_is_set(btn_B_input_reg, i) && bit_is_clear(btn_flags[8 + i], last_state_flag))
 		{
-			btn_B_timer[i] = 0;
+			btn_timer[8 + i] = 0;
 		}
-		else if(bit_is_clear(btn_B_input_reg, i) && bit_is_set(btn_B_flags[i], last_state_flag))
+		else if(bit_is_clear(btn_B_input_reg, i) && bit_is_set(btn_flags[8 + i], last_state_flag))
 		{
-			btn_B_timer[i] = 0;
+			btn_timer[8 + i] = 0;
 		}
 		else
 		{
-			if(btn_B_timer[i] < 255)
+			if(btn_timer[8 + i] < 255)
 			{
-				btn_B_timer[i]++;
+				btn_timer[8 + i]++;
 			}
-			if(btn_B_timer[i] > btn_debounce_time)
+			if(btn_timer[8 + i] > btn_debounce_time)
 			{
 				if(bit_is_clear(btn_B_input_reg, i))
 				{
-					if(bit_is_set(btn_B_flags[i], fixed_state_flag))
+					if(bit_is_set(btn_flags[8 + i], fixed_state_flag))
 					{
-						sbi(btn_B_flags[i], click_flag);
+						sbi(btn_flags[8 + i], click_flag);
 					}
-					cbi(btn_B_flags[i], fixed_state_flag);
+					cbi(btn_flags[8 + i], fixed_state_flag);
 				}
 				else
 				{
-					sbi(btn_B_flags[i], fixed_state_flag);
+					sbi(btn_flags[8 + i], fixed_state_flag);
 				}
 			}
 		}
 		if(bit_is_clear(btn_B_input_reg, i))
 		{
-			cbi(btn_B_flags[i], last_state_flag);
+			cbi(btn_flags[8 + i], last_state_flag);
 		}
 		else
 		{
-			sbi(btn_B_flags[i], last_state_flag);
+			sbi(btn_flags[8 + i], last_state_flag);
 		}
 	}
 }

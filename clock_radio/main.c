@@ -728,11 +728,11 @@ int main()
 		
 		c = serRx(&a);
 
-		if(bit_is_set(btn_A_flags[0], click_flag))
+		if(bit_is_set(btn_flags[0], click_flag))
 		{
 			btncnt++;
 			fprintf_P(&serstdout, PSTR("btn %d\n"), btncnt);
-			cbi(btn_A_flags[0], click_flag);
+			cbi(btn_flags[0], click_flag);
 		}
 
 		if(a != 0)
@@ -797,6 +797,8 @@ int main()
 
 		if(err == 0)
 		{
+			sbi(ops.flags, showerrflag);
+
 			if(bit_is_set(ops.flags, playflag))
 			{
 				if(mp3_handle.open != 0)
