@@ -32,6 +32,8 @@ void LCDInit(void);
 
 int LCD_putc(char, FILE *);
 
+void LCDSoftReset();
+
 #define upperlineaddr 0
 #define ulc upperlineaddr
 #define lowerlineaddr 1

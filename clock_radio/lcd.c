@@ -302,53 +302,9 @@ void LCDCustomChar(unsigned char address, unsigned char * dataArray)
 	}
 }
 
-void LCDInit()
+void LCDLoadChars()
 {
-	// LCD Initialization Function
-
-	// backlight as output, turn backlight on
-	sbi(LCDBLDDR, LCDBLPin);
-	LCDBL(1);
-
-	// 8 bit code
-	//LCDDataDDR  0xFF; // data port as output
-
-	// 4 bit code
-	unsigned char i;
 	unsigned char temp[8];
-	temp[0] = LCDDataBit0;
-	temp[1] = LCDDataBit1;
-	temp[2] = LCDDataBit2;
-	temp[3] = LCDDataBit3;
-
-	for(i = 0; i < 4; i++)
-	{
-		sbi(LCDDataDDR, temp[i]);
-	}
-
-	sbi(LCDCtrlDDR, LCDRSPin); // control pins as output
-	sbi(LCDCtrlDDR, LCDRWPin);
-	sbi(LCDCtrlDDR, LCDEPin);
-
-	// clear the port and pins
-	LCDDataPort = 0;
-	cbi(LCDCtrlPort, LCDRSPin);
-	cbi(LCDCtrlPort, LCDRWPin);
-	cbi(LCDCtrlPort, LCDEPin);
-
-	sbi(LCDBLDDR, LCDBLPin);
-	cbi(LCDBLPort, LCDBLPin);
-
-	_delay_ms(125); // wait for LCD driver to warm up
-
-	// 4 bit code
-	LCDSend(0b00000001, 0); // all clear command
-	_delay_us(1200); // wait for LCD to execute
-	LCDSend(0b00000010, 0); // return home command
-	_delay_us(1200); // wait for LCD to execute
-	LCDSend(0b00101000, 0); // function set 4 bit, 2 line, 5x8 character
-	LCDSend(0b00001100, 0); // cursor off
-	LCDSetPos(1, 1); // set position to (1, 1)
 
 	for(unsigned char i = 0; i < 8; i++)
 	{
@@ -391,6 +347,64 @@ void LCDInit()
 		temp[i] = pgm_read_byte(&downchar[i]);
 	}
 	LCDCustomChar(downcharaddr, temp);
+}
+
+void LCDSoftReset()
+{
+	// 4 bit code
+	LCDSend(0b00000001, 0); // all clear command
+	_delay_us(1200); // wait for LCD to execute
+	LCDSend(0b00000010, 0); // return home command
+	_delay_us(1200); // wait for LCD to execute
+	LCDSend(0b00101000, 0); // function set 4 bit, 2 line, 5x8 character
+	LCDSend(0b00001100, 0); // cursor off
+	LCDSetPos(1, 1); // set position to (1, 1)
+
+	//LCDLoadChars();
+}
+
+void LCDInit()
+{
+	// LCD Initialization Function
+
+	// backlight as output, turn backlight on
+	sbi(LCDBLDDR, LCDBLPin);
+	LCDBL(1);
+
+	// 8 bit code
+	//LCDDataDDR  0xFF; // data port as output
+
+	// 4 bit code
+	unsigned char i;
+	unsigned char temp[8];
+	temp[0] = LCDDataBit0;
+	temp[1] = LCDDataBit1;
+	temp[2] = LCDDataBit2;
+	temp[3] = LCDDataBit3;
+
+	for(i = 0; i < 4; i++)
+	{
+		sbi(LCDDataDDR, temp[i]);
+	}
+
+	sbi(LCDCtrlDDR, LCDRSPin); // control pins as output
+	sbi(LCDCtrlDDR, LCDRWPin);
+	sbi(LCDCtrlDDR, LCDEPin);
+
+	// clear the port and pins
+	LCDDataPort = 0;
+	cbi(LCDCtrlPort, LCDRSPin);
+	cbi(LCDCtrlPort, LCDRWPin);
+	cbi(LCDCtrlPort, LCDEPin);
+
+	sbi(LCDBLDDR, LCDBLPin);
+	cbi(LCDBLPort, LCDBLPin);
+
+	_delay_ms(125); // wait for LCD driver to warm up
+
+	LCDSoftReset();
+
+	LCDLoadChars();
 }
 
 int LCD_putc(char c, FILE *stream)

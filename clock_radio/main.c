@@ -680,6 +680,7 @@ int main()
 	serInit();
 	timer_init();
 	LCDInit();
+	btn_port_init();
 
 	signed char err = 1;
 
@@ -718,12 +719,21 @@ int main()
 	sbi(ops.flags, continueflag);
 	sbi(ops.flags, showerrflag);
 
+	unsigned short btncnt = 0;
+
 	while(1)
 	{
 		static unsigned char a = 0;
 		unsigned char c = 255;
 		
 		c = serRx(&a);
+
+		if(bit_is_set(btn_A_flags[0], click_flag))
+		{
+			btncnt++;
+			fprintf_P(&serstdout, PSTR("btn %d\n"), btncnt);
+			cbi(btn_A_flags[0], click_flag);
+		}
 
 		if(a != 0)
 		{
@@ -851,6 +861,11 @@ int main()
 		if(clk_timer >= refresh_time && song_title_timer >= display_title_time + 100)
 		{
 			get_time(&ops);
+			if(LCD_rst_timer >= song_title_timer * 2)
+			{
+				LCD_rst_timer = 0;
+				LCDSoftReset();
+			}
 			LCDPrintTime(ops.cur_h, ops.cur_m, ops.ampm);
 
 			clk_timer = 0;
@@ -912,6 +927,11 @@ int main()
 					{
 						clk_timer = 0;
 						get_time(&ops);
+						if(LCD_rst_timer >= song_title_timer * 2)
+						{
+							LCD_rst_timer = 0;
+							LCDSoftReset();
+						}
 						LCDPrintTime(ops.cur_h, ops.cur_m, ops.ampm);
 					}
 

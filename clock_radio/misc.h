@@ -2,6 +2,7 @@ volatile unsigned long long ovf_cnt_2;
 volatile unsigned long menu_timer;
 volatile unsigned long song_title_timer;
 volatile unsigned long clk_timer;
+volatile unsigned long LCD_rst_timer;
 volatile unsigned long fade_timer;
 volatile unsigned long vol_timer;
 volatile unsigned long BL_timer;
@@ -25,6 +26,7 @@ ISR(TIMER2_OVF_vect)
 	BL_timer++;
 	menu_timer++;
 	vol_timer++;
+	LCD_rst_timer++;
 
 	if(BL_timer >= BL_timeout)
 	{
@@ -98,6 +100,7 @@ void timer_init()
 	min_cnt = 0;
 	hour_cnt = 0;
 	day_cnt = 0;
+	LCD_rst_timer = 0;
 	BL_timer = 0;
 	BL_mode = 1;
 	fade_timer = 0;
@@ -126,7 +129,8 @@ volatile unsigned char btn_B_timer[8];
 
 void btn_port_init()
 {
-	
+	btn_A_output_reg |= 00111111;
+	btn_B_output_reg |= 01111111;
 }
 
 void check_btns()
@@ -147,7 +151,7 @@ void check_btns()
 			{
 				btn_A_timer[i]++;
 			}
-			if(btn_A_timer[i] > btn_debounc_time)
+			if(btn_A_timer[i] > btn_debounce_time)
 			{
 				if(bit_is_clear(btn_A_input_reg, i))
 				{
@@ -186,7 +190,7 @@ void check_btns()
 			{
 				btn_B_timer[i]++;
 			}
-			if(btn_B_timer[i] > btn_debounc_time)
+			if(btn_B_timer[i] > btn_debounce_time)
 			{
 				if(bit_is_clear(btn_B_input_reg, i))
 				{

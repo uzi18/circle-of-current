@@ -14,8 +14,6 @@
 #include <avr/pgmspace.h>
 #include <avr/interrupt.h>
 
-#define MP3PacketSize 32
-
 #define MP3_Reg_MODE 0x00
 #define MP3_Reg_STATUS 0x01
 #define MP3_Reg_BASS 0x02
