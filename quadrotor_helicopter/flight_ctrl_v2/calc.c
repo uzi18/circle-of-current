@@ -1,5 +1,6 @@
 #include "calc.h"
 
+/*
 signed long calc_multi(signed long in, signed long numer, signed long denom)
 {
 	if(denom == 0)
@@ -21,60 +22,7 @@ signed long calc_multi(signed long in, signed long numer, signed long denom)
 	signed long r = (in * numer) + (denom / 2);
 	return r / denom;
 }
-
-signed long calc_abs(signed long in)
-{
-	if(in < 0)
-	{
-		return in * -1;
-	}
-	else
-	{
-		return in;
-	}
-}
-
-signed long calc_sign(signed long in)
-{
-	if(in < 0)
-	{
-		return -1;
-	}
-	else
-	{
-		return 1;
-	}
-}
-
-
-signed long calc_map_long(signed long in, signed long old_min, signed long old_max, signed long new_min, signed long new_max)
-{
-	return new_min + calc_multi(in - old_min, new_max - new_min, old_max - old_min);
-}
-
-signed long calc_max(signed long a, signed long b)
-{
-	if(a > b)
-	{
-		return a;
-	}
-	else
-	{
-		return b;
-	}
-}
-
-signed long calc_min(signed long a, signed long b)
-{
-	if(a < b)
-	{
-		return a;
-	}
-	else
-	{
-		return b;
-	}
-}
+*/
 
 #include "trig_tbl.h"
 
@@ -153,32 +101,11 @@ signed long calc_atan2(signed long y, signed long x)
 
 #endif
 
-signed long calc_ang_range(signed long ang)
-{
-	if(ang > (180 * MATH_MULTIPLIER))
-	{
-		return (-180 * MATH_MULTIPLIER) + ang - (180 * MATH_MULTIPLIER);
-	}
-	else if(ang < (-180 * MATH_MULTIPLIER))
-	{
-		return (180 * MATH_MULTIPLIER) + ang - (-180 * MATH_MULTIPLIER);
-	}
-	else
-	{
-		return ang;
-	}
-}
-
-signed long calc_constrain_long(signed long in, signed long min_, signed long max_)
-{
-	return calc_min(calc_max(in, min_), max_);
-}
-
 signed long PID_mv(PID_data * pid, PID_const k, signed long current, signed long target)
 {
 	signed long err = target - current;
 
-	pid->err_sum = calc_constrain_long(pid->err_sum + err, -1000000, 1000000);
+	pid->err_sum = calc_constrain(pid->err_sum + err, -1000000, 1000000);
 
 	signed long delta_err = err - pid->err_last;
 
@@ -201,7 +128,12 @@ PID_data PID_init()
 
 signed long complementary_filter(signed long * ang, signed long accel_ang, signed long gyro_r, signed long w, signed long dt)
 {
-	*ang = calc_multi((MATH_MULTIPLIER - w), (*ang + (calc_multi(gyro_r, dt, MATH_MULTIPLIER))), MATH_MULTIPLIER) + calc_multi(w, accel_ang, MATH_MULTIPLIER);
+	*ang = calc_multi
+			(
+				(MATH_MULTIPLIER - w),
+				(*ang + (calc_multi(gyro_r, dt, MATH_MULTIPLIER))),
+				MATH_MULTIPLIER
+			) + calc_multi(w, accel_ang, MATH_MULTIPLIER);
 	return *ang;
 }
 

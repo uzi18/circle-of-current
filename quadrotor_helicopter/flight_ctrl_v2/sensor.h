@@ -28,6 +28,7 @@ void sens_init();
 void sens_calibrate(unsigned char);
 void adc_start(unsigned char, unsigned char);
 void adc_wait_stop();
+unsigned char adc_new(unsigned char);
 unsigned int sens_read(unsigned char);
 unsigned int sens_offset(unsigned char);
 

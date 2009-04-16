@@ -11,6 +11,8 @@
 #define use_comp_filter
 //#define use_kalman_filter
 
+#define delta_time_const 10000
+
 #define ticks_500us ((F_CPU * 5) / 10000)
 #define ticks_10ms (ticks_500us * 20)
 

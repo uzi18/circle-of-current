@@ -66,51 +66,61 @@ int main()
 		else
 		{
 			//cbi(LED_port, LED1_pin);
+		}		
+
+		signed long roll_gyro_val;
+		signed long pitch_gyro_val;
+		signed long prev_roll_gyro_val;
+		signed long prev_pitch_gyro_val;
+
+		if(adc_new(0xFF) != 0)
+		{
+			zero_G_val = (saved_params.sl_s.vert_accel_top + saved_params.sl_s.vert_accel_bot + 1) / 2;
+			one_G_val = sens_offset(vert_accel_chan) - zero_G_val;
+
+			signed long roll_accel_val = ((signed long)sens_read(roll_accel_chan) - ((saved_params.sl_s.roll_accel_bot + saved_params.sl_s.roll_accel_top + 1) / 2));
+			signed long pitch_accel_val = ((signed long)sens_read(pitch_accel_chan) - ((saved_params.sl_s.pitch_accel_bot + saved_params.sl_s.pitch_accel_top + 1) / 2));
+			signed long vert_accel_val = ((signed long)sens_read(vert_accel_chan) - ((saved_params.sl_s.vert_accel_bot + saved_params.sl_s.vert_accel_top + 1) / 2));
+
+			roll_gyro_val = (signed long)sens_read(roll_gyro_chan) - saved_params.sl_s.roll_gyro_center;
+			pitch_gyro_val = (signed long)sens_read(pitch_gyro_chan) - saved_params.sl_s.pitch_gyro_center;
+
+			signed long roll_trig;
+			signed long pitch_trig;
+
+			#if (delta_time_const != 0)
+			signed long delta_time = delta_time_const * adc_new(0xFF);
+			#else
+			signed long delta_time = timer0_elapsed();
+			#endif
+
+			#ifdef use_atan
+			roll_trig = calc_atan2(roll_accel_val, vert_accel_val);
+			pitch_trig = calc_atan2(pitch_accel_val, vert_accel_val);
+			#endif
+
+			#ifdef use_asin
+			roll_trig = calc_asin(roll_accel_val, one_G_val);
+			pitch_trig = calc_asin(pitch_accel_val, one_G_val);
+			#endif
+
+			roll_trig += saved_params.sl_s.roll_offset;
+			pitch_trig += saved_params.sl_s.pitch_offset;
+
+			roll_trig = calc_ang_range(roll_trig);
+			pitch_trig = calc_ang_range(pitch_trig);
+
+			roll_ang = complementary_filter(&roll_ang, roll_trig, calc_multi(((roll_gyro_val + prev_roll_gyro_val + 1) / 2), saved_params.sl_s.roll_gyro_to_rate, MATH_MULTIPLIER), saved_params.sl_s.comp_filter_w, delta_time);
+			pitch_ang = complementary_filter(&pitch_ang, pitch_trig, calc_multi(((pitch_gyro_val + prev_pitch_gyro_val + 1) / 2), saved_params.sl_s.pitch_gyro_to_rate, MATH_MULTIPLIER), saved_params.sl_s.comp_filter_w, delta_time);
+
+			prev_pitch_gyro_val = pitch_gyro_val;
+			prev_roll_gyro_val = roll_gyro_val;
+
+			roll_ang = calc_ang_range(roll_ang);
+			pitch_ang = calc_ang_range(pitch_ang);
+
+			adc_new(0);
 		}
-
-		zero_G_val = (saved_params.sl_s.vert_accel_top + saved_params.sl_s.vert_accel_bot + 1) / 2;
-		one_G_val = sens_offset(vert_accel_chan) - zero_G_val;
-
-		signed long roll_accel_val = ((signed long)sens_read(roll_accel_chan) - ((saved_params.sl_s.roll_accel_bot + saved_params.sl_s.roll_accel_top + 1) / 2));
-		signed long pitch_accel_val = ((signed long)sens_read(pitch_accel_chan) - ((saved_params.sl_s.pitch_accel_bot + saved_params.sl_s.pitch_accel_top + 1) / 2));
-		signed long vert_accel_val = ((signed long)sens_read(vert_accel_chan) - ((saved_params.sl_s.vert_accel_bot + saved_params.sl_s.vert_accel_top + 1) / 2));
-
-		signed long roll_gyro_val = (signed long)sens_read(roll_gyro_chan) - saved_params.sl_s.roll_gyro_center;
-		signed long pitch_gyro_val = (signed long)sens_read(pitch_gyro_chan) - saved_params.sl_s.pitch_gyro_center;
-
-		signed long roll_trig;
-		signed long pitch_trig;
-
-		signed long delta_time = timer0_elapsed();
-
-		#ifdef use_atan
-		roll_trig = calc_atan2((double)roll_accel_val, (double)vert_accel_val);
-		pitch_trig = calc_atan2((double)pitch_accel_val, (double)vert_accel_val);
-		#endif
-
-		#ifdef use_asin
-		roll_trig = calc_asin((double)roll_accel_val, (double)one_G_val);
-		pitch_trig = calc_asin((double)pitch_accel_val, (double)one_G_val);
-		#endif
-
-		roll_trig += saved_params.sl_s.roll_offset;
-		pitch_trig += saved_params.sl_s.pitch_offset;
-
-		roll_trig = calc_ang_range(roll_trig);
-		pitch_trig = calc_ang_range(pitch_trig);
-
-		#ifdef use_comp_filter
-		roll_ang = complementary_filter(&roll_ang, roll_trig, calc_multi(roll_gyro_val, saved_params.sl_s.roll_gyro_to_rate, MATH_MULTIPLIER), saved_params.sl_s.comp_filter_w, delta_time);
-		pitch_ang = complementary_filter(&pitch_ang, pitch_trig, calc_multi(pitch_gyro_val, saved_params.sl_s.pitch_gyro_to_rate, MATH_MULTIPLIER), saved_params.sl_s.comp_filter_w, delta_time);
-		#endif
-
-		#ifdef use_kalman_filter
-		roll_ang = kalman_filter(&roll_kalman, calc_multi(roll_gyro_val, saved_params.sl_s.roll_gyro_to_rate, MATH_MULTIPLIER), roll_trig, delta_time);
-		pitch_ang = kalman_filter(&pitch_kalman, calc_multi(pitch_gyro_val, saved_params.sl_s.pitch_gyro_to_rate, MATH_MULTIPLIER), pitch_trig, delta_time);
-		#endif
-
-		roll_ang = calc_ang_range(roll_ang);
-		pitch_ang = calc_ang_range(pitch_ang);
 
 		if(esc_is_done())
 		{

@@ -1,17 +1,24 @@
 #include "sensor.h"
 
+static volatile unsigned int adc_res_t[8];
 static volatile unsigned int adc_res[8];
 static volatile unsigned int adc_offset[8];
 static volatile unsigned char adc_chan;
+static volatile unsigned char adc_new_cycle;
 
 ISR(ADC_vect)
 {
 	tog(LED_port, LED1_pin);
-	adc_res[adc_chan] = ADC;
+	adc_res_t[adc_chan] = ADC;
 	adc_chan++;
 	adc_chan %= 6;
 	ADMUX = (ADMUX & 0b11100000) | adc_chan;
 	ADCSRA = _BV(ADEN) | _BV(ADSC) | _BV(ADIE) | _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0);
+	if(adc_chan == 0)
+	{
+		memcpy(adc_res, adc_res_t, sizeof(unsigned int) * 8);
+		adc_new_cycle++;
+	}
 }
 
 void adc_start(unsigned char c, unsigned char f)
@@ -34,6 +41,7 @@ void sens_init()
 	}
 
 	adc_chan = 0;
+	adc_new_cycle = 0;
 
 	adc_start(0, _BV(ADIE));
 }
@@ -65,7 +73,13 @@ void sens_calibrate(unsigned char t)
 	}
 	for(unsigned char j = 0; j < 8; j++)
 	{
-		adc_offset[j] = lround((double)sum[j] / (double)t);
+		adc_offset[j] = calc_multi(sum[j], 1, t);
 	}
 	adc_start(0, _BV(ADIE));
+}
+
+unsigned char adc_new(unsigned char c)
+{
+	adc_new_cycle &= c;
+	return adc_new_cycle;
 }
