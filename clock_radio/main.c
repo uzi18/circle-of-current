@@ -177,13 +177,7 @@ unsigned char open_prev(DIR * dh, MP3File * mf, char * p)
 
 unsigned char rewind(MP3File * mf)
 {
-	unsigned char * p = calloc(MP3PacketSize, sizeof(unsigned char));
-	for(unsigned char i = 0; i < 256 / MP3PacketSize; i++)
-	{
-		while(bit_is_clear(MP3_PinIn, MP3_DREQ_Pin));
-		MP3DataTx(p, MP3PacketSize);
-	}
-	free(p);
+	MP3Reset();
 	return f_lseek(&(mf->fh), 0);
 }
 
@@ -222,7 +216,7 @@ unsigned char menu(OP_STRUCT * o, MP3File * mf)
 			}
 			else if(c == NEXTCMD)
 			{
-				if(mode == 0)
+				if(mode == cur_time_menu)
 				{
 					mode = o->cur_day + 2;
 				}
@@ -902,19 +896,19 @@ int main()
 				}
 				else if(ops.alarm_mode == alarm_mode_daily)
 				{
-					char * alarm_path = calloc(20, sizeof(char));
-					alarm_path = "/alarm/";
-					strcat(alarm_path, day_array[ops.cur_day]);
-					strcat(alarm_path, ".mp3");
+					char alarm_path[13] = { '/', 'a', 'l', 'a', 'r', 'm', '/', '0' + ops.cur_day, '.', 'm', 'p', '3', 0, };
 
 					alarm_err = MP3Open(0, &alarm_handle, alarm_path);
-
-					free(alarm_path);
 
 					if(alarm_err != 0)
 					{
 						alarm_err = MP3Open(0, &alarm_handle, "/alarm/default.mp3");
 					}
+				}
+
+				if(alarm_err != 0)
+				{
+					start_alarm();
 				}
 
 				vol_timer = 0;
@@ -951,11 +945,20 @@ int main()
 							rewind(&alarm_handle);
 						}
 					}
+					else
+					{
+						alarm_play();
+					}
 
 					if(a != 0)
 					{
 						break;
 					}
+				}
+
+				if(alarm_err != 0)
+				{
+					MP3Reset();
 				}
 			}
 

@@ -537,8 +537,12 @@ void MP3Init(unsigned char vol, unsigned char invert)
 	sbi(MP3_Port, MP3_RST_Pin);
 
 	// wait for reset
-	while(bit_is_set(MP3_PinIn, MP3_DREQ_Pin));
-	while(bit_is_clear(MP3_PinIn, MP3_DREQ_Pin));
+	for(unsigned char i = 0; i < 100; i++)
+	{
+		_delay_us(10);
+		if(bit_is_clear(MP3_PinIn, MP3_DREQ_Pin)) break;
+	}
+	loop_until_bit_is_set(MP3_PinIn, MP3_DREQ_Pin);
 
 	// initial setup
 	if(invert == 1)
@@ -563,4 +567,58 @@ void MP3Init(unsigned char vol, unsigned char invert)
 	#endif
 
 	MP3SetVol(vol, vol);
+
+	// wait for reset
+	for(unsigned char i = 0; i < 100; i++)
+	{
+		_delay_us(10);
+		if(bit_is_clear(MP3_PinIn, MP3_DREQ_Pin)) break;
+	}
+	loop_until_bit_is_set(MP3_PinIn, MP3_DREQ_Pin);
+}
+
+void MP3Reset()
+{
+	unsigned short old_mode = MP3ReadReg(MP3_Reg_MODE);
+	unsigned short old_vol = MP3ReadReg(MP3_Reg_VOL);
+	unsigned short old_clk = MP3ReadReg(MP3_Reg_VOL);
+
+	MP3SetVol(0, 0);
+
+	// reset the decoder
+	sbi(MP3_Port, MP3_RST_Pin);
+	_delay_us(10);
+	cbi(MP3_Port, MP3_RST_Pin);
+	_delay_us(10);
+	sbi(MP3_Port, MP3_RST_Pin);
+	
+	// wait for reset
+	for(unsigned char i = 0; i < 100; i++)
+	{
+		_delay_us(10);
+		if(bit_is_clear(MP3_PinIn, MP3_DREQ_Pin)) break;
+	}
+	loop_until_bit_is_set(MP3_PinIn, MP3_DREQ_Pin);
+
+	MP3WriteRegS(MP3_Reg_MODE, old_mode);
+	MP3WriteRegS(MP3_Reg_CLOCKF, old_clk);
+	MP3WriteRegS(MP3_Reg_VOL, 0x9800);
+
+	#ifdef MP3_Custom_Code
+	for(unsigned int i = 0; i < CODE_SIZE; i++)
+	{
+		while(bit_is_clear(MP3_PinIn, MP3_DREQ_Pin));
+		MP3WriteRegS(pgm_read_byte(&MP3Code_atab[i]), pgm_read_word(&MP3Code_dtab[i]));
+	}
+
+	MP3WriteRegS(MP3_Reg_AIADDR, 0x30);
+	#endif
+
+	// wait for reset
+	for(unsigned char i = 0; i < 100; i++)
+	{
+		_delay_us(10);
+		if(bit_is_clear(MP3_PinIn, MP3_DREQ_Pin)) break;
+	}
+	loop_until_bit_is_set(MP3_PinIn, MP3_DREQ_Pin);
 }

@@ -15,6 +15,7 @@
 #include "ff.h"
 #include "diskio.h"
 #include "mp3.h"
+#include "spi.h"
 #include "pindef.h"
 #include "config.h"
 

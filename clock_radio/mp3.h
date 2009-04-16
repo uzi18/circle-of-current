@@ -77,5 +77,7 @@ void MP3PlayToEnd(MP3File *);
 
 void MP3Init(unsigned char, unsigned char);
 
+void MP3Reset();
+
 #define mp3_inc
 #endif
