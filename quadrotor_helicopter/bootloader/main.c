@@ -9,8 +9,8 @@
 #define TIMEOUT 0x7FFF // ((SPM_PAGESIZE * 2 * 10 * F_CPU) / (BAUD * 1024))
 
 // bootloader invoking jumper
-#define SWITCH_INPUT PINB
-#define SWITCH_PIN 0
+#define JUMPER_INPUT PINB
+#define JUMPER_PIN 0
 
 // address to start of bootloader
 #define BOOTLOADER_START 0x7000
@@ -44,7 +44,7 @@ void ser_tx_short(unsigned short d)
 int main()
 {
 	// jump to application if bootloader not active
-	if(bit_is_clear(SWITCH_INPUT, SWITCH_PIN))
+	if(bit_is_clear(JUMPER_INPUT, JUMPER_PIN))
 	{
 		app_start();
 	}
@@ -59,11 +59,16 @@ int main()
 	// send sync signal
 	ser_tx_short(0xFFFF);
 
+	// start timeout timer
+	TCCR1B = _BV(CS10) | _BV(CS12);
+
 	// get number of pages from serial port
 	u16 page_num;
 	page_num.d = 0;
 	cntc = 0;
-	while(cntc < 2)
+
+	// exit loop when received 2 bytes or timed out after 0.5 seconds
+	while(cntc < 2 || TCNT1 < 9765)
 	{
 		if(bit_is_set(UCSR0A, RXC0))
 		{
@@ -73,8 +78,14 @@ int main()
 		}
 	}
 
-	// start timeout timer
-	TCCR1B = _BV(CS10) | _BV(CS12);
+	// reset if timeout
+	if(cntc < 2)
+	{
+		TCCR1B = 0;
+		TCNT1 = 0;
+		UCSR0B = 0;
+		app_start();
+	}
 
 	for(unsigned short i = 0; i < page_num.d; i++)
 	{

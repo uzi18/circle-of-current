@@ -35,13 +35,14 @@ namespace CSharpBootloaderUtility
             this.SerPort = new System.IO.Ports.SerialPort(this.components);
             this.ProcTimer = new System.Windows.Forms.Timer(this.components);
             this.label2 = new System.Windows.Forms.Label();
-            this.FilePathTxt = new System.Windows.Forms.TextBox();
             this.BrowseBtn = new System.Windows.Forms.Button();
             this.StartBtn = new System.Windows.Forms.Button();
             this.CancelBtn = new System.Windows.Forms.Button();
             this.LoadProgress = new System.Windows.Forms.ProgressBar();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.LogTxt = new System.Windows.Forms.TextBox();
+            this.FilePathTxt = new System.Windows.Forms.ComboBox();
+            this.DataProcessor = new System.ComponentModel.BackgroundWorker();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -76,6 +77,7 @@ namespace CSharpBootloaderUtility
             // SerPort
             // 
             this.SerPort.BaudRate = 19200;
+            this.SerPort.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.SerPort_DataReceived);
             // 
             // ProcTimer
             // 
@@ -92,19 +94,10 @@ namespace CSharpBootloaderUtility
             this.label2.TabIndex = 3;
             this.label2.Text = "File Path:";
             // 
-            // FilePathTxt
-            // 
-            this.FilePathTxt.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.FilePathTxt.Location = new System.Drawing.Point(78, 39);
-            this.FilePathTxt.Name = "FilePathTxt";
-            this.FilePathTxt.Size = new System.Drawing.Size(310, 20);
-            this.FilePathTxt.TabIndex = 4;
-            // 
             // BrowseBtn
             // 
             this.BrowseBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.BrowseBtn.Location = new System.Drawing.Point(394, 37);
+            this.BrowseBtn.Location = new System.Drawing.Point(394, 38);
             this.BrowseBtn.Name = "BrowseBtn";
             this.BrowseBtn.Size = new System.Drawing.Size(75, 23);
             this.BrowseBtn.TabIndex = 5;
@@ -167,23 +160,39 @@ namespace CSharpBootloaderUtility
             this.LogTxt.Size = new System.Drawing.Size(451, 278);
             this.LogTxt.TabIndex = 0;
             // 
+            // FilePathTxt
+            // 
+            this.FilePathTxt.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.FilePathTxt.FormattingEnabled = true;
+            this.FilePathTxt.Location = new System.Drawing.Point(79, 38);
+            this.FilePathTxt.Name = "FilePathTxt";
+            this.FilePathTxt.Size = new System.Drawing.Size(309, 21);
+            this.FilePathTxt.TabIndex = 10;
+            this.FilePathTxt.SelectedIndexChanged += new System.EventHandler(this.FilePathTxt_SelectedIndexChanged);
+            // 
+            // DataProcessor
+            // 
+            this.DataProcessor.DoWork += new System.ComponentModel.DoWorkEventHandler(this.DataProcessor_DoWork);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(481, 432);
+            this.Controls.Add(this.FilePathTxt);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.LoadProgress);
             this.Controls.Add(this.CancelBtn);
             this.Controls.Add(this.StartBtn);
             this.Controls.Add(this.BrowseBtn);
-            this.Controls.Add(this.FilePathTxt);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.PortStatus);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.PortList);
             this.Name = "Form1";
             this.Text = "Bootloader Utility";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
@@ -199,13 +208,14 @@ namespace CSharpBootloaderUtility
         private System.IO.Ports.SerialPort SerPort;
         private System.Windows.Forms.Timer ProcTimer;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox FilePathTxt;
         private System.Windows.Forms.Button BrowseBtn;
         private System.Windows.Forms.Button StartBtn;
         private System.Windows.Forms.Button CancelBtn;
         private System.Windows.Forms.ProgressBar LoadProgress;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.TextBox LogTxt;
+        private System.Windows.Forms.ComboBox FilePathTxt;
+        private System.ComponentModel.BackgroundWorker DataProcessor;
     }
 }
 
