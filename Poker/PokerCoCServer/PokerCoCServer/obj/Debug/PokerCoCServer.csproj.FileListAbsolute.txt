@@ -1,0 +1,8 @@
+C:\Users\Frank\Documents\Projects\Visual C Sharp\PokerCoCServer\PokerCoCServer\bin\Debug\PokerCoCServer.exe
+C:\Users\Frank\Documents\Projects\Visual C Sharp\PokerCoCServer\PokerCoCServer\bin\Debug\PokerCoCServer.pdb
+C:\Users\Frank\Documents\Projects\Visual C Sharp\PokerCoCServer\PokerCoCServer\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Frank\Documents\Projects\Visual C Sharp\PokerCoCServer\PokerCoCServer\obj\Debug\PokerCoCServer.Form1.resources
+C:\Users\Frank\Documents\Projects\Visual C Sharp\PokerCoCServer\PokerCoCServer\obj\Debug\PokerCoCServer.Properties.Resources.resources
+C:\Users\Frank\Documents\Projects\Visual C Sharp\PokerCoCServer\PokerCoCServer\obj\Debug\PokerCoCServer.csproj.GenerateResource.Cache
+C:\Users\Frank\Documents\Projects\Visual C Sharp\PokerCoCServer\PokerCoCServer\obj\Debug\PokerCoCServer.exe
+C:\Users\Frank\Documents\Projects\Visual C Sharp\PokerCoCServer\PokerCoCServer\obj\Debug\PokerCoCServer.pdb
