@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -29,6 +30,7 @@ namespace PokerCoCServer
             pl = new PlayerList();
             tcpL = new TcpListener(5000);
 
+            tcpL.Start();
             tcpClientConnected.Reset();
 
             tcpL.BeginAcceptTcpClient(new AsyncCallback(NewClientEvent), tcpL);
@@ -41,6 +43,11 @@ namespace PokerCoCServer
             GamePlayer gp = new GamePlayer(client, "new player");
             pl.AddPlayer(gp);
             tcpClientConnected.Set();
+            MessageBox.Show("New Client " + pl.Count + " " + pl.Player.Current.Client.Client.LocalEndPoint.ToString());
+            Stream s = pl.Player.Current.Client.GetStream();
+            ASCIIEncoding asen = new ASCIIEncoding();
+            byte[] b = asen.GetBytes("fuck");
+            s.Write(b, 0, 4);
         }
 
         private void ConnectionAcceptingTimer_Tick(object sender, EventArgs e)
@@ -51,10 +58,42 @@ namespace PokerCoCServer
             {
                 internal_ip_str += i.ToString() + " ";
             }
-            label1.Text = internal_ip_str;
-            if (tcpClientConnected.WaitOne(100))
+            //label1.Text = internal_ip_str;
+            pl.Clean();
+            if (tcpClientConnected.WaitOne(10))
             {
-                MessageBox.Show("New Client " + pl.Player.Current.Client.Client.LocalEndPoint.ToString());
+                tcpClientConnected.Reset();
+                tcpL.BeginAcceptTcpClient(new AsyncCallback(NewClientEvent), tcpL);
+            }
+
+            try
+            {
+                if (pl.Player.Current.Client.Connected)
+                {
+                    Stream s = pl.Player.Current.Client.GetStream();
+                    //if (s.Length >= 4)
+                    {                        
+                        int cnt = s.ReadByte();
+                        if (cnt != -1)
+                        {
+                            string str = "";
+                            for (int i = 0; i < cnt; )
+                            {
+                                int aaa = s.ReadByte();
+                                if (aaa != -1)
+                                {
+                                    str += Convert.ToChar(aaa);
+                                    i++;
+                                }
+                            }
+                            //MessageBox.Show(str);
+                            label1.Text += str;
+                        }
+                    }
+                }
+            }
+            catch
+            {
             }
         }
     }

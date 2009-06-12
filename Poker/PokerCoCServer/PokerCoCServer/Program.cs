@@ -191,19 +191,31 @@ namespace PokerCoCServer
 
         public void Clean()
         {
-            if (player.Next != null)
+            int iter = 0;
+            do
             {
-                int iter = 0;
-                do
+                if (player.Next != null)
                 {
-                    if (false)
+                    if (player.Next.Current != null)
                     {
-                        cnt--;
+                        if (player.Next.Current.Client.Connected == false)
+                        {
+                            player.Next = player.Next.Next.Next;
+                            cnt--;
+                        }
+                        else
+                        {
+                            player = player.Next;
+                        }
                     }
                     iter++;
                 }
-                while (iter < cnt);
+                else
+                {
+                    break;
+                }
             }
+            while (iter < cnt);
         }
     }
 
