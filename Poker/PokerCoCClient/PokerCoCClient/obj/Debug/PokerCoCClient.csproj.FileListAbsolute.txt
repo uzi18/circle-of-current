@@ -16,3 +16,12 @@ C:\Users\Mark\Documents\Visual Studio 2008\Projects\PokerCoCClient\PokerCoCClien
 C:\Users\Mark\Documents\Visual Studio 2008\Projects\PokerCoCClient\PokerCoCClient\obj\Debug\PokerCoCClient.Login.resources
 C:\Users\Mark\Documents\Visual Studio 2008\Projects\PokerCoCClient\PokerCoCClient\obj\Debug\PokerCoCClient.Properties.Resources.resources
 C:\Users\Mark\Documents\Visual Studio 2008\Projects\PokerCoCClient\PokerCoCClient\obj\Debug\PokerCoCClient.csproj.GenerateResource.Cache
+C:\Users\Mark\Desktop\CoCPoker\PokerCoCClient\PokerCoCClient\obj\Debug\PokerCoCClient.exe
+C:\Users\Mark\Desktop\CoCPoker\PokerCoCClient\PokerCoCClient\obj\Debug\PokerCoCClient.pdb
+C:\Users\Mark\Desktop\CoCPoker\PokerCoCClient\PokerCoCClient\bin\Debug\PokerCoCClient.exe
+C:\Users\Mark\Desktop\CoCPoker\PokerCoCClient\PokerCoCClient\bin\Debug\PokerCoCClient.pdb
+C:\Users\Mark\Desktop\CoCPoker\PokerCoCClient\PokerCoCClient\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Mark\Desktop\CoCPoker\PokerCoCClient\PokerCoCClient\obj\Debug\PokerCoCClient.Client.resources
+C:\Users\Mark\Desktop\CoCPoker\PokerCoCClient\PokerCoCClient\obj\Debug\PokerCoCClient.Login.resources
+C:\Users\Mark\Desktop\CoCPoker\PokerCoCClient\PokerCoCClient\obj\Debug\PokerCoCClient.Properties.Resources.resources
+C:\Users\Mark\Desktop\CoCPoker\PokerCoCClient\PokerCoCClient\obj\Debug\PokerCoCClient.csproj.GenerateResource.Cache

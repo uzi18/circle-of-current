@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.label1 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
@@ -36,6 +37,7 @@
             this.RoomName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PlayerCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.TotalChips = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -53,12 +55,13 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(593, 350);
+            this.button1.Location = new System.Drawing.Point(593, 346);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(165, 34);
             this.button1.TabIndex = 5;
-            this.button1.Text = "button1";
+            this.button1.Text = "Refresh Room List";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // button2
             // 
@@ -82,6 +85,7 @@
             // 
             this.dataGridView1.AllowUserToAddRows = false;
             this.dataGridView1.AllowUserToDeleteRows = false;
+            this.dataGridView1.AllowUserToResizeColumns = false;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.RoomName,
@@ -90,6 +94,7 @@
             this.dataGridView1.Location = new System.Drawing.Point(15, 79);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ReadOnly = true;
+            this.dataGridView1.RowHeadersVisible = false;
             this.dataGridView1.Size = new System.Drawing.Size(572, 301);
             this.dataGridView1.TabIndex = 8;
             // 
@@ -117,6 +122,12 @@
             this.TotalChips.Name = "TotalChips";
             this.TotalChips.ReadOnly = true;
             this.TotalChips.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            // 
+            // timer1
+            // 
+            this.timer1.Enabled = true;
+            this.timer1.Interval = 600;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // Client
             // 
@@ -149,6 +160,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn RoomName;
         private System.Windows.Forms.DataGridViewTextBoxColumn PlayerCount;
         private System.Windows.Forms.DataGridViewTextBoxColumn TotalChips;
+        private System.Windows.Forms.Timer timer1;
     }
 }
 

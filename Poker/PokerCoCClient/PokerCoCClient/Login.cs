@@ -20,10 +20,9 @@ namespace PokerCoCClient
 
         private void textBox1_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Enter)
+            if (e.KeyCode == Keys.Enter && textBox1.Text.Length > 0)
             {
                 name = textBox1.Text;
-                //TO DO: SEND NAME TO SERVER!
                 this.Close();
             }
         }
