@@ -30,7 +30,12 @@
         {
             this.components = new System.ComponentModel.Container();
             this.ConnectionAcceptingTimer = new System.Windows.Forms.Timer(this.components);
-            this.label1 = new System.Windows.Forms.Label();
+            this.LobbyListGrid = new System.Windows.Forms.DataGridView();
+            this.Index = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PlayerIP = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PlayerName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.RequestListener = new System.ComponentModel.BackgroundWorker();
+            ((System.ComponentModel.ISupportInitialize)(this.LobbyListGrid)).BeginInit();
             this.SuspendLayout();
             // 
             // ConnectionAcceptingTimer
@@ -38,33 +43,65 @@
             this.ConnectionAcceptingTimer.Enabled = true;
             this.ConnectionAcceptingTimer.Tick += new System.EventHandler(this.ConnectionAcceptingTimer_Tick);
             // 
-            // label1
+            // LobbyListGrid
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(24, 19);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(35, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "label1";
+            this.LobbyListGrid.AllowUserToAddRows = false;
+            this.LobbyListGrid.AllowUserToDeleteRows = false;
+            this.LobbyListGrid.AllowUserToResizeRows = false;
+            this.LobbyListGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.LobbyListGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Index,
+            this.PlayerIP,
+            this.PlayerName});
+            this.LobbyListGrid.Location = new System.Drawing.Point(12, 12);
+            this.LobbyListGrid.Name = "LobbyListGrid";
+            this.LobbyListGrid.RowHeadersVisible = false;
+            this.LobbyListGrid.Size = new System.Drawing.Size(717, 240);
+            this.LobbyListGrid.TabIndex = 0;
+            // 
+            // Index
+            // 
+            this.Index.HeaderText = "Index";
+            this.Index.Name = "Index";
+            // 
+            // PlayerIP
+            // 
+            this.PlayerIP.HeaderText = "IP";
+            this.PlayerIP.Name = "PlayerIP";
+            this.PlayerIP.ReadOnly = true;
+            // 
+            // PlayerName
+            // 
+            this.PlayerName.HeaderText = "Name";
+            this.PlayerName.Name = "PlayerName";
+            this.PlayerName.ReadOnly = true;
+            // 
+            // RequestListener
+            // 
+            this.RequestListener.DoWork += new System.ComponentModel.DoWorkEventHandler(this.RequestListener_DoWork);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(741, 264);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.LobbyListGrid);
             this.Name = "Form1";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.LobbyListGrid)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
 
         private System.Windows.Forms.Timer ConnectionAcceptingTimer;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.DataGridView LobbyListGrid;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Index;
+        private System.Windows.Forms.DataGridViewTextBoxColumn PlayerIP;
+        private System.Windows.Forms.DataGridViewTextBoxColumn PlayerName;
+        private System.ComponentModel.BackgroundWorker RequestListener;
     }
 }
 
