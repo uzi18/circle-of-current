@@ -33,12 +33,12 @@
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.listBox2 = new System.Windows.Forms.ListBox();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.RoomName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PlayerCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.TotalChips = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.listView1 = new System.Windows.Forms.ListView();
+            this.roomName = new System.Windows.Forms.ColumnHeader();
+            this.players = new System.Windows.Forms.ColumnHeader();
+            this.totalChips = new System.Windows.Forms.ColumnHeader();
+            this.gameID = new System.Windows.Forms.ColumnHeader();
             this.SuspendLayout();
             // 
             // label1
@@ -55,6 +55,7 @@
             // 
             // button1
             // 
+            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.button1.Location = new System.Drawing.Point(593, 346);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(165, 34);
@@ -65,15 +66,18 @@
             // 
             // button2
             // 
+            this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.button2.Location = new System.Drawing.Point(593, 310);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(165, 34);
             this.button2.TabIndex = 6;
-            this.button2.Text = "button2";
+            this.button2.Text = "Join Game";
             this.button2.UseVisualStyleBackColor = true;
             // 
             // listBox2
             // 
+            this.listBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.listBox2.BackColor = System.Drawing.Color.White;
             this.listBox2.FormattingEnabled = true;
             this.listBox2.Location = new System.Drawing.Point(593, 79);
@@ -81,53 +85,53 @@
             this.listBox2.Size = new System.Drawing.Size(165, 225);
             this.listBox2.TabIndex = 7;
             // 
-            // dataGridView1
-            // 
-            this.dataGridView1.AllowUserToAddRows = false;
-            this.dataGridView1.AllowUserToDeleteRows = false;
-            this.dataGridView1.AllowUserToResizeColumns = false;
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.RoomName,
-            this.PlayerCount,
-            this.TotalChips});
-            this.dataGridView1.Location = new System.Drawing.Point(15, 79);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.ReadOnly = true;
-            this.dataGridView1.RowHeadersVisible = false;
-            this.dataGridView1.Size = new System.Drawing.Size(572, 301);
-            this.dataGridView1.TabIndex = 8;
-            // 
-            // RoomName
-            // 
-            this.RoomName.HeaderText = "Room Name";
-            this.RoomName.MinimumWidth = 300;
-            this.RoomName.Name = "RoomName";
-            this.RoomName.ReadOnly = true;
-            this.RoomName.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.RoomName.Width = 300;
-            // 
-            // PlayerCount
-            // 
-            this.PlayerCount.HeaderText = "Players";
-            this.PlayerCount.MinimumWidth = 100;
-            this.PlayerCount.Name = "PlayerCount";
-            this.PlayerCount.ReadOnly = true;
-            this.PlayerCount.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            // 
-            // TotalChips
-            // 
-            this.TotalChips.HeaderText = "Total Chips";
-            this.TotalChips.MinimumWidth = 100;
-            this.TotalChips.Name = "TotalChips";
-            this.TotalChips.ReadOnly = true;
-            this.TotalChips.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            // 
             // timer1
             // 
             this.timer1.Enabled = true;
-            this.timer1.Interval = 600;
+            this.timer1.Interval = 500;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
+            // listView1
+            // 
+            this.listView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.gameID,
+            this.roomName,
+            this.players,
+            this.totalChips});
+            this.listView1.FullRowSelect = true;
+            this.listView1.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.listView1.Location = new System.Drawing.Point(15, 79);
+            this.listView1.Name = "listView1";
+            this.listView1.Size = new System.Drawing.Size(572, 301);
+            this.listView1.TabIndex = 9;
+            this.listView1.UseCompatibleStateImageBehavior = false;
+            this.listView1.View = System.Windows.Forms.View.Details;
+            this.listView1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseDoubleClick);
+            this.listView1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseClick);
+            // 
+            // roomName
+            // 
+            this.roomName.Text = "Room Name";
+            this.roomName.Width = 399;
+            // 
+            // players
+            // 
+            this.players.Text = "Players";
+            this.players.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.players.Width = 82;
+            // 
+            // totalChips
+            // 
+            this.totalChips.Text = "Total Chips";
+            this.totalChips.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.totalChips.Width = 86;
+            // 
+            // gameID
+            // 
+            this.gameID.Text = "ID";
             // 
             // Client
             // 
@@ -135,16 +139,16 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.ClientSize = new System.Drawing.Size(770, 392);
-            this.Controls.Add(this.dataGridView1);
+            this.Controls.Add(this.listView1);
             this.Controls.Add(this.listBox2);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label1);
+            this.MinimumSize = new System.Drawing.Size(786, 428);
             this.Name = "Client";
             this.Text = "Circle of Current Poker!";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Client_FormClosed);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -156,11 +160,12 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.ListBox listBox2;
-        private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn RoomName;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PlayerCount;
-        private System.Windows.Forms.DataGridViewTextBoxColumn TotalChips;
         private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.ListView listView1;
+        private System.Windows.Forms.ColumnHeader roomName;
+        private System.Windows.Forms.ColumnHeader players;
+        private System.Windows.Forms.ColumnHeader totalChips;
+        private System.Windows.Forms.ColumnHeader gameID;
     }
 }
 
