@@ -19,6 +19,7 @@ namespace PokerCoCServer
     {
         TcpListener tcpL;
         ArrayList lobby_list = new ArrayList();
+        ArrayList game_rooms = new ArrayList();
 
         public Form1()
         {
@@ -37,6 +38,12 @@ namespace PokerCoCServer
             tcpL.BeginAcceptTcpClient(new AsyncCallback(NewClientEvent), tcpL);
 
             RequestListener.RunWorkerAsync();
+
+            for (int p = 0; p < 5; p++)
+            {
+                GameRoom gr = new GameRoom("Empty Room", game_rooms.Count);
+                game_rooms.Add(gr);
+            }
         }
 
         delegate int LobbyListAddCallback(string ip, string n);
@@ -51,10 +58,32 @@ namespace PokerCoCServer
             {
                 if (c == "requestroomlist")
                 {
-                    err = NetSend(ref tc, "foo,1,2", 100);
-                    err = NetSend(ref tc, "go o,1," + Convert.ToString(DateTime.Now.Second), 100);
+                    for (int j = 0; j < game_rooms.Count; j++)
+                    {
+                        err = NetSend(ref tc, ((GameRoom)game_rooms[j]).id.ToString() + "," + ((GameRoom)game_rooms[j]).name + "," + ((GameRoom)game_rooms[j]).player_cnt + "," + ((GameRoom)game_rooms[j]).chips, 100);
+                    }
                     err = NetSend(ref tc, "endaddgame", 100);
-                    MessageBox.Show("request received, " + Convert.ToString(err));
+                    //MessageBox.Show("request received, " + Convert.ToString(err));
+                }
+                if (c == "joingame")
+                {
+                    string game_id;
+                    err = NetReceive(ref tc, out game_id, 100);
+                    err = NetSend(ref tc, "You have joined " + game_id, 100);
+                }
+                if (c == "requsers")
+                {
+                    string game_id;
+                    err = NetReceive(ref tc, out game_id, 100);
+                    err = NetSend(ref tc, "sdgsdf2435g," + game_id, 100);
+                    err = NetSend(ref tc, "sdgsdfgrty," + game_id, 100);
+                    err = NetSend(ref tc, "sdgsdfsdfgg," + game_id, 100);
+                    err = NetSend(ref tc, "sdgsdfgsdfg," + game_id, 100);
+                    err = NetSend(ref tc, "sdgsdf567g7," + game_id, 100);
+                    err = NetSend(ref tc, "sdgsdf567g6," + game_id, 100);
+                    err = NetSend(ref tc, "sdgsdf567g5," + game_id, 100);
+                    err = NetSend(ref tc, "sdgsdf567g3," + game_id, 100);
+                    err = NetSend(ref tc, "sdgsdf567g1," + game_id, 100);
                 }
             }
         }
@@ -72,10 +101,18 @@ namespace PokerCoCServer
             else
             {
                 // It's on the same thread, no need for Invoke
-                i = this.LobbyListGrid.Rows.Add();
-                LobbyListGrid.Rows[i].Cells["Index"].Value = i.ToString();
-                LobbyListGrid.Rows[i].Cells["PlayerIP"].Value = ip;
-                LobbyListGrid.Rows[i].Cells["PlayerName"].Value = n;
+                this.LobbyListGrid.Rows.Add();
+                i = lobby_list.Count;
+                LobbyListGrid.Rows[i].Cells["Player1Index"].Value = i.ToString();
+                LobbyListGrid.Rows[i].Cells["Player1IP"].Value = ip;
+                LobbyListGrid.Rows[i].Cells["Player1Name"].Value = n;
+
+                string[] str = new string[3];
+                str[0] = i.ToString();
+                str[1] = ip;
+                str[2] = n;
+                ListViewItem lvi = new ListViewItem(str);
+                LobbyListView.Items.Add(lvi);
             }
             return i;
         }
@@ -85,21 +122,25 @@ namespace PokerCoCServer
             TcpListener listener = (TcpListener)ar.AsyncState;
             TcpClient client = listener.EndAcceptTcpClient(ar);
             tcpClientConnected.Set();
-            string n;
-            int err = NetReceive(ref client, out n, 100);
+            string c;
+            int err = NetReceive(ref client, out c, 100);
             if (err == 0)
             {
-                LobbyListEntry lle = new LobbyListEntry();
-                lle.name = n;
-                lle.tc = client;
-                err = NetSend(ref client, "Test String", 100);
+                if (c == "joinlobby")
+                {
+                    string n;
+                    err = NetReceive(ref client, out n, 100);
+                    LobbyListEntry lle = new LobbyListEntry();
+                    lle.name = n;
+                    lle.tc = client;
+                    err = NetSend(ref client, "Test String", 100);
 
-                string ip_str = client.Client.LocalEndPoint.ToString();
+                    string ip_str = client.Client.LocalEndPoint.ToString();
 
-                lle.i = LobbyListAdd(ip_str, n);
+                    lle.i = LobbyListAdd(ip_str, n);
 
-                lobby_list.Add(lle);
-                MessageBox.Show("New Client " + client.Client.LocalEndPoint.ToString() + " , NetReceive = " + n + " , NetSend = " + Convert.ToString(err));
+                    lobby_list.Add(lle);
+                }
             }
         }
 
@@ -219,12 +260,34 @@ namespace PokerCoCServer
             {
                 if (((LobbyListEntry)lobby_list[i]).tc.Client.Connected == false)
                 {
+                    int to_remove = ((LobbyListEntry)lobby_list[i]).i;
                     lobby_list.RemoveAt(i);
                     for (int j = 0; j < LobbyListGrid.Rows.Count; j++)
                     {
-                        if ((string)(LobbyListGrid.Rows[j].Cells["Index"].Value) == Convert.ToString(i))
+                        try
                         {
-                            LobbyListGrid.Rows.RemoveAt(j);
+                            if (int.Parse((string)(LobbyListGrid.Rows[j].Cells["Player1Index"].Value)) == to_remove)
+                            {
+                                LobbyListGrid.Rows.RemoveAt(j - 1);
+                                break;
+                            }
+                        }
+                        catch
+                        {
+                        }
+                    }
+                    for (int j = 0; j < LobbyListView.Items.Count; j++)
+                    {
+                        try
+                        {
+                            if (int.Parse(LobbyListView.Items[j].SubItems[0].Text) == to_remove)
+                            {
+                                LobbyListView.Items.RemoveAt(j - 1);
+                                break;
+                            }
+                        }
+                        catch
+                        {
                         }
                     }
                 }
@@ -236,15 +299,38 @@ namespace PokerCoCServer
                     }
                     catch (Exception ex)
                     {
+                        int to_remove = ((LobbyListEntry)lobby_list[i]).i;
                         lobby_list.RemoveAt(i);
                         for (int j = 0; j < LobbyListGrid.Rows.Count; j++)
                         {
-                            if (int.Parse((string)LobbyListGrid.Rows[j].Cells["Index"].Value) == i)
+                            try
                             {
-                                LobbyListGrid.Rows.RemoveAt(j);
+                                if (int.Parse((string)(LobbyListGrid.Rows[j].Cells["Player1Index"].Value)) == to_remove)
+                                {
+                                    LobbyListGrid.Rows.RemoveAt(j - 1);
+                                    break;
+                                }
+                            }
+                            catch
+                            {
+                            }
+                        }
+                        for (int j = 0; j < LobbyListView.Items.Count; j++)
+                        {
+                            try
+                            {
+                                if (int.Parse(LobbyListView.Items[j].SubItems[0].Text) == to_remove)
+                                {
+                                    LobbyListView.Items.RemoveAt(j - 1);
+                                    break;
+                                }
+                            }
+                            catch
+                            {
                             }
                         }
                     }
+                    i = 0;
                 }
             }
         }

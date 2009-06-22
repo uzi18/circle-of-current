@@ -21,85 +21,10 @@ namespace PokerCoCServer
         }
     }
 
-    class GamePlayerNode
-    {
-        GamePlayerNode next;
-        GamePlayerNode prev;
-        GamePlayer cur;
-
-        public GamePlayerNode Next
-        {
-            get
-            {
-                return next;
-            }
-            set
-            {
-                next = value;
-            }
-        }
-
-        public GamePlayerNode Prev
-        {
-            get
-            {
-                return prev;
-            }
-            set
-            {
-                prev = value;
-            }
-        }
-
-        public GamePlayer Current
-        {
-            get
-            {
-                return cur;
-            }
-            set
-            {
-                cur = value;
-            }
-        }
-
-        public GamePlayerNode(GamePlayerNode p, GamePlayerNode n, GamePlayer gp)
-        {
-            prev = p;
-            next = n;
-            cur = gp;
-        }
-    }
-
     class GamePlayer
     {
-        string name;
-        TcpClient tcpC;
-
-        public TcpClient Client
-        {
-            get
-            {
-                return tcpC;
-            }
-            set
-            {
-                tcpC = value;
-            }
-        }
-        
-
-        public string Name
-        {
-            get
-            {
-                return name;
-            }
-            set
-            {
-                name = value;
-            }
-        }
+        public string name;
+        public TcpClient tcpC;
 
         public GamePlayer(TcpClient tcpC_, string n)
         {
@@ -108,125 +33,20 @@ namespace PokerCoCServer
         }
     }
 
-    class PlayerList
-    {
-        int cnt;
-        GamePlayerNode player;
-
-        public int Count
-        {
-            get
-            {
-                return cnt;
-            }
-            set
-            {
-                cnt = value;
-            }
-        }
-
-        public GamePlayerNode Player
-        {
-            get
-            {
-                return player;
-            }
-            set
-            {
-                player = value;
-            }
-        }
-
-        public PlayerList()
-        {
-            player = new GamePlayerNode(null, null, null);
-            player.Next = null;
-            player.Prev = null;
-            cnt = 0;
-        }
-
-        public void AddPlayer(GamePlayer p)
-        {
-            if (player.Next == null)
-            {
-                player = player.Prev = player.Next = new GamePlayerNode(player, player, p);
-            }
-            else
-            {
-                player = player.Next = new GamePlayerNode(player, player.Next, p);
-            }
-            cnt++;
-        }
-
-        public void ToNext()
-        {
-            if (player.Next != null)
-            {
-                player = player.Next;
-            }
-        }
-
-        public void Remove(string n)
-        {
-            if (player.Next != null)
-            {
-                int iter = 0;
-                do
-                {
-                    if (player.Current.Name == n)
-                    {
-                        player.Next = player.Next.Next;
-                        cnt--;
-                        break;
-                    }
-                    else
-                    {
-                        player = player.Next;
-                        iter++;
-                    }
-                }
-                while (iter < cnt);
-            }
-        }
-
-        public void Clean()
-        {
-            int iter = 0;
-            do
-            {
-                if (player.Next != null)
-                {
-                    if (player.Next.Current != null)
-                    {
-                        if (player.Next.Current.Client.Connected == false)
-                        {
-                            player.Next = player.Next.Next.Next;
-                            cnt--;
-                        }
-                        else
-                        {
-                            player = player.Next;
-                        }
-                    }
-                    iter++;
-                }
-                else
-                {
-                    break;
-                }
-            }
-            while (iter < cnt);
-        }
-    }
-
     class GameRoom
     {
-        string name;
+        public string name;
+        public int id;
+
         GamePlayer[] player;
+
+        public int chips;
+        public int player_cnt;
         
-        public GameRoom(string n)
+        public GameRoom(string n, int i)
         {
             name = n;
+            id = i;
             player = new GamePlayer[10];
         }
     }
