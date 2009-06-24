@@ -29,13 +29,13 @@ namespace PokerCoCServer
     class GamePlayer
     {
         public string name;
-        public TcpClient tcpC;
+        public TcpClient tc;
         public bool active;
         public int chips;
 
-        public GamePlayer(TcpClient tcpC_, string n, int c)
+        public GamePlayer(TcpClient tc_, string n, int c)
         {
-            tcpC = tcpC_;
+            tc = tc_;
             name = n;
             chips = c;
             active = false;
@@ -47,7 +47,7 @@ namespace PokerCoCServer
         public string name;
         public int id;
 
-        GamePlayer[] player;
+        public GamePlayer[] player;
 
         public int chips
         {
@@ -77,6 +77,8 @@ namespace PokerCoCServer
                 return j;
             }
         }
+
+        public Thread game_work_thread;
         
         public GameRoom(string n, int i)
         {
@@ -87,6 +89,33 @@ namespace PokerCoCServer
             {
                 player[j] = new GamePlayer(null, null, 0);
             }
+        }
+
+        private void game_work()
+        {
+            while (player_cnt > 0)
+            {
+            }
+        }
+
+        public bool AddPlayer(GamePlayer gp, int seat)
+        {
+            for (int i = seat; i < player.Length + seat; i++)
+            {
+                if (player[i % player.Length].active == false)
+                {
+                    player[i % player.Length] = gp;
+                    player[i % player.Length].active = true;
+                    if (player_cnt == 1)
+                    {
+                        game_work_thread = new Thread(new ThreadStart(game_work));
+                        game_work_thread.Start();
+                    }
+                    return true;
+                }
+            }
+            return false;
+
         }
     }
 
@@ -102,27 +131,28 @@ namespace PokerCoCServer
         public TcpListener tcpL;
         public ArrayList lobby_list = new ArrayList();
         public ArrayList game_rooms = new ArrayList();
-        public int timeout;
-        public int room_management_speed;
-        public int connection_check_speed;
-        public int request_check_speed;
+
+        public volatile int timeout;
+        public volatile int room_management_speed;
+        public volatile int connection_check_speed;
+        public volatile int request_check_speed;
 
         public Thread room_man_thread;
         public Thread request_handle_thread;
         public Thread connection_check_thread;
 
-        public static ManualResetEvent tcpClientConnected = new ManualResetEvent(false);
+        public static ManualResetEvent TcpClientConnected = new ManualResetEvent(false);
 
         public Lobby()
         {
             timeout = 100;
-            room_management_speed = 100;
-            connection_check_speed = 100;
-            request_check_speed = 100;
+            room_management_speed = 2000;
+            connection_check_speed = 1000;
+            request_check_speed = 10;
 
             tcpL = new TcpListener(5000);
             tcpL.Start();
-            tcpClientConnected.Reset();
+            TcpClientConnected.Reset();
 
             tcpL.BeginAcceptTcpClient(new AsyncCallback(NewClientEvent), tcpL);
 
@@ -149,9 +179,11 @@ namespace PokerCoCServer
                 }
                 else if (((GameRoom)game_rooms[i]).player_cnt == 0)
                 {
+                    //((GameRoom)game_rooms[i]).game_work_thread.Abort();
                     game_rooms.RemoveAt(i);
                     i = 0;
                 }
+                Thread.Sleep(0);
             }
             if (empty_found == false)
             {
@@ -182,7 +214,7 @@ namespace PokerCoCServer
         {
             TcpListener listener = (TcpListener)ar.AsyncState;
             TcpClient client = listener.EndAcceptTcpClient(ar);
-            tcpClientConnected.Set();
+            TcpClientConnected.Set();
             string c;
             NetTunnel nt = new NetTunnel(client, timeout);
             int err = nt.Receive(out c);
@@ -203,6 +235,25 @@ namespace PokerCoCServer
 
                     lobby_list.Add(lle);
                 }
+                else if (c == "joingame")
+                {
+                    string game_id;
+                    string n;
+                    string seat;
+                    err = nt.Receive(out game_id);
+                    err = nt.Receive(out n);
+                    err = nt.Receive(out seat);
+                    bool success = ((GameRoom)game_rooms[int.Parse(game_id)]).AddPlayer(new GamePlayer(client, n, 0), int.Parse(seat));
+                    if (success)
+                    {
+                        err = nt.Send("You have joined " + game_id);
+                    }
+                    else
+                    {
+                        err = nt.Send("joined failed" + game_id);
+                    }
+                }
+
             }
 
             RestartTcpListeningCallback d = new RestartTcpListeningCallback(RestartTcpListening);
@@ -215,7 +266,7 @@ namespace PokerCoCServer
         {
             for (int i = 0; i < lobby_list.Count; i++)
             {
-                if (((LobbyListEntry)lobby_list[i]).tc.Available > 0)
+                while (((LobbyListEntry)lobby_list[i]).tc.Available > 0)
                 {
                     string c;
                     TcpClient tc = ((LobbyListEntry)lobby_list[i]).tc;
@@ -232,28 +283,23 @@ namespace PokerCoCServer
                             err = nt.Send("endaddgame");
                             //MessageBox.Show("request received, " + Convert.ToString(err));
                         }
-                        if (c == "joingame")
+                        else if (c == "requsers")
                         {
                             string game_id;
                             err = nt.Receive(out game_id);
-                            err = nt.Send("You have joined " + game_id);
-                        }
-                        if (c == "requsers")
-                        {
-                            string game_id;
-                            err = nt.Receive(out game_id);
-                            err = nt.Send("sdgsdf2435g," + game_id);
-                            err = nt.Send("sdgsdfgrty," + game_id);
-                            err = nt.Send("sdgsdfsdfgg," + game_id);
-                            err = nt.Send("sdgsdfgsdfg," + game_id);
-                            err = nt.Send("sdgsdf567g7," + game_id);
-                            err = nt.Send("sdgsdf567g6," + game_id);
-                            err = nt.Send("sdgsdf567g5," + game_id);
-                            err = nt.Send("sdgsdf567g3," + game_id);
-                            err = nt.Send("sdgsdf567g1," + game_id);
+                            for (int j = 0; j < ((GameRoom)game_rooms[int.Parse(game_id)]).player.Length; j++)
+                            {
+                                if (((GameRoom)game_rooms[int.Parse(game_id)]).player[j].active)
+                                {
+                                    err = nt.Send(((GameRoom)game_rooms[int.Parse(game_id)]).player[j].name + "," + ((GameRoom)game_rooms[int.Parse(game_id)]).player[j].chips);
+                                }
+                            }
+                            err = nt.Send("endplayerlist");
                         }
                     }
+                    Thread.Sleep(0);
                 }
+                Thread.Sleep(0);
             }
         }
 
@@ -278,7 +324,7 @@ namespace PokerCoCServer
                 {
                     int to_remove = ((LobbyListEntry)lobby_list[i]).i;
                     lobby_list.RemoveAt(i);
-                    i = 0;
+                    i = -1;
                 }
                 else
                 {
@@ -290,9 +336,10 @@ namespace PokerCoCServer
                     {
                         int to_remove = ((LobbyListEntry)lobby_list[i]).i;
                         lobby_list.RemoveAt(i);
-                        i = 0;
+                        i = -1;
                     }
                 }
+                Thread.Sleep(0);
             }
         }
 
