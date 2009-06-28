@@ -1,0 +1,8 @@
+C:\Users\Mark\Desktop\CoCPoker\PokerCoCGameRoom\PokerCoCGameRoom\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Mark\Desktop\CoCPoker\PokerCoCGameRoom\PokerCoCGameRoom\obj\Debug\PokerCoCGameRoom.GameRoom.resources
+C:\Users\Mark\Desktop\CoCPoker\PokerCoCGameRoom\PokerCoCGameRoom\obj\Debug\WindowsFormsApplication1.Properties.Resources.resources
+C:\Users\Mark\Desktop\CoCPoker\PokerCoCGameRoom\PokerCoCGameRoom\obj\Debug\PokerCoCGameRoom.csproj.GenerateResource.Cache
+C:\Users\Mark\Desktop\CoCPoker\PokerCoCGameRoom\PokerCoCGameRoom\bin\Debug\PokerCoCGameRoom.exe
+C:\Users\Mark\Desktop\CoCPoker\PokerCoCGameRoom\PokerCoCGameRoom\bin\Debug\PokerCoCGameRoom.pdb
+C:\Users\Mark\Desktop\CoCPoker\PokerCoCGameRoom\PokerCoCGameRoom\obj\Debug\PokerCoCGameRoom.exe
+C:\Users\Mark\Desktop\CoCPoker\PokerCoCGameRoom\PokerCoCGameRoom\obj\Debug\PokerCoCGameRoom.pdb
