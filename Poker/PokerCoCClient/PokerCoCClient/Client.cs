@@ -19,13 +19,12 @@ namespace PokerCoCClient
     {
         ArrayList rooms = new ArrayList();
         private string username;
-        int roomCount;
-
+        int roomCount;        
 
         //Connect to server
-        string address = "5.163.58.64";
-        TcpClient tcpclnt = new TcpClient();
-        TcpClient temp = new TcpClient();
+        string address = "poker.circleofcurrent.com";
+        NetTunnel lobbyTunnel;
+        
 
         struct GameListEntry
         {
@@ -40,115 +39,26 @@ namespace PokerCoCClient
             InitializeComponent();
             this.username = username_;
             label1.Text = label1.Text + "\n" + username;
-
-            tcpclnt.Connect(address, 5000);
-            NetSend(ref tcpclnt, "joinlobby", 1000);
-            NetSend(ref tcpclnt, username, 1000);                            
+            
+            lobbyTunnel = new NetTunnel(500);
+            lobbyTunnel.Connect(address, 5000);
+            lobbyTunnel.Send ("joinlobby");
+            lobbyTunnel.Send (username);                            
 
             string WelcomeMessage;
-            NetReceive(ref tcpclnt, out WelcomeMessage, 1000);
+            lobbyTunnel.Receive(out WelcomeMessage);
             receiveGameList();
             MessageBox.Show(WelcomeMessage);
         }
 
-        private int NetSend(ref TcpClient tc, string s, int to)
-        {
-           try
-           {
-               if (tc.Connected == false) return 1;
-
-               tc.SendTimeout = to;
-               Stream st = tc.GetStream();
-
-               st.WriteTimeout = to;
-               byte len = Convert.ToByte(s.Length);
-
-               st.WriteByte(len);
-
-               Stopwatch sw = new Stopwatch();
-               sw.Reset();
-               sw.Start();
-
-               for (int i = 0; i < len && sw.ElapsedMilliseconds < to * len; i++)
-               {
-                   st.WriteByte((byte)(s[i]));
-               }
-
-               sw.Stop();
-               if (sw.ElapsedMilliseconds < to * len)
-               {
-                   return 0;
-               }
-               else
-               {
-                   return 1;
-               }
-           }
-           catch (Exception e)
-           {
-               return 1;
-           }
-       }
-
-       private int NetReceive(ref TcpClient tc, out string s, int to)
-       {
-           s = "";
-
-           try
-           {
-               if (tc.Connected == false) return 1;
-
-               tc.ReceiveTimeout = to;
-               Stream st = tc.GetStream();
-
-               st.ReadTimeout = to;
-
-               retry_place:
-
-               int len = st.ReadByte();
-
-               if (len == 0) goto retry_place;
-
-               Stopwatch sw = new Stopwatch();
-               sw.Reset();
-               sw.Start();
-
-               for (int i = 0; i < len && sw.ElapsedMilliseconds < to * len; i++)
-               {
-                   int b;
-                   do
-                   {
-                       b = st.ReadByte();
-                   }
-                   while (b == -1 && sw.ElapsedMilliseconds < to * len);
-
-                   s += (char)(b);
-               }
-
-               sw.Stop();
-               if (sw.ElapsedMilliseconds < to * len)
-               {
-                   return 0;
-               }
-               else
-               {
-                   return 1;
-               }
-           }
-           catch (Exception e)
-           {
-               return 1;
-           }
-       }
-
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            webBrowser1.Navigate("http://mark.circleofcurrent.com");
         }
 
         private void Client_FormClosed(object sender, FormClosedEventArgs e)
         {
-            tcpclnt.Client.Disconnect(false);
+            //
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -158,13 +68,13 @@ namespace PokerCoCClient
 
         private void receiveGameList()
         {
-            NetSend(ref tcpclnt, "requestroomlist", 1000);
+            lobbyTunnel.Send("requestroomlist");
             rooms.Clear();
             listView1.Items.Clear();
             while (true)
             {
                 string tmp;
-                NetReceive(ref tcpclnt, out tmp, 1000);
+                lobbyTunnel.Receive(out tmp);
                 if (tmp == "endaddgame")
                 {
                     listView1.Columns[0].Width = listView1.Width * 5 / 100;
@@ -197,45 +107,41 @@ namespace PokerCoCClient
             receiveGameList();
         }
 
-        private void launchNewRoom()
-        {
-            /*
-             * temp.Connect(address, 5000);
-            NetSend(ref temp, username, 1000);
-            Application.Run(new GameRoom());
-            temp.Client.Disconnect(true);
-            temp.Close();
-            temp = new TcpClient();
-            //MessageBox.Show(temp.Connected.ToString());
-             */
-            TcpClient tc = new TcpClient();
-            tc.Connect(address, 5000);
-            NetSend(ref tc, username, 1000);
-            Application.Run(new GameRoom());
-            tc.Client.Disconnect(true);
-        }
-
         private void listView1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            string msg;
-            NetSend(ref tcpclnt, "joingame", 1000);
-            NetSend(ref tcpclnt, listView1.SelectedItems[0].SubItems[0].Text, 1000);
-            NetReceive(ref tcpclnt, out msg, 1000);
-            MessageBox.Show(msg);
-            Thread t = new Thread(new ThreadStart(launchNewRoom));
-            t.Start();
+            lobbyTunnel.Send("joingame");
+            lobbyTunnel.Send(listView1.SelectedItems[0].SubItems[0].Text);
+            lobbyTunnel.Send(username);
+
+            string key;
+
+            lobbyTunnel.Receive(out key);
+            ProcessStartInfo psi = new ProcessStartInfo("C:/Users/Mark/Desktop/CoCPoker/PokerCoCGameRoom/PokerCoCGameRoom/bin/Debug/PokerCoCGameRoom.exe", key);
+            Process.Start(psi);
         }
 
         private void listView1_MouseClick(object sender, MouseEventArgs e)
         {
             listBox2.Items.Clear();
             string[] users = new string[9];
-            NetSend(ref tcpclnt, "requsers", 1000);
-            NetSend(ref tcpclnt, listView1.SelectedItems[0].SubItems[0].Text, 1000);
-            for (int i = 0; i < 9; i++)
+            lobbyTunnel.Send("requsers");
+            lobbyTunnel.Send(listView1.SelectedItems[0].SubItems[0].Text);
+            while (true)
             {
-                NetReceive(ref tcpclnt, out users[i], 1000);
-                listBox2.Items.Add(users[i]);
+                string tmp;
+                lobbyTunnel.Receive(out tmp);
+                if (tmp == "endplayerlist")
+                {
+                    return;
+                }
+                else
+                {
+                    string[] s = tmp.Split(',');
+                    if (s.Length == 2)
+                    {
+                        listBox2.Items.Add(s[0] + "  /  Chips: " + s[1]);
+                    }
+                }
             }
         }
     }

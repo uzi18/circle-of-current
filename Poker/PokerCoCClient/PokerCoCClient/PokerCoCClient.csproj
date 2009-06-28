@@ -54,12 +54,7 @@
     <Compile Include="Client.Designer.cs">
       <DependentUpon>Client.cs</DependentUpon>
     </Compile>
-    <Compile Include="GameRoom.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GameRoom.Designer.cs">
-      <DependentUpon>GameRoom.cs</DependentUpon>
-    </Compile>
+    <Compile Include="NetTunnel.cs" />
     <Compile Include="Login.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -70,9 +65,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Client.resx">
       <DependentUpon>Client.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GameRoom.resx">
-      <DependentUpon>GameRoom.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Login.resx">
       <DependentUpon>Login.cs</DependentUpon>
@@ -98,7 +90,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\ownage.jpg" />
+    <None Include="Resources\holdem.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

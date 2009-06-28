@@ -60,9 +60,9 @@ namespace PokerCoCClient.Properties {
             }
         }
         
-        internal static System.Drawing.Bitmap ownage {
+        internal static System.Drawing.Bitmap holdem {
             get {
-                object obj = ResourceManager.GetObject("ownage", resourceCulture);
+                object obj = ResourceManager.GetObject("holdem", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

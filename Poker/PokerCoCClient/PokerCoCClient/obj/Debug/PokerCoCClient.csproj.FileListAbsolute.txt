@@ -25,4 +25,3 @@ C:\Users\Mark\Desktop\CoCPoker\PokerCoCClient\PokerCoCClient\obj\Debug\PokerCoCC
 C:\Users\Mark\Desktop\CoCPoker\PokerCoCClient\PokerCoCClient\obj\Debug\PokerCoCClient.Login.resources
 C:\Users\Mark\Desktop\CoCPoker\PokerCoCClient\PokerCoCClient\obj\Debug\PokerCoCClient.Properties.Resources.resources
 C:\Users\Mark\Desktop\CoCPoker\PokerCoCClient\PokerCoCClient\obj\Debug\PokerCoCClient.csproj.GenerateResource.Cache
-C:\Users\Mark\Desktop\CoCPoker\PokerCoCClient\PokerCoCClient\obj\Debug\PokerCoCClient.GameRoom.resources

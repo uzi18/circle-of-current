@@ -35,10 +35,11 @@
             this.listBox2 = new System.Windows.Forms.ListBox();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.listView1 = new System.Windows.Forms.ListView();
+            this.gameID = new System.Windows.Forms.ColumnHeader();
             this.roomName = new System.Windows.Forms.ColumnHeader();
             this.players = new System.Windows.Forms.ColumnHeader();
             this.totalChips = new System.Windows.Forms.ColumnHeader();
-            this.gameID = new System.Windows.Forms.ColumnHeader();
+            this.webBrowser1 = new System.Windows.Forms.WebBrowser();
             this.SuspendLayout();
             // 
             // label1
@@ -112,16 +113,20 @@
             this.listView1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseDoubleClick);
             this.listView1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseClick);
             // 
+            // gameID
+            // 
+            this.gameID.Text = "ID";
+            // 
             // roomName
             // 
             this.roomName.Text = "Room Name";
-            this.roomName.Width = 399;
+            this.roomName.Width = 371;
             // 
             // players
             // 
             this.players.Text = "Players";
             this.players.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.players.Width = 82;
+            this.players.Width = 50;
             // 
             // totalChips
             // 
@@ -129,9 +134,16 @@
             this.totalChips.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.totalChips.Width = 86;
             // 
-            // gameID
+            // webBrowser1
             // 
-            this.gameID.Text = "ID";
+            this.webBrowser1.AllowNavigation = false;
+            this.webBrowser1.Location = new System.Drawing.Point(281, 9);
+            this.webBrowser1.MinimumSize = new System.Drawing.Size(20, 20);
+            this.webBrowser1.Name = "webBrowser1";
+            this.webBrowser1.ScriptErrorsSuppressed = true;
+            this.webBrowser1.ScrollBarsEnabled = false;
+            this.webBrowser1.Size = new System.Drawing.Size(477, 64);
+            this.webBrowser1.TabIndex = 10;
             // 
             // Client
             // 
@@ -139,6 +151,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.ClientSize = new System.Drawing.Size(770, 392);
+            this.Controls.Add(this.webBrowser1);
             this.Controls.Add(this.listView1);
             this.Controls.Add(this.listBox2);
             this.Controls.Add(this.button2);
@@ -166,6 +179,7 @@
         private System.Windows.Forms.ColumnHeader players;
         private System.Windows.Forms.ColumnHeader totalChips;
         private System.Windows.Forms.ColumnHeader gameID;
+        private System.Windows.Forms.WebBrowser webBrowser1;
     }
 }
 
