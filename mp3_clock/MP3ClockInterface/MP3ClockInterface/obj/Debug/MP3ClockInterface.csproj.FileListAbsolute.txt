@@ -1,0 +1,18 @@
+C:\Documents and Settings\Administrator\Local Settings\Application Data\Temporary Projects\MP3ClockInterface\bin\Debug\MP3ClockInterface.exe
+C:\Documents and Settings\Administrator\Local Settings\Application Data\Temporary Projects\MP3ClockInterface\bin\Debug\MP3ClockInterface.pdb
+C:\Documents and Settings\Administrator\Local Settings\Application Data\Temporary Projects\MP3ClockInterface\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\Administrator\Local Settings\Application Data\Temporary Projects\MP3ClockInterface\obj\Debug\MP3ClockInterface.Form1.resources
+C:\Documents and Settings\Administrator\Local Settings\Application Data\Temporary Projects\MP3ClockInterface\obj\Debug\MP3ClockInterface.Properties.Resources.resources
+C:\Documents and Settings\Administrator\Local Settings\Application Data\Temporary Projects\MP3ClockInterface\obj\Debug\MP3ClockInterface.csproj.GenerateResource.Cache
+C:\Documents and Settings\Administrator\Local Settings\Application Data\Temporary Projects\MP3ClockInterface\obj\Debug\MP3ClockInterface.exe
+C:\Documents and Settings\Administrator\Local Settings\Application Data\Temporary Projects\MP3ClockInterface\obj\Debug\MP3ClockInterface.pdb
+C:\Documents and Settings\Administrator\My Documents\Projects\clock_radio\MP3ClockInterface\MP3ClockInterface\bin\Debug\MP3ClockInterface.exe
+C:\Documents and Settings\Administrator\My Documents\Projects\clock_radio\MP3ClockInterface\MP3ClockInterface\bin\Debug\MP3ClockInterface.pdb
+C:\Documents and Settings\Administrator\My Documents\Projects\clock_radio\MP3ClockInterface\MP3ClockInterface\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\Administrator\My Documents\Projects\clock_radio\MP3ClockInterface\MP3ClockInterface\obj\Debug\MP3ClockInterface.Form1.resources
+C:\Documents and Settings\Administrator\My Documents\Projects\clock_radio\MP3ClockInterface\MP3ClockInterface\obj\Debug\MP3ClockInterface.Properties.Resources.resources
+C:\Documents and Settings\Administrator\My Documents\Projects\clock_radio\MP3ClockInterface\MP3ClockInterface\obj\Debug\MP3ClockInterface.csproj.GenerateResource.Cache
+C:\Documents and Settings\Administrator\My Documents\Projects\clock_radio\MP3ClockInterface\MP3ClockInterface\obj\Debug\MP3ClockInterface.exe
+C:\Documents and Settings\Administrator\My Documents\Projects\clock_radio\MP3ClockInterface\MP3ClockInterface\obj\Debug\MP3ClockInterface.pdb
+C:\Users\Frank\Documents\Projects\AVR\mp3_clock\MP3ClockInterface\MP3ClockInterface\obj\Debug\MP3ClockInterface.exe
+C:\Users\Frank\Documents\Projects\AVR\mp3_clock\MP3ClockInterface\MP3ClockInterface\obj\Debug\MP3ClockInterface.pdb
