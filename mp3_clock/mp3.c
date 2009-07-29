@@ -607,7 +607,7 @@ void MP3Reset()
 
 	MP3WriteRegS(MP3_Reg_MODE, old_mode);
 	MP3WriteRegS(MP3_Reg_CLOCKF, old_clk);
-	MP3WriteRegS(MP3_Reg_VOL, 0x9800);
+	MP3WriteRegS(MP3_Reg_VOL, old_vol);
 
 	#ifdef MP3_Custom_Code
 	for(unsigned int i = 0; i < CODE_SIZE; i++)
