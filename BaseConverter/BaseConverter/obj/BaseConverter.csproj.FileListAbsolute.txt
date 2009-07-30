@@ -1,8 +1,0 @@
-C:\Documents and Settings\fzhao\My Documents\Visual Studio 2005\Projects\BaseConverter\BaseConverter\bin\Debug\BaseConverter.exe
-C:\Documents and Settings\fzhao\My Documents\Visual Studio 2005\Projects\BaseConverter\BaseConverter\bin\Debug\BaseConverter.pdb
-C:\Documents and Settings\fzhao\My Documents\Visual Studio 2005\Projects\BaseConverter\BaseConverter\obj\Debug\ResolveAssemblyReference.cache
-C:\Documents and Settings\fzhao\My Documents\Visual Studio 2005\Projects\BaseConverter\BaseConverter\obj\Debug\BaseConverter.Form1.resources
-C:\Documents and Settings\fzhao\My Documents\Visual Studio 2005\Projects\BaseConverter\BaseConverter\obj\Debug\BaseConverter.Properties.Resources.resources
-C:\Documents and Settings\fzhao\My Documents\Visual Studio 2005\Projects\BaseConverter\BaseConverter\obj\Debug\BaseConverter.csproj.GenerateResource.Cache
-C:\Documents and Settings\fzhao\My Documents\Visual Studio 2005\Projects\BaseConverter\BaseConverter\obj\Debug\BaseConverter.exe
-C:\Documents and Settings\fzhao\My Documents\Visual Studio 2005\Projects\BaseConverter\BaseConverter\obj\Debug\BaseConverter.pdb
