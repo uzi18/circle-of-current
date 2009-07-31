@@ -17,6 +17,8 @@ namespace BaseConverter
 
             NotiIcon.BalloonTipTitle = "Base Converter";
 
+            // look through all processes to find one with the same name as the current process
+            // if found, then kill self
             Process selfproc = Process.GetCurrentProcess();
             Process[] proclist = Process.GetProcesses();
             foreach (Process i in proclist)
@@ -44,22 +46,23 @@ namespace BaseConverter
 
         private void ProcessTimer_Tick(object sender, EventArgs e)
         {
-            string s = "";
-            string rh, rd, rb;
-            int r = 0;
-            bool show_balloon = false;
+            string s = ""; // input string
+            string rh, rd, rb; // result string
+            int r = 0; // input value
+            bool show_balloon = false; // show only if needed
 
-            if (WindowState != FormWindowState.Minimized)
+            if (WindowState != FormWindowState.Minimized) // window is open
             {
-                s = InputBox.Text;
+                s = InputBox.Text; // use user input box
             }
-            else
+            else // window is hidden
             {
                 if (Clipboard.ContainsText())
                 {
-                    s = Clipboard.GetText();
+                    s = Clipboard.GetText(); // use clipboard data as input
                     if (s != old_clipboard)
                     {
+                        // text has changed, show balloon
                         old_clipboard = s;
                         show_balloon = true;
                     }
@@ -67,6 +70,16 @@ namespace BaseConverter
             }
 
             s = s.Trim();
+
+            /*
+             * Below is the code trying to see what base the input is in.
+             * First, it checks for standard prefixes, such as "0x" or "0b".
+             * If those are not found, then it assumes the input is decimal.
+             * If the input is not decimal, an exception is thrown and the catch
+             * block is executed, which then assumes the input is hexadecimal, if
+             * exception is thrown, then the input cannot be converted. If
+             * the conversion is successful, then store the value as an integer.
+             */
 
             if (s.IndexOf("0x") == 0 || s.IndexOf("0X") == 0)
             {
@@ -123,37 +136,45 @@ namespace BaseConverter
 
             NotiIcon.BalloonTipText = "Detected: " + DetectedLabel.Text + "\r\n";
 
-            if (DetectedLabel.Text != "Error")
+            if (DetectedLabel.Text != "Error") // conversion successful
             {
+                // convert into hexadecimal, make sure length of resulting string
+                // is a multiple of 2, so it looks neat
                 rh = Convert.ToString(r, 16).ToUpper();
                 if (rh.Length % 2 != 0)
                 {
                     rh = "0" + rh;
                 }
 
+                // convert into binary, make sure length of resulting string
+                // is a multiple of 4 and at least 8, so it looks neat
                 rb = Convert.ToString(r, 2);
                 while (rb.Length % 4 != 0 || rb.Length < 8)
                 {
                     rb = "0" + rb;
                 }
 
+                // convert to decimal
                 rd = Convert.ToString(r, 10);
 
+                // prepare notification balloon
                 NotiIcon.BalloonTipText += "Dec: " + rd + "\r\n";
                 NotiIcon.BalloonTipText += "Hex: " + rh + "\r\n";
                 NotiIcon.BalloonTipText += "Bin: " + rb + "\r\n";
 
+                // prepare text in window
                 HexLabel.Text = rh;
                 BinLabel.Text = rb;
                 DecLabel.Text = rd;
 
-                if (show_balloon && EnableNoti.Checked)
+                if (show_balloon && EnableNoti.Checked) // show balloon if appropriate
                 {
                     NotiIcon.ShowBalloonTip(2000);
                 }
                 InputBox.Text = s;
             }
 
+            // enable/disable menu items
             if (EnableNoti.Checked)
             {
                 onToolStripMenuItem.Enabled = false;
