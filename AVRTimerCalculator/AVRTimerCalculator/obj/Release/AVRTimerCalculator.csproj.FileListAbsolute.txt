@@ -1,8 +1,0 @@
-C:\Documents and Settings\Administrator\My Documents\Visual Studio 2008\Projects\AVRTimerCalculator\AVRTimerCalculator\bin\Release\AVRTimerCalculator.exe
-C:\Documents and Settings\Administrator\My Documents\Visual Studio 2008\Projects\AVRTimerCalculator\AVRTimerCalculator\bin\Release\AVRTimerCalculator.pdb
-C:\Documents and Settings\Administrator\My Documents\Visual Studio 2008\Projects\AVRTimerCalculator\AVRTimerCalculator\obj\Release\ResolveAssemblyReference.cache
-C:\Documents and Settings\Administrator\My Documents\Visual Studio 2008\Projects\AVRTimerCalculator\AVRTimerCalculator\obj\Release\AVRTimerCalculator.Form1.resources
-C:\Documents and Settings\Administrator\My Documents\Visual Studio 2008\Projects\AVRTimerCalculator\AVRTimerCalculator\obj\Release\AVRTimerCalculator.Properties.Resources.resources
-C:\Documents and Settings\Administrator\My Documents\Visual Studio 2008\Projects\AVRTimerCalculator\AVRTimerCalculator\obj\Release\AVRTimerCalculator.csproj.GenerateResource.Cache
-C:\Documents and Settings\Administrator\My Documents\Visual Studio 2008\Projects\AVRTimerCalculator\AVRTimerCalculator\obj\Release\AVRTimerCalculator.exe
-C:\Documents and Settings\Administrator\My Documents\Visual Studio 2008\Projects\AVRTimerCalculator\AVRTimerCalculator\obj\Release\AVRTimerCalculator.pdb
