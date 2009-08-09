@@ -47,9 +47,17 @@ namespace PlainTextClipboard
 
         private void ConvertBtn_Click(object sender, EventArgs e)
         {
-            // convert text and show notification
-            Clipboard.SetText(Clipboard.GetText());
-            SystrayIcon.ShowBalloonTip(1000, "Plain Text Converted", "Text has been converted", ToolTipIcon.Info);
+            try
+            {
+                // convert text and show notification
+                Clipboard.SetText(Clipboard.GetText());
+                SystrayIcon.ShowBalloonTip(1000, "Plain Text Converted", "Text has been converted", ToolTipIcon.Info);
+            }
+            catch
+            {
+                // conversion failed, display error
+                SystrayIcon.ShowBalloonTip(1000, "Plain Text Converter", "Conversion Failed", ToolTipIcon.Error);
+            }
         }
 
         private void ShowWinBtn_Click(object sender, EventArgs e)
@@ -59,15 +67,31 @@ namespace PlainTextClipboard
             this.ShowInTaskbar = true;
             Show();
 
-            // load preview of converted text
-            ConvertedTxt.Text = Clipboard.GetText();
+            try
+            {
+                // load preview of converted text
+                ConvertedTxt.Text = Clipboard.GetText();
+            }
+            catch (Exception ex)
+            {
+                // conversion has failed, show error
+                ConvertedTxt.Text = "Conversion Failed, Exception: \r\n" + ex.ToString();
+            }
         }
 
         private void SystrayIcon_DoubleClick(object sender, EventArgs e)
         {
-            // convert text and show notification
-            Clipboard.SetText(Clipboard.GetText());
-            SystrayIcon.ShowBalloonTip(1000, "Plain Text Converted", "Text has been converted", ToolTipIcon.Info);
+            try
+            {
+                // convert text and show notification
+                Clipboard.SetText(Clipboard.GetText());
+                SystrayIcon.ShowBalloonTip(1000, "Plain Text Converted", "Text has been converted", ToolTipIcon.Info);
+            }
+            catch
+            {
+                // conversion failed, display error
+                SystrayIcon.ShowBalloonTip(1000, "Plain Text Converter", "Conversion Failed", ToolTipIcon.Error);
+            }
         }
     }
 }
