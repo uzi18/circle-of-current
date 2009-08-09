@@ -1,0 +1,16 @@
+C:\Users\Frank\AppData\Local\Temporary Projects\PlainTextClipboard\bin\Debug\PlainTextClipboard.exe
+C:\Users\Frank\AppData\Local\Temporary Projects\PlainTextClipboard\bin\Debug\PlainTextClipboard.pdb
+C:\Users\Frank\AppData\Local\Temporary Projects\PlainTextClipboard\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Frank\AppData\Local\Temporary Projects\PlainTextClipboard\obj\Debug\PlainTextClipboard.Form1.resources
+C:\Users\Frank\AppData\Local\Temporary Projects\PlainTextClipboard\obj\Debug\PlainTextClipboard.Properties.Resources.resources
+C:\Users\Frank\AppData\Local\Temporary Projects\PlainTextClipboard\obj\Debug\PlainTextClipboard.csproj.GenerateResource.Cache
+C:\Users\Frank\AppData\Local\Temporary Projects\PlainTextClipboard\obj\Debug\PlainTextClipboard.exe
+C:\Users\Frank\AppData\Local\Temporary Projects\PlainTextClipboard\obj\Debug\PlainTextClipboard.pdb
+C:\Users\Frank\Documents\Projects\Visual C Sharp\PlainTextClipboard\PlainTextClipboard\obj\Debug\PlainTextClipboard.exe
+C:\Users\Frank\Documents\Projects\Visual C Sharp\PlainTextClipboard\PlainTextClipboard\obj\Debug\PlainTextClipboard.pdb
+C:\Users\Frank\Documents\Projects\Visual C Sharp\PlainTextClipboard\PlainTextClipboard\bin\Debug\PlainTextClipboard.exe
+C:\Users\Frank\Documents\Projects\Visual C Sharp\PlainTextClipboard\PlainTextClipboard\bin\Debug\PlainTextClipboard.pdb
+C:\Users\Frank\Documents\Projects\Visual C Sharp\PlainTextClipboard\PlainTextClipboard\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Frank\Documents\Projects\Visual C Sharp\PlainTextClipboard\PlainTextClipboard\obj\Debug\PlainTextClipboard.Form1.resources
+C:\Users\Frank\Documents\Projects\Visual C Sharp\PlainTextClipboard\PlainTextClipboard\obj\Debug\PlainTextClipboard.Properties.Resources.resources
+C:\Users\Frank\Documents\Projects\Visual C Sharp\PlainTextClipboard\PlainTextClipboard\obj\Debug\PlainTextClipboard.csproj.GenerateResource.Cache
