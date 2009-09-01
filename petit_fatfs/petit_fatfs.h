@@ -37,6 +37,8 @@ class PFF
   public:
     static DIR dir_obj;
     PFF();
+	
+	void moo(void);
     int begin(int, unsigned char (*)(void), void (*)(unsigned char));
 	int open_file(char *);
 	int read_file(char *, int, int *);

@@ -51,29 +51,45 @@ void PFF::MMC_DESELECT()
 }
 
 ///////////////////////////////////
-/// begin list of public methods
+// begin list of public methods
 ///////////////////////////////////
 
-/*
+//! Initialization Function
+/*!
+  \param cs_pin is the Arduino pin connected to the MMC card's CS pin
+  \param rx is a pointer to the SPI recieve function, it must return a byte and accept no parameters
+  \param tx is a pointer to the SPI transmit function, it must accept a byte as a parameter and return nothing
+  \return error code, see comments in pff.h for FRESULT enumeration
+	  
+Notes:
 
-Initialization Function, re-call if error detected (returns non-zero)
-
-parameters:
-cs_pin is the Arduino pin connected to the MMC card's CS pin
-rx and tx are pointers to SPI functions
-rx must return a byte and accept no parameters
-tx must accept a byte as a parameter and return nothing
-
-returns:
-error code, refer to comments in pff.h for the FRESULT enumeration
-
-notes:
 The reason why the SPI functions are not built in is because some people
 may wish to use software SPI, or want to share SPI functions with other other code
 so this reduces redundant code.
 
-*/
+If error is detected due to a hardware error, you can re-call this function to re-initialize the MMC card.
 
+*/
+void PFF::moo()
+{
+}
+
+//! Initialization Function
+/*!
+  \param cs_pin is the Arduino pin connected to the MMC card's CS pin
+  \param rx is a pointer to the SPI recieve function, it must return a byte and accept no parameters
+  \param tx is a pointer to the SPI transmit function, it must accept a byte as a parameter and return nothing
+  \return error code, see comments in pff.h for FRESULT enumeration
+	  
+Notes:
+
+The reason why the SPI functions are not built in is because some people
+may wish to use software SPI, or want to share SPI functions with other other code
+so this reduces redundant code.
+
+If error is detected due to a hardware error, you can re-call this function to re-initialize the MMC card.
+
+*/
 int PFF::begin(int cs_pin, unsigned char (* rx)(void), void (* tx)(unsigned char))
 {
 	MMC_CS = cs_pin; // set CS pin number
@@ -87,53 +103,48 @@ int PFF::begin(int cs_pin, unsigned char (* rx)(void), void (* tx)(unsigned char
 	return open_dir((char *)"/");
 }
 
-/*
-
-Open file by file path
-
-parameters:
-fn is the file path, not relative to current directory
-
-returns:
-error code, refer to comments in pff.h for the FRESULT enumeration
+//! Opens a file with a path
+/*!
+  \param fn is a string containing the file name and path
+  \return error code, see comments in pff.h for FRESULT enumeration
+	  
+Notes:
+path is not relative to current directory
 
 */
-
 int PFF::open_file(char * fn)
 {
 	return pf_open(fn);
 }
 
-/*
+//! Read last file opened into a buffer
+/*!
+  \param dest is a pointer to a buffer, make sure there is enough room in this buffer
+  \param to_read is the maximum number of bytes you want to read into the buffer
+  \param read_from is a pointer to a integer which will contain the number of bytes actually read
+  \return error code, see comments in pff.h for FRESULT enumeration
+	  
+Notes:
 
-Read last file opened into a buffer
-
-parameters:
-dest must be a pointer to a buffer
-to_read is how many bytes to read
-read_from returns the actual number of bytes that has been read, use it to determine end-of-file
-
-returns:
-error code, refer to comments in pff.h for the FRESULT enumeration
+use read_from to determin whether you've reached the end of the file
+a file must be opened for this to work
 
 */
-
 int PFF::read_file(char * dest, int to_read, int * read_from)
 {
 	fatfs_obj.flag &= ~FA_STREAM; // disable streaming
 	return pf_read((void *)dest, to_read, (WORD *)read_from);	
 }
 
-/*
-
-Attach functions for streaming
-
-parameters:
-dest must be a pointer to a function, it must accept a byte as a parameter, it returns non-zero for streaming to continue, returning 0 will end the stream prematurely
-pre_ and post_block are called before and after the first and last byte streamed (before and after the pre_ and post_byte functions)
-pre_ and post_byte are called before and after each byte streamed.
-
-notes:
+//! Attach functions for streaming
+/*!
+  \param pre_block is a pointer to a function, refer to notes for when it is called
+  \param pre_byte is a pointer to a function, refer to notes for when it is called
+  \param dest is a pointer to a function, it must accept a byte as a parameter, it should return non-zero for streaming to continue, returning 0 will end the stream prematurely
+  \param post_byte is a pointer to a function, refer to notes for when it is called
+  \param post_block is a pointer to a function, refer to notes for when it is called
+	  
+Notes:
 
 refer to the code below to understand calling order
 
@@ -151,32 +162,30 @@ These functions are meant for users who would like to stream directly from the M
 For example, when streaming mp3 data to a VS1002d decoder, pre_byte can be used to wait until there is room in the decoder's buffer
 and pre_block and post_block can be used to select and deselect the decoder's SDI bus
 
-If not needed, these functions can be empty functions.
+If not needed, these functions can be empty functions, but they must be provided.
+
+This function must be called at least once before calling stream_file
 
 */
-
 void PFF::setup_stream(void (* pre_block)(void), void (* pre_byte)(void), char (* dest)(char), void (* post_byte)(void), void (* post_block)(void))
 {
 	disk_attach_stream_functs(pre_byte, post_byte, pre_block, post_block); // attach functions
 	stream_dest = (void *)dest;
 }
 
-/*
+//! Stream last file opened to a function
+/*!
+  \param to_read is the maximum number of bytes you want to read into the buffer
+  \param read_from is a pointer to a integer which will contain the number of bytes actually read
+  \return error code, see comments in pff.h for FRESULT enumeration
+	  
+Notes:
 
-Stream last file opened to a function
-
-parameters:
-to_read is how many bytes to read
-read_from returns the actual number of bytes that has been read, use it to determine end-of-file
-
-returns:
-error code, refer to comments in pff.h for the FRESULT enumeration
-
-notes:
+use read_from to determin whether you've reached the end of the file
 you must setup the stream first
+a file must be opened before
 
 */
-
 int PFF::stream_file(int to_read, int * read_from)
 {
 	fatfs_obj.flag |= FA_STREAM; // enable streaming
@@ -184,35 +193,28 @@ int PFF::stream_file(int to_read, int * read_from)
 	return res; // return error
 }
 
-/*
-
-Move file read pointer
-
-parameters:
-p is the desired pointer location
-
-returns:
-error code, refer to comments in pff.h for the FRESULT enumeration
-
+//! Move file read pointer
+/*!
+  \param p is the desired pointer location
+  \return error code, see comments in pff.h for FRESULT enumeration
+  
 */
-
 int PFF::lseek_file(long p)
 {
 	return pf_lseek(p);
 }
 
-/*
 
-Opens a directory, will rewind pointer to first file in directory
+//! Opens a directory as the current directory
+/*!
+  \param dn is a folder path string
+  \return error code, see comments in pff.h for FRESULT enumeration
+  
+Notes:
 
-parameters:
-dn is the directory path, must start with a slash, must not end with a slash
-
-returns:
-error code, refer to comments in pff.h for the FRESULT enumeration
+this will rewind directory file index pointer to first file in directory
 
 */
-
 int PFF::open_dir(char * dn)
 {
 	int res = pf_opendir(&dir_obj, dn);
@@ -223,23 +225,29 @@ int PFF::open_dir(char * dn)
 	return res; // return error if any
 }
 
-/*
 
-Reopens current directory, which rewinds the file index
+//! Reopens current directory, which rewinds the file index
+/*!
+  \return error code, see comments in pff.h for FRESULT enumeration
+  
+Notes:
+
+this will rewind directory file index pointer to first file in directory
 
 */
-
 int PFF::rewind_dir()
 {
 	return pf_opendir(&dir_obj, dir_path);
 }
 
-/*
-
-Opens the parent directory, also rewinds the file index
+//! Opens the parent directory of the current directory, and become the current directory
+/*!
+  \return error code, see comments in pff.h for FRESULT enumeration
+  
+Notes:
+this will rewind directory file index pointer to first file in directory
 
 */
-
 int PFF::up_dir()
 {
 	int res;
@@ -260,38 +268,45 @@ int PFF::up_dir()
 	return res;
 }
 
-/*
+//! Saves the FILINFO of the next file in currently open directory
+/*!
+  \param fnfo is the pointer to the user's FILINFO struct
+  \return error code, see comments in pff.h for FRESULT enumeration
 
-Saves the FILINFO of the next file in currently open directory
+Notes:
 
-parameters:
-fnfo is the pointer to the user's FILINFO struct
+FILINFO can be a file, a directory, or nothing
+if the file name is empty, it is invalid and indicates that the entire directory has been read and you need to rewind the file index, or that the directory is empty
+to check if the file name is empty, check if the first char of the FILINFO's fname is null, for example:
 
-returns:
-error code, refer to comments in pff.h for the FRESULT enumeration
+FILINFO fnfo;
+int err = PFFS.read_dir(&fnfo);
+if (fnfo.fname[0] == 0) print("end of directory");
+
+if the FILINFO is a directory, check if the AM_DIR flag in the FILINFO's fattrib is set, for example:
+
+FILINFO fnfo;
+int err = PFFS.read_dir(&fnfo);
+if (fnfo.fattrib & AM_DIR) print("is a directory"); else print("is a file");
 
 */
-
 int PFF::read_dir(FILINFO * fnfo)
 {
 	return pf_readdir(&dir_obj, fnfo);
 }
 
-/*
+//! Opens a file using a FILINFO struct
+/*!
+  \param fnfo is the pointer to the user's FILINFO struct
+  \return error code, see comments in pff.h for FRESULT enumeration
 
-Opens a file using a FILINFO struct instead of a file path
+Notes:
 
-parameters:
-fnfo is the pointer to the user's FILINFO struct
-
-returns:
-error code, refer to comments in pff.h for the FRESULT enumeration
-
-notes:
 the actual file path opened is the last path used in open_dir joined with the file name provided by fnfo
+this means that the FILINFO must be read from the same directory or else this will fail
+if fnfo is a directory, that directory will be opened and become the current directory
 
 */
-
 int PFF::open(FILINFO * fnfo)
 {
 	int res; // stores error code
@@ -315,22 +330,18 @@ int PFF::open(FILINFO * fnfo)
 	return res; // return error code
 }
 
-/*
-
-Returns current directory path as a string
-
-returns:
-pointer to a string
+//! Returns current directory path as a string
+/*!
+  \return pointer to a string containing the current directory path
 
 */
-
 char * PFF::cur_dir()
 {
 	return dir_path;
 }
 
 //////////////////////////////////////
-/// end list of public methods
+// end list of public methods
 //////////////////////////////////////
 
 PFF PFFS = PFF(); // create usuable instance
