@@ -70,26 +70,6 @@ so this reduces redundant code.
 If error is detected due to a hardware error, you can re-call this function to re-initialize the MMC card.
 
 */
-void PFF::moo()
-{
-}
-
-//! Initialization Function
-/*!
-  \param cs_pin is the Arduino pin connected to the MMC card's CS pin
-  \param rx is a pointer to the SPI recieve function, it must return a byte and accept no parameters
-  \param tx is a pointer to the SPI transmit function, it must accept a byte as a parameter and return nothing
-  \return error code, see comments in pff.h for FRESULT enumeration
-	  
-Notes:
-
-The reason why the SPI functions are not built in is because some people
-may wish to use software SPI, or want to share SPI functions with other other code
-so this reduces redundant code.
-
-If error is detected due to a hardware error, you can re-call this function to re-initialize the MMC card.
-
-*/
 int PFF::begin(int cs_pin, unsigned char (* rx)(void), void (* tx)(unsigned char))
 {
 	MMC_CS = cs_pin; // set CS pin number
