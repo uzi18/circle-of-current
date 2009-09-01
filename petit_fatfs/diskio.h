@@ -23,7 +23,8 @@ typedef enum {
 /*---------------------------------------*/
 /* Prototypes for disk control functions */
 
-void mmc_attach_functs(void (*)(unsigned char), unsigned char (*)(void), void (*)(void), void (*)(void));
+void disk_attach_spi_functs(void (*)(unsigned char), unsigned char (*)(void), void (*)(void), void (*)(void));
+void disk_attach_stream_functs(void (*)(void), void (*)(void), void (*)(void), void (*)(void));
 DSTATUS disk_initialize (void);
 DRESULT disk_readp (void*, DWORD, WORD, WORD);
 

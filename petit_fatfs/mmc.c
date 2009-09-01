@@ -33,7 +33,7 @@ static void (* SELECT)(void);
 static void (* DESELECT)(void);
 
 // This function allows you to attach any functions to chip-select the MMC card
-void mmc_attach_functs(void (* tx)(unsigned char), unsigned char (* rx)(void), void (* sel)(void), void (* desel)(void))
+void disk_attach_spi_functs(void (* tx)(unsigned char), unsigned char (* rx)(void), void (* sel)(void), void (* desel)(void))
 {
   xmit_spi = tx;
   rcv_spi = rx;
@@ -41,6 +41,20 @@ void mmc_attach_functs(void (* tx)(unsigned char), unsigned char (* rx)(void), v
   DESELECT = desel;
 }
 
+// functions to happen before and after streaming a byte and block
+static void (* pre_byte)(void);
+static void (* post_byte)(void);
+static void (* pre_block)(void);
+static void (* post_block)(void);
+
+// attach above functions
+void disk_attach_stream_functs(void (* pre_byte_f)(void), void (* post_byte_f)(void), void (* pre_block_f)(void), void (* post_block_f)(void))
+{
+	pre_byte = pre_byte_f;
+	post_byte = post_byte_f;
+	pre_block = pre_block_f;
+	post_block = post_block_f;
+}
 
 /*--------------------------------------------------------------------------
 
@@ -220,10 +234,15 @@ DRESULT disk_readp (
 			if (dev) {					/* Receive middle of the sector */
 				f = dest;
 
+				pre_block();
 				do
+				{
+					pre_byte();
 					res = f(rcv_spi());
+					post_byte();
+				}
 				while (--cnt && res);
-				
+				post_block();
 
 				cf += cnt;
 			} else {
