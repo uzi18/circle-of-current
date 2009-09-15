@@ -1,0 +1,242 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{AB21876B-FE2C-48D4-A5F4-3EB344272950}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>AVRProjectIDE</RootNamespace>
+    <AssemblyName>AVRProjectIDE</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ScintillaNet, Version=2.0.3138.25704, Culture=neutral, PublicKeyToken=948d6c9751444115, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\ScintillaNet.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AboutBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AboutBox.Designer.cs">
+      <DependentUpon>AboutBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EditorTabsPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="EditorTabsPanel.Designer.cs">
+      <DependentUpon>EditorTabsPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EnumsAndStructs.cs" />
+    <Compile Include="EnviroSettings.cs" />
+    <Compile Include="frmFileOptions.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmFileOptions.Designer.cs">
+      <DependentUpon>frmFileOptions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmProjIDE.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmProjIDE.Designer.cs">
+      <DependentUpon>frmProjIDE.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmProjConfig.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmProjConfig.Designer.cs">
+      <DependentUpon>frmProjConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmWelcome.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmWelcome.Designer.cs">
+      <DependentUpon>frmWelcome.cs</DependentUpon>
+    </Compile>
+    <Compile Include="INIFile.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="ProjectBuilderBurner.cs" />
+    <Compile Include="ProjectManagement.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="AboutBox.resx">
+      <DependentUpon>AboutBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EditorTabsPanel.resx">
+      <DependentUpon>EditorTabsPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmFileOptions.resx">
+      <DependentUpon>frmFileOptions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmProjIDE.resx">
+      <DependentUpon>frmProjIDE.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmProjConfig.resx">
+      <DependentUpon>frmProjConfig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmWelcome.resx">
+      <DependentUpon>frmWelcome.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SerialPortPanel.resx">
+      <DependentUpon>SerialPortPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="SerialPortPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SerialPortPanel.Designer.cs">
+      <DependentUpon>SerialPortPanel.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="graphics\find.png" />
+    <None Include="graphics\paste.png" />
+    <None Include="graphics\copy.png" />
+    <None Include="graphics\cut.png" />
+    <None Include="graphics\configure.ico" />
+    <None Include="graphics\build.ico" />
+    <None Include="graphics\burn.ico" />
+    <None Include="graphics\redo.ico" />
+    <None Include="graphics\comment.png" />
+    <None Include="graphics\file.ico" />
+    <None Include="graphics\findnext.png" />
+    <None Include="graphics\header.ico" />
+    <None Include="graphics\help.ico" />
+    <None Include="graphics\hppheader.ico" />
+    <None Include="graphics\indent.png" />
+    <None Include="graphics\missing.ico" />
+    <None Include="graphics\new.ico" />
+    <None Include="graphics\nocompile.ico" />
+    <None Include="graphics\save.png" />
+    <None Include="graphics\saveall.png" />
+    <None Include="graphics\search.ico" />
+    <None Include="graphics\searchall.png" />
+    <None Include="graphics\serial.ico" />
+    <None Include="graphics\SHELL32_223.ico" />
+    <None Include="graphics\treeroot.ico" />
+    <None Include="graphics\uncomment.png" />
+    <None Include="graphics\undo.ico" />
+    <None Include="graphics\unindent.png" />
+    <None Include="graphics\unknown.ico" />
+    <None Include="graphics\warning.ico" />
+    <None Include="graphics\exit.png" />
+    <Content Include="graphics\unknown2.ico" />
+    <None Include="graphics\web.png" />
+    <Content Include="SciLexer.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ScintillaNet.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
