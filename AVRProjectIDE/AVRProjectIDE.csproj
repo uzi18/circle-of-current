@@ -82,6 +82,12 @@
     </Compile>
     <Compile Include="EnumsAndStructs.cs" />
     <Compile Include="EnviroSettings.cs" />
+    <Compile Include="frmEditorConfig.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmEditorConfig.Designer.cs">
+      <DependentUpon>frmEditorConfig.cs</DependentUpon>
+    </Compile>
     <Compile Include="frmFileOptions.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -107,6 +113,7 @@
       <DependentUpon>frmWelcome.cs</DependentUpon>
     </Compile>
     <Compile Include="INIFile.cs" />
+    <Compile Include="MenuWebLink.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ProjectBuilderBurner.cs" />
     <Compile Include="ProjectManagement.cs" />
@@ -116,6 +123,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="EditorTabsPanel.resx">
       <DependentUpon>EditorTabsPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmEditorConfig.resx">
+      <DependentUpon>frmEditorConfig.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="frmFileOptions.resx">
       <DependentUpon>frmFileOptions.cs</DependentUpon>
@@ -224,6 +234,9 @@
     <None Include="graphics\exit.png" />
     <Content Include="graphics\unknown2.ico" />
     <None Include="graphics\web.png" />
+    <Content Include="helplinks.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="SciLexer.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

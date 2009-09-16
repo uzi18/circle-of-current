@@ -55,6 +55,15 @@ namespace AVRProjectIDE
             myEditorTabsPanel = new EditorTabsPanel(myProject, mySettings);
             splitFileTreeEditorTabs.Panel2.Controls.Add(myEditorTabsPanel);
 
+            try
+            {
+                helpToolStripMenuItem.DropDownItems.Add(MenuWebLink.GetMenuLinkRoot("Resources", "helplinks.xml"));
+            }
+            catch (Exception ex)
+            {
+                txtOutputMsg.Text += "Failed to Load Help->Resource Links\r\n" + ex.ToString();
+            }
+
             FillRecentProjects();
 
             RefreshFileTree();

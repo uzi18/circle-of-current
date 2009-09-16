@@ -1,11 +1,13 @@
 ﻿using System;
 using ScintillaNet;
+using ScintillaNet.Configuration;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Xml;
 using System.IO;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
@@ -405,22 +407,53 @@ namespace AVRProjectIDE
 
             myScint = new Scintilla();
             myScint.Dock = DockStyle.Fill;
+            myScint.ConfigurationManager.Language = "cs";
+            myScint.Lexing.SetKeywords(0, "if else for do while	switch case default goto break continue return sizeof free malloc calloc PSTR ISR SIGNAL");
+            myScint.Lexing.SetKeywords(1, "void inline extern signed unsigned typedef union struct enum volatile static const byte char short int long word dword float double bool bit bitfield byte uchar ushort uint ulong uword uint8_t uint16_t uint32_t uint64_t int8_t int16_t int32_t int64_t");
+
+            for (int i = 0; i < 256; i++)
+            {
+                try
+                {
+                    if (myScint.Styles[i].ForeColor == Color.Teal)
+                    {
+                        myScint.Styles[i].ForeColor = Color.Purple;
+                    }
+                    if (myScint.Styles[i].ForeColor == Color.Orange)
+                    {
+                        myScint.Styles[i].ForeColor = Color.DarkBlue;
+                    }
+                    if (myScint.Styles[i].ForeColor == Color.DarkGoldenrod)
+                    {
+                        myScint.Styles[i].ForeColor = Color.BlueViolet;
+                    }
+                }
+                catch
+                {
+                    break;
+                }
+            }
+
             myScint.Folding.IsEnabled = true;
             myScint.Folding.MarkerScheme = FoldMarkerScheme.BoxPlusMinus;
+
             myScint.Margins[0].Width = 20;
             myScint.Margins[1].Width = 10;
             myScint.Margins[2].Width = 10;
+
             myScint.IsBraceMatching = true;
             myScint.MatchBraces = true;
-            myScint.ConfigurationManager.Language = "cs";
-            //myScint.ConfigurationManager.CustomLocation
+
             myScint.Scrolling.ScrollBars = ScrollBars.Vertical;
+
             myScint.LineWrap.Mode = WrapMode.Word;
+
             myScint.Indentation.SmartIndentType = SmartIndent.CPP;
             myScint.Indentation.TabIndents = true;
             myScint.Indentation.UseTabs = true;
             myScint.Indentation.IndentWidth = 4;
             myScint.Indentation.ShowGuides = true;
+
             myScint.Modified = false;
             myScint.TextChanged += new EventHandler(MakeChange);
 
@@ -779,5 +812,132 @@ namespace AVRProjectIDE
         }
 
         #endregion
+    }
+
+    public class ScintConfig
+    {
+        public static ScintillaNet.Configuration.Configuration Config(string filePath)
+        {
+            ScintillaNet.Configuration.Configuration config = new ScintillaNet.Configuration.Configuration("custom");
+
+            XmlDocument xDoc = new XmlDocument();
+            xDoc.Load(filePath);
+            XmlElement xDocEle = xDoc.DocumentElement;
+
+            config.Styles = GetStyles(xDocEle);
+            config.Lexing_Keywords = GetKeywords(xDocEle);
+            return config;
+        }
+
+        public static ScintillaNet.Configuration.StyleConfigList GetStyles(string filePath)
+        {
+            XmlDocument xDoc = new XmlDocument();
+            xDoc.Load(filePath);
+            XmlElement xDocEle = xDoc.DocumentElement;
+            return GetStyles(xDocEle);
+        }
+
+        private static ScintillaNet.Configuration.StyleConfigList GetStyles(XmlElement xDocEle)
+        {
+            ScintillaNet.Configuration.StyleConfigList styles = new ScintillaNet.Configuration.StyleConfigList();
+
+            XmlElement xStyles = (XmlElement)xDocEle.GetElementsByTagName("Styles")[0];
+            foreach (XmlElement xStyle in xStyles.GetElementsByTagName("Style"))
+            {
+                ScintillaNet.Configuration.StyleConfig style = new ScintillaNet.Configuration.StyleConfig();
+
+                XmlAttributeCollection xAttribs = xStyle.Attributes;
+                foreach (XmlAttribute xAttrib in xAttribs)
+                {
+                    if (xAttrib.Name == "Name")
+                    {
+                        style.Name = xAttrib.Value;
+                    }
+                    else if (xAttrib.Name == "ForeColor")
+                    {
+                        Color foreColor = Color.FromName(xAttrib.Value);
+                        style.ForeColor = foreColor;
+                    }
+                    else if (xAttrib.Name == "BackColor")
+                    {
+                        Color backColor = Color.FromName(xAttrib.Value);
+                        style.BackColor = backColor;
+                    }
+                    else if (xAttrib.Name == "FontName")
+                    {
+                        style.FontName = xAttrib.Value;
+                    }
+                    else if (xAttrib.Name == "Size")
+                    {
+                        int size = 10;
+                        if (int.TryParse(xAttrib.Value, out size))
+                        {
+                            style.Size = size;
+                        }
+                    }
+                    else if (xAttrib.Name == "Bold")
+                    {
+                        style.Bold = xAttrib.Value.ToLower().Trim() == "true";
+                    }
+                    else if (xAttrib.Name == "Italic")
+                    {
+                        style.Italic = xAttrib.Value.ToLower().Trim() == "true";
+                    }
+                    else if (xAttrib.Name == "Underline")
+                    {
+                        style.Underline = xAttrib.Value.ToLower().Trim() == "true";
+                    }
+                    else if (xAttrib.Name == "EolFilled")
+                    {
+                        style.IsSelectionEolFilled = xAttrib.Value.ToLower().Trim() == "true";
+                    }
+                }
+
+                styles.Add(style);
+            }
+
+            return styles;
+        }
+
+        private static ScintillaNet.Configuration.KeyWordConfigList GetKeywords(XmlElement xDocEle)
+        {
+            ScintillaNet.Configuration.KeyWordConfigList keywords = new ScintillaNet.Configuration.KeyWordConfigList();
+
+            foreach (XmlElement xKeyword in xDocEle.GetElementsByTagName("Keywords"))
+            {
+                int listNum = 0;
+                bool inherit = false;
+                string[] words = xKeyword.InnerText.Split(new char[] { ' ', '\t', '\r', '\n', });
+                
+                XmlAttributeCollection xAttribs = xKeyword.Attributes;
+                foreach (XmlAttribute xAttrib in xAttribs)
+                {
+                    if (xAttrib.Name == "List")
+                    {
+                        if (int.TryParse(xAttrib.Value, out listNum) == false)
+                            listNum = 0;
+                    }
+                    else if (xAttrib.Name == "Inherit")
+                    {
+                        inherit = xAttrib.Value.ToLower().Trim() == "true";
+                    }
+                }
+
+                ScintillaNet.Configuration.KeyWordConfig keyword = new ScintillaNet.Configuration.KeyWordConfig(listNum, xKeyword.InnerText, inherit);
+                keywords.Add(keyword);
+
+                //foreach (string word in words)
+                //{
+                //    if (string.IsNullOrEmpty(word) == false)
+                //    {
+                //        ScintillaNet.Configuration.KeyWordConfig keyword = new ScintillaNet.Configuration.KeyWordConfig(listNum, word, inherit);
+                //        keywords.Remove(keyword);
+                //        keywords.Add(keyword);
+                //    }
+                //}
+            }
+
+            return keywords;
+        }
     }
 }

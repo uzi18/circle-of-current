@@ -85,16 +85,9 @@
             this.mbtnConfig = new System.Windows.Forms.ToolStripMenuItem();
             this.mbtnCompile = new System.Windows.Forms.ToolStripMenuItem();
             this.mbtnBurn = new System.Windows.Forms.ToolStripMenuItem();
+            this.mbtnExportMakefile = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mbtnHelpTopics = new System.Windows.Forms.ToolStripMenuItem();
-            this.mbtnResources = new System.Windows.Forms.ToolStripMenuItem();
-            this.linkAvrlibcReference = new System.Windows.Forms.ToolStripMenuItem();
-            this.linkLibRef = new System.Windows.Forms.ToolStripMenuItem();
-            this.linkInterruptRef = new System.Windows.Forms.ToolStripMenuItem();
-            this.linkAvrlibcFAQ = new System.Windows.Forms.ToolStripMenuItem();
-            this.linkBaudRateChart = new System.Windows.Forms.ToolStripMenuItem();
-            this.linkFuseCalc = new System.Windows.Forms.ToolStripMenuItem();
-            this.linkAtmel = new System.Windows.Forms.ToolStripMenuItem();
             this.mbtnAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMain = new System.Windows.Forms.ToolStrip();
             this.tbtnNewOrig = new System.Windows.Forms.ToolStripButton();
@@ -132,8 +125,6 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripSeparatorReuse = new System.Windows.Forms.ToolStripSeparator();
-            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            this.mbtnExportMakefile = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripContainer1.BottomToolStripPanel.SuspendLayout();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -687,11 +678,17 @@
             this.mbtnBurn.Text = "&Program";
             this.mbtnBurn.Click += new System.EventHandler(this.mbtnBurn_Click);
             // 
+            // mbtnExportMakefile
+            // 
+            this.mbtnExportMakefile.Name = "mbtnExportMakefile";
+            this.mbtnExportMakefile.Size = new System.Drawing.Size(167, 22);
+            this.mbtnExportMakefile.Text = "Export Makefile";
+            this.mbtnExportMakefile.Click += new System.EventHandler(this.mbtnExportMakefile_Click);
+            // 
             // helpToolStripMenuItem
             // 
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mbtnHelpTopics,
-            this.mbtnResources,
             this.mbtnAbout});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
             this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
@@ -701,72 +698,14 @@
             // 
             this.mbtnHelpTopics.Image = global::AVRProjectIDE.Properties.Resources.help;
             this.mbtnHelpTopics.Name = "mbtnHelpTopics";
-            this.mbtnHelpTopics.Size = new System.Drawing.Size(137, 22);
+            this.mbtnHelpTopics.Size = new System.Drawing.Size(152, 22);
             this.mbtnHelpTopics.Text = "&Help Topics";
             this.mbtnHelpTopics.Click += new System.EventHandler(this.mbtnHelpTopics_Click);
-            // 
-            // mbtnResources
-            // 
-            this.mbtnResources.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.linkAvrlibcReference,
-            this.linkBaudRateChart,
-            this.linkFuseCalc,
-            this.linkAtmel});
-            this.mbtnResources.Image = global::AVRProjectIDE.Properties.Resources.web;
-            this.mbtnResources.Name = "mbtnResources";
-            this.mbtnResources.Size = new System.Drawing.Size(137, 22);
-            this.mbtnResources.Text = "&Resources";
-            // 
-            // linkAvrlibcReference
-            // 
-            this.linkAvrlibcReference.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.linkLibRef,
-            this.linkInterruptRef,
-            this.linkAvrlibcFAQ});
-            this.linkAvrlibcReference.Name = "linkAvrlibcReference";
-            this.linkAvrlibcReference.Size = new System.Drawing.Size(171, 22);
-            this.linkAvrlibcReference.Text = "Avr-libc Reference";
-            // 
-            // linkLibRef
-            // 
-            this.linkLibRef.Name = "linkLibRef";
-            this.linkLibRef.Size = new System.Drawing.Size(165, 22);
-            this.linkLibRef.Text = "Library Reference";
-            // 
-            // linkInterruptRef
-            // 
-            this.linkInterruptRef.Name = "linkInterruptRef";
-            this.linkInterruptRef.Size = new System.Drawing.Size(165, 22);
-            this.linkInterruptRef.Text = "Interrupts";
-            // 
-            // linkAvrlibcFAQ
-            // 
-            this.linkAvrlibcFAQ.Name = "linkAvrlibcFAQ";
-            this.linkAvrlibcFAQ.Size = new System.Drawing.Size(165, 22);
-            this.linkAvrlibcFAQ.Text = "FAQ";
-            // 
-            // linkBaudRateChart
-            // 
-            this.linkBaudRateChart.Name = "linkBaudRateChart";
-            this.linkBaudRateChart.Size = new System.Drawing.Size(171, 22);
-            this.linkBaudRateChart.Text = "Baud Rate Chart";
-            // 
-            // linkFuseCalc
-            // 
-            this.linkFuseCalc.Name = "linkFuseCalc";
-            this.linkFuseCalc.Size = new System.Drawing.Size(171, 22);
-            this.linkFuseCalc.Text = "Fuse Calculator";
-            // 
-            // linkAtmel
-            // 
-            this.linkAtmel.Name = "linkAtmel";
-            this.linkAtmel.Size = new System.Drawing.Size(171, 22);
-            this.linkAtmel.Text = "Atmel";
             // 
             // mbtnAbout
             // 
             this.mbtnAbout.Name = "mbtnAbout";
-            this.mbtnAbout.Size = new System.Drawing.Size(137, 22);
+            this.mbtnAbout.Size = new System.Drawing.Size(152, 22);
             this.mbtnAbout.Text = "&About";
             this.mbtnAbout.Click += new System.EventHandler(this.mbtnAbout_Click);
             // 
@@ -1082,13 +1021,6 @@
             this.toolStripSeparatorReuse.Name = "toolStripSeparatorReuse";
             this.toolStripSeparatorReuse.Size = new System.Drawing.Size(6, 25);
             // 
-            // mbtnExportMakefile
-            // 
-            this.mbtnExportMakefile.Name = "mbtnExportMakefile";
-            this.mbtnExportMakefile.Size = new System.Drawing.Size(167, 22);
-            this.mbtnExportMakefile.Text = "Export Makefile";
-            this.mbtnExportMakefile.Click += new System.EventHandler(this.mbtnExportMakefile_Click);
-            // 
             // frmProjIDE
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1169,14 +1101,6 @@
         private System.Windows.Forms.ToolStripMenuItem mbtnCompile;
         private System.Windows.Forms.ToolStripMenuItem mbtnBurn;
         private System.Windows.Forms.ToolStripMenuItem mbtnHelpTopics;
-        private System.Windows.Forms.ToolStripMenuItem mbtnResources;
-        private System.Windows.Forms.ToolStripMenuItem linkAvrlibcReference;
-        private System.Windows.Forms.ToolStripMenuItem linkLibRef;
-        private System.Windows.Forms.ToolStripMenuItem linkInterruptRef;
-        private System.Windows.Forms.ToolStripMenuItem linkBaudRateChart;
-        private System.Windows.Forms.ToolStripMenuItem linkAvrlibcFAQ;
-        private System.Windows.Forms.ToolStripMenuItem linkFuseCalc;
-        private System.Windows.Forms.ToolStripMenuItem linkAtmel;
         private System.Windows.Forms.ToolStripMenuItem mbtnAbout;
         private System.Windows.Forms.TextBox txtOutputMsg;
         private System.Windows.Forms.TabPage tabSearchResults;
@@ -1228,7 +1152,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator16;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator17;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator15;
-        private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.ToolStripMenuItem mbtnClearBookmarks;
         private System.Windows.Forms.ToolStripMenuItem mbtnExportMakefile;
 

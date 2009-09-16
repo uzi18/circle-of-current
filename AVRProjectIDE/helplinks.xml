@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<HelpLinks>
+  <Link Text="AVR-Libc Reference" URL="http://www.nongnu.org/avr-libc/user-manual/">
+    <Link Text="Library Reference" URL="http://www.nongnu.org/avr-libc/user-manual/modules.html" />
+    <Link Text="Interrupts" URL="http://www.nongnu.org/avr-libc/user-manual/group__avr__interrupts.html" />
+    <Link Text="FAQ" URL="http://www.nongnu.org/avr-libc/user-manual/FAQ.html" />
+  </Link>
+  <Link Text="Baud Rate Chart" URL="http://www.wormfood.net/avrbaudcalc.php" />
+  <Link Text="Fuse Calculator" URL="http://www.engbedded.com/cgi-bin/fcx.cgi" />
+  <Link Text="Timer Calculator" URL="http://frank.circleofcurrent.com/content.php?page_id=avrtimercalc" />
+  <Link Text="Atmel's Site" URL="http://www.atmel.com/products/AVR/" />
+</HelpLinks>
