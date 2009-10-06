@@ -7,6 +7,7 @@
 [http://www.rcgroups.com/forums/showthread.php?p=11238320#post11238320 RC Groups Post 2]
 [http://www.rcgroups.com/forums/showthread.php?p=9987793#post9987793 RC Groups Post 3]
 [http://ckado.com/UFO-004-Z-16-B-pcb_product_1805_fr.html Some European Store (confirms that sensors are included)]
+[http://www.sparkfun.com/commerce/product_info.php?products_id=9431 SparkFun's new 6 DOF IMU]
 
 Also purchased [http://www.seeedstudio.com/depot/angular-rate-sensor-ewts82-p-193.html Panasonic EWTS82] to test.
 
