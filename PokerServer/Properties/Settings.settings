@@ -1,0 +1,51 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="PokerServer.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="serverport" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">1234</Value>
+    </Setting>
+    <Setting Name="serverbacklog" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">1000</Value>
+    </Setting>
+    <Setting Name="dbhost" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">localhost</Value>
+    </Setting>
+    <Setting Name="dbdatabase" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">poker</Value>
+    </Setting>
+    <Setting Name="dbusername" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">root</Value>
+    </Setting>
+    <Setting Name="dbpassword" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">123123</Value>
+    </Setting>
+    <Setting Name="playerinichips" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">1000</Value>
+    </Setting>
+    <Setting Name="emailuser" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">poker</Value>
+    </Setting>
+    <Setting Name="emaildomain" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">circleofcurrent.com</Value>
+    </Setting>
+    <Setting Name="emailpassword" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">QWE123</Value>
+    </Setting>
+    <Setting Name="emailsmtp" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">smtp.gmail.com</Value>
+    </Setting>
+    <Setting Name="emailsmtpuseauth" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="emailsmtpusessl" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="emailsmtpport" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">587</Value>
+    </Setting>
+    <Setting Name="playerinactivelimit" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">3</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

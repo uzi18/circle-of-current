@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="PokerServer.CardDeck" Collapsed="true">
+    <Position X="6" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAgAAAAAAAAIEAAAAAEAAAAAAAAAAEAA=</HashCode>
+      <FileName>CardDeck.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PokerServer.CGamePlayer" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQQCAQEEQAAAAAARAAAAIAQAACJEAEAAgAACAAAAAQE=</HashCode>
+      <FileName>CGamePlayer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PokerServer.CGameRoom" Collapsed="true">
+    <Position X="3.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QKAABAAAIgIAAARAABgCABUAAAAEEBAAgAkgYQABAAA=</HashCode>
+      <FileName>CGameRoom.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PokerServer.ClassTemplate" Collapsed="true">
+    <Position X="7.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ClassTemplate.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PokerServer.Database" Collapsed="true">
+    <Position X="9.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IgAAAAAAACAkgACABAAAIAAQAQAgAAUIAAEQAAAAAAA=</HashCode>
+      <FileName>Database.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PokerServer.LobbyPlayer" Collapsed="true">
+    <Position X="11.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQBAAQEAAAAAQIAUAAgAAAQAAABEAAgAAAQAAAQAAQE=</HashCode>
+      <FileName>LobbyPlayer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PokerServer.ManagerWindow" Collapsed="true">
+    <Position X="7.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AICAACBAAKAUWAAAAACAEAACCAAAAQAUACCEAAEBBAI=</HashCode>
+      <FileName>ManagerWindow.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PokerServer.Program" Collapsed="true">
+    <Position X="11.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Program.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PokerServer.Server" Collapsed="true">
+    <Position X="7.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIABogAAACQAEABAAgEAAAAQCOBMAAFEICEAAAAQAGA=</HashCode>
+      <FileName>Server.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PokerServer.TexasHoldem" Collapsed="true">
+    <Position X="3.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TexasHoldem.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PokerServer.THPlayer" Collapsed="true">
+    <Position X="0.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>THPlayer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LogUtilities.Logger" Collapsed="true">
+    <Position X="6" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACQAAAAACAABQAAAAAAAAAAAgAAAAAAAAAAAAABAA=</HashCode>
+      <FileName>Logger.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NetUtilities.NetTunnel" Collapsed="true">
+    <Position X="9.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gCQAIAAAAAAEwAAFIHAAAACEAgFAwEABKAECAAgACAA=</HashCode>
+      <FileName>NetTunnel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PokerServer.Properties.Resources" Collapsed="true">
+    <Position X="6" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAABEAAAAQAAAAAAAAAAAAAAAIA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PokerServer.Properties.Settings" Collapsed="true">
+    <Position X="9.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAABAEAAAQAAAACBALAAAQAEDAAAAAEAAIAAAAAQ=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="PokerServer.Card" Collapsed="true">
+    <Position X="6" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAJAgAAAAAAA=</HashCode>
+      <FileName>Card.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Enum Name="PokerServer.CardValue" Collapsed="true">
+    <Position X="7.75" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAAAAAAAAggAAAEAAEAIAAAAAFBAAAAAgAAAgAAEE=</HashCode>
+      <FileName>Card.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="PokerServer.CardSuite" Collapsed="true">
+    <Position X="6" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAQAAAAAAAAAAAAAAAQAAAAAAgAAAAAAAACAACA=</HashCode>
+      <FileName>Card.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="PokerServer.RegistrationResult" Collapsed="true">
+    <Position X="7.75" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAACAAAAAAAAQAAAAAAEABAIAAAAAAAAIAAAAAAAA=</HashCode>
+      <FileName>Database.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="PokerServer.ChipRetrieveResult" Collapsed="true">
+    <Position X="9.5" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAQAAAAAAAAAAAABAAAAAAAAAAIAAAAAAAA=</HashCode>
+      <FileName>Database.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="LogUtilities.LogType" Collapsed="true">
+    <Position X="11.25" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAYAAAAAAIAAAAgAAAAAAAAAAAAIAAAA=</HashCode>
+      <FileName>Logger.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="PokerServer.PlayerStatus" Collapsed="true">
+    <Position X="6" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAgAAQA=</HashCode>
+      <FileName>CGamePlayer.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
