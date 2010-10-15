@@ -242,7 +242,15 @@ namespace BaseConverter
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            NotiIcon.Visible = false;
+            this.WindowState = FormWindowState.Minimized;
+            this.Hide();
+            e.Cancel = true;
+        }
+
+        private void showWindowToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Show();
+            WindowState = FormWindowState.Normal;
         }
     }
 }
