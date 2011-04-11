@@ -15,6 +15,8 @@
  * Plenty of configurations options available 
  * Slotted corners allows for flexible mounting
 
+=Table of Contents=
+
 <wiki:toc max_depth="1" />
 
 =Assembly Guide=
