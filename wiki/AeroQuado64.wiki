@@ -1,0 +1,440 @@
+#summary Experimental AeroQuad based Quadrotor Helicopter Flight Control Board
+
+=Features=
+
+* ATmega644PA, 16 MHz, 64KB of flash memory, 4KB of SRAM memory
+* Two serial ports, both are level shifted, and can be easily routed
+to different devices
+* Plenty of pins for extra servos, digital and analog inputs, and
+digital outputs
+* Code size large enough for all existing AeroQuad code
+* Supports ESCs which use RC pulse signals or I2C
+* Supports the following SparkFun breakout boards: ITG-3200 gyro, 6
+DOF IMU, BMA180 accelerometer, BMP085 barometic pressure sensor,
+HMC5842 compass, IMU3000 IMU
+* Circuitry for battery monitoring
+* Connectors for FTDI cable, bluetooth, XBee, GPS, AVR programmer,
+V-USB, and more
+* 3 LEDs and 1 power indicator LED
+* Reset switch, and another switch that you can use
+* Plenty of extra connectors, plenty of connection options
+* Plenty of configurations options available
+* Slotted corners allows for flexible mounting
+
+=Assembly Guide=
+
+Note that all resistors are in 0805 packaging, although 0603 will also
+fit perfectly fine. They should be 1/16 watt or greater.
+Note that all capacitors, unless otherwise specified, are ceramic chip
+capacitors in 0805 packaging (or 0603 since they will also fit
+perfectly fine). They should be rated 16V or greater.
+
+This assembly guide also contains some notes about the various areas
+on the circuit.
+
+==Microcontroller==
+
+The ATmega644PA obviously must be installed, solder in a 40 pin DIP
+socket so you are able to replace the IC if you need to.
+
+The ATmega644PA requires a 16 MHz resonator.
+
+The resonator footprint also allows you to use a 16 MHz crystal in
+HC49 packaging, but if you do this, you must install two 27 pF
+capacitors to the underside of the board. You should only choose a 16
+MHz crystal if you have a good reason not to use a 16 MHz resonator.
+
+You must solder C?? and C??, which are 0.1 uF decoupling capacitors
+for the ATmega644PA. Also solder C?? which is a 0.1 uF decoupling
+capacitor for the analog reference.
+
+On the bottom of the board, there is a footprint labelled "AREF-SEL",
+which allows you to choose the analog reference voltage by soldering
+over the pads labelled 5V or 3V3. You may also use a 0 ohm resistor
+here, or an ferrite bead. Note that AVCC is always connected to 5V.
+
+==Microcontroller Supporting Areas==
+
+The reset switch must be installed, R?? is the pull-up resistor for
+the reset switch. This resistor is optional because the ATmega644PA
+has a built-in pull-up resistor on the reset pin. You should install
+this if you do not trust the built-in resistor.
+
+A push button labelled "BOOT" can be installed only if you are using a
+non-Arduino-standard bootloader. I personally hate the way "time
+sensitive" bootloaders work. This button is active low and connected
+to PB?? on the ATmega. Be sure to enable internal pull-up resistors
+for this button.
+
+The ISP header should be installed if you need to use an AVR
+programmer (perhaps to load the bootloader for the first time, etc).
+
+Note: The ISP header is also the only way to access the SPI signals.
+To experiment with SPI devices, I suggest you connect it with this
+header by using a 2X3 IDC cable, and then use a pin from PORTA or
+PORTB as the CS or SS signal. Remember that the voltage here is 5V and
+if your device uses 3V3, external level shifters will be needed.
+Luckily, there's two connectors near the voltage regulators that give
+you access to 3V3.
+
+==LED Indicators==
+
+LED1, LED2, LED3 are 3 mm LEDs, choose your own colours. They can be
+mounted vertically or horizontally (pointing out). Please watch the
+polarity indicated by the hole shape and silkscreen. R??, R??, R??,
+are all 1K ohm resistors to limit current to these LEDs. They are 1K
+ohm instead of a lower value because the signals may be used for some
+other purpose later, you may substitute a lower resistance if you want
+brighter LEDs and do not want to experiment with native USB
+funtionality.
+
+LED3 does not currently serve any purpose in the existing software, it
+is there for you to use for your own custom application. LED1 is
+conencted to PB0 (Sanguino pin 0), LED2 is connected to PB1 (Sanguino
+pin 1), and LED3 is connected to PB2 (Sanguino pin 2).
+
+==Power Supply==
+
+Solder a LM1117 3V3 regulator in SOT-233-3 packaging where indicated
+on the PCB. Also solder the accompanying C??, which is 1 uF.
+
+LED-PWR is a 3 mm LED that indicates that there is power present on
+the 3V3 supply bus. You may solder this vertically or sideways
+(pointing out). R?? is the 1K ohm current limiting resistor for this
+LED.
+
+Two rows of 3 pin male headers should be installed at "3V3-TAP", these
+headers give you access to the 3V3 supply bus.
+Two rows of 3 pin male headers should be installed at "5V-TAP", these
+headers give you access to the "SYS" 5V supply bus.
+
+If you are powering this circuit from a battery, you must install a
+LM1117 5V regulator in SOT-233-3 packaging where indicated on the PCB.
+This may be omitted if you are using the ESCs as the power supply (be
+sure to set SJ?? correctly), or under other circumstances that you are
+under.
+
+The 1 uF capacitor C?? should be always soldered regardless of whether
+or not you are using a 5V regulator.
+
+The battery power input is used if you need to connect a battery.
+There are four ways to do this:
+
+* Using a barrel jack
+* Solder wire directly onto PCB (you can enlarge some holes to act as
+strain relief)
+* using a screw terminal
+* Using a 3 pin header
+
+A beefy diode should be installed at D? to protect the circuit from a
+battery connected backwards (so omit this diode if you believe in your
+own competence, you must bridge the pads of the diode footprint with
+solder if you omit this diode). This must be a diode that can handle
+20V of reverse voltage, and handle 1.5A of forward current. The
+footprint is SMB or similar.
+
+C?? and C?? are aluminum electrolytic 5.3mm x 5.3mm capacitors that
+must be installed, solder them in the correct orientation according to
+polarity.
+
+===Battery Monitor===
+
+If you want to use the battery voltage monitor capabilies, install D?
+(1N4148 in MELF packaging), R?? (7K5 ohm), and R?? (15K ohm). There's
+a 3 pin header near these components labelled "BATT-MON" that you can
+use to connect the battery that you wish to monitor. Alternatively,
+bridging SJ?? will connect the battery supply to the battery monitor
+circuit instead. The battery monitor and battery supply sections are
+separated in case you use two separate batteries (one for motors,
+another for control electronics). Remember to enable the battery
+monitor software, and note that this is connected to analog channel 0
+(PORTA's PA0).
+
+Remember to measure the voltage drop across D?? and also the values of
+R?? and R??. Set these values in the software so the sampled data is
+accurate.
+
+==Port A Auxilliary GPIOs==
+
+There are 7X3 headers connected to PORTA's pins PA1 to PA7. The top
+row of pins is ground, the voltage for the center row of pins is
+selectable, and the pins in the bottom row are connected to PORTA's
+pins. You must select the voltage for the center row according to how
+you plan to use them.
+These pins have no specific purpose and are meant for you to
+experiment with. Here are your options and how you should choose the
+voltage.
+
+* Control more servos
+   * Use SJ?? to power the servos via the system supply (might be
+weak) or the power supplied by the ESCs (recommended).
+* Read more RC input channels
+   * Use SJ?? to connect the same voltage used by the RC input headers
+* General purpose digital input/output
+   * Select either 5V or 3V3 using SJ??
+* Read in analog voltages
+   * Select either 5V or 3V3 using SJ??
+* Use with jumper shunt blocks
+   * Select ground using SJ??, also remember to enable the internal
+pull-up resistors on these pins
+
+==RC Input==
+
+PORTC's pins PC7 to PC2 are connected to 6x3 headers, solder in male
+headers here. These are dedicated to taking RC pulse signals from your
+RC receiver. The voltage for the center pin can be connected to 5V or
+3V3 using SJ??, and remember that there is a "5V-TAP" and "3V-TAP" if
+your receiver needs power from a 7th cable.
+
+==Sensors==
+
+Solder R?? and R??, which are 4K7 pull-up resistors for the I2C bus.
+Be sure that you disable internal pull-up resistors in the software.
+This allows you to use 3V3 I2C sensors without using a level shifter.
+
+You may choose to install either the 6-DOF IMU (gyro and accelerometer
+combined) breakout board, or a ITG-3200 gyro breakout board. If you do
+choose the ITG-3200, you may then also choose to install a BMA180
+accelerometer breakout board. You must always have a gyro but the
+accelerometer is optional (it allows you to enable auto-leveling
+flight). Be sure to configure this correctly in the software.
+
+If you are feeling experimental, the IMU3000 breakout board also fits
+into the ITG-3200 breakout board footprint, with similar pin
+assignments.
+
+You may also choose to install a BMP085 barometric sensor breakout
+board, and a HMC5842 compass breakout board. These are optional and
+you can configure the software to use them for altitude-hold and
+compass-heading-hold.
+
+==Outputs to Motors and Servos==
+
+Four sets of 3-pin male headers should be soldered near "ESC" labels,
+these are connections for standard RC pulse signal ESCs. SJ?? can be
+used to connect the voltage supplied by the ESCs to the main system
+supply bus.
+
+Four sets of 4-pin headers can be soldered near "I2C-GROUP", these are
+meant for connections to any ESCs that use I2C. SJ?? Can be used to
+connect the 5V supply or 3V3 supply to the ESCs's supply voltage.
+
+There's another 4-pin header also meant for an auxilliary I2C
+connection, SJ?? selects the voltage supplied to this connector. This
+connection is for experimentation with I2C devices. Personally, I
+think it's useful for connecting a logic analyzer to debug the I2C
+bus.
+
+There's a set of four 3-pin headers labelled "SERVO" 1 to 4. Solder
+these if you have any servos to control (maybe for a camera?), you can
+also use these as general purpose digital input/output pins. SJ?? is
+used to select the power supply for these servos, either from the
+system 5V supply, or the 5V supplied by the ESCs (recommended). These
+pins are connected to PB3 to PB6.
+
+==Native USB==
+
+There is a section designed with V-USB circuitry so the ATmega644PA
+can communicate with a computer via native low speed USB. This can be
+used to implement FTDI-less communication, bootloading, and
+configuration. This is current meant just for experimentation. SJ?? is
+used to join the 5V power supply with the 5V coming from the
+computer's USB port, this is not recommended as the 5V from the
+computer is also connected to PB0 so that it can detect whether or not
+USB is connected.
+
+Do not solder anything to the USB section unless you really want to
+experiment. It is possible for LED2 and LED3 to cause too much load on
+the USB bus, if you suspect that they are causing problems, uninstall
+R?? and R??.
+
+C?? is a tantalum 4u7 capacitor, solder it on if you are playing with
+USB. This capacitor is polarized so install it in the right
+orientation as indicated. If you install a ceramic capacitor here,
+then most likely the orientation will not matter. R?? and R?? are 68
+ohm terminating resistors for the D+ and D- signals of the USB bus,
+R?? is a 2K2 pull-up resistor which causes the computer to recognize
+the bus as low speed USB. D? and D? must be 3.6V zener diodes in MELF
+package (suggested 1N5227B, use 500 mW versions, will not work with
+200 mW versions) which clamp the USB bus voltage.
+
+==Serial Ports==
+
+There are a few possible serial port devices. The ATmega644PA has two
+serial ports, USART0 and USART1, they are probably labelled SER0 and
+SER1 on the PCB.
+
+Use horizontal mount male headers for the FTDI cable connection. This
+connection is always powered by 5V, RX and TX are at 5V level. Use
+SJ?? and SJ?? to decide whether to connect this to SER0 or SER1.
+
+There's a connection designed for a Bluetooth Mate (or BlueSMIRF), and
+since they don't come with default headers, you should decide between
+either male or female headers yourself. This connection is always
+powered by 5V, RX and TX are at 5V level. Use SJ?? and SJ?? to decide
+whether to connect this to SER0 or SER1.
+
+There's a connection meant for a general purpose serial device (GPS,
+datalogger, etc). Use SJ?? and SJ?? to decide whether to connect this
+to SER0 or SER1. Use SJ?? to decide whether to power this device from
+5V or 3V3. It is important to note that the RX and TX signals are
+always at 3V3 level regardless of the supplied power. You must install
+the level shifter circuit or bypass it correctly if you plan on using
+this connector.
+
+Install 2 mm female headers on the XBee footprint if you plan on using
+a XBee radio module. This is always powered by 3V3, RX and TX always
+uses the level shifted serial signals.
+
+===Level Shifters===
+
+If you plan on interfacing any 3V3 devices with the serial ports, you
+should implement the level shifting circuitry. XBee is known to not
+work well with 5V microcontrollers directly.
+
+Each level shifter circuit uses a voltage divider for the TX signal
+and a TXB0101 (IC? and IC?, SOT-23 package) bidirectional level
+translator for the RX signal. R?? (4K7 ohm), R?? (10K ohm) and IC? are
+used for SER0. R?? (4K7 ohm), R?? (10K ohm) and IC? are used for SER1.
+C?? and C?? (0.1 uF) are there to decouple the 3V3 and 5V supplies for
+IC? and IC?. Do not omit C?? and C?? if either IC? or IC? is installed
+(otherwise, omit C?? and C?? if both IC? and IC? are omitted).
+
+To bypass a level shifter circuit, short out the 4K7 ohm resistor
+footprint, omit the TXB0101, and join pin 3 and 4 (signal A and B) of
+the TXB0101 with a wire.
+
+=Jumper Configuration Summary=
+
+===AREF-SEL===
+
+Selects the analog reference voltage between 3V3 and 5V
+
+===SJ??===
+
+Joins the 5V from RC pulse ESCs to the 5V system power supply
+
+===SJ??===
+
+Joins the power from I2C ESCs to either the 5V RC pulse ESCs power, or
+to 3V3 power
+
+===SJ??===
+
+Selects 5V or 3V3 for the auxillary I2C device connector
+
+===SJ??===
+
+Selects either the 5V from the ESCs or the 5V from the system power
+supply for the headers connected to PORTA
+
+===SJ??===
+
+Allows you to join the center pin of the PORTA headers to the same
+power used by the RC signal input headers, or to ground so you can use
+them with jumper shunt blocks.
+
+===SJ??===
+
+Joins the 5V from the USB bus to the 5V system power
+
+===SJ??===
+
+Chooses between the 5V system power or the ESC 5V power for the four
+auxillary servos
+
+===SJ??===
+
+Selects the voltage supplied to the auxillary serial device, either 5V or 3V3
+
+===SJ?? and SJ??===
+
+Selects between SER0 and SER1 for the XBee
+
+===SJ?? and SJ??===
+
+Selects between SER0 and SER1 for the auxillary serial device
+
+===SJ?? and SJ??===
+
+Selects between SER0 and SER1 for the bluetooth connector
+
+===SJ?? and SJ??===
+
+Selects between SER0 and SER1 for the FTDI cable connector
+
+=Part List=
+
+Note that in this list, all components are listed regardless of
+whether or not you need them
+
+=Schematic and PCB=
+
+=Design Notes=
+
+No copper near where abrasion is expected (near around the FTDI
+connector, and the mounting slots)
+
+No copper under the XBee antenna
+
+No copper under the compass sensor
+
+All traces are 0.016" wide or greater. If you need to cut a trace, but
+then later want to re-connect it, the thick trace makes this easy for
+you.
+
+Most header footprints have a tiny locking offset similar to how
+SparkFun does it in their Eagle library, however my footprints are
+easier to center correctly.
+
+I know AeroQuad depends on all the timers except timer0 (reserved so
+millis() works) to control auxillary servos on the Arduino Mega, so
+you might be wondering how I plan on controlling four more servos when
+the ATmega644PA only has timer0 available to use. Don't worry, I have
+compare match driven servo control code that utilizes timer0 without
+disturbing the operation of millis(), and actually my code can target
+any pin on the ATmega, even the ones on PORTA.
+
+==Improvements Over Various AeroQuad Shields==
+
+The shields look kind of "Eagle auto-routed" (judging from the trace
+width, apparent routing grid, and cornering)
+
+The shield had level shifting for the I2C which is totally
+unnessesary, but no level shifting for any serial port devices. My
+design has level shifting for both serial ports, and I2C uses external
+pull-up resistors to 3V3 so it doesn't need level shifting.
+
+The LEDs on the V1.8 shield are supposed to be special LEDs with
+current limiting resistors built inside, but this makes it dangerous
+for anybody not using the same special LEDs. Also the LED on pin 13
+can cause problems for any SPI devices and ISP programming.
+
+The AeroQuad shields do not provide a 3V3 supply, it uses the one
+built into the Arduino. The 3V3 supply from the Arduino boards before
+UNO are kind of bad, limited, and noisy.
+
+==After Thoughts==
+
+AREF probably should just be connected directly to 3V3, since you can
+select 5V as the reference through software.
+
+More attention should have been paid towards SPI, but nothing uses SPI yet.
+
+The native USB stuff probably causes a lot of confusion.
+
+No mounting holes for IMU3000 breakout board.
+
+Timer1's ICP is not available for use since it is occupied by OC2B.
+
+RSSI pin is not used on the XBee. Various shields on the market
+include a LED on this pin, but I though you can always just look at
+the ground station XBee's RSSI instead of the one that is flying.
+
+INT0, INT1, and INT2 are the only external interrupt pins on the
+ATmega644PA, but there's no easy way to use them on this PCB. Good
+thing there are plenty of PCINT pins.
+
+My code for the 4 servos work, but I'm not sure how having more
+interrupt routines will bother the rest of the time sensitive
+software.
