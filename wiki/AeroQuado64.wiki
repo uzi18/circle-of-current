@@ -95,15 +95,15 @@ There are 7x3 headers connected to PORTA's pins PA1 to PA7. The top row of pins 
  * Read more RC input channels    
   * Use SJ15 to connect the same voltage used by the RC input headers 
  * General purpose digital input/output    
-  * Select either 5V or 3V3 using SJ15 and SJ12 together
+  * Select either 5V or 3V3 using SJ15 and SJ2 together
  * Read in analog voltages    
-  * Select either 5V or 3V3 using SJ15 and SJ12 together
+  * Select either 5V or 3V3 using SJ15 and SJ2 together
  * Use with jumper shunt blocks    
   * Select ground using SJ15, also remember to enable the internal pull-up resistors on these pins
 
 ==RC Input==
 
-PORTC's pins PC7 to PC2 are connected to 6x3 headers, solder in male headers here. These are dedicated to taking RC pulse signals from your RC receiver. The voltage for the center pin can be connected to 5V or 3V3 using SJ12, and remember that there is a "5V-TAP" and "3V-TAP" if your receiver needs power from a 7th cable.
+PORTC's pins PC7 to PC2 are connected to 6x3 headers, solder in male headers here. These are dedicated to taking RC pulse signals from your RC receiver. The voltage for the center pin can be connected to 5V or 3V3 using SJ2, and remember that there is a "5V-TAP" and "3V-TAP" if your receiver needs power from a 7th cable.
 
 ==Sensors==
 
@@ -165,47 +165,47 @@ Selects the analog reference voltage between 3V3 and 5V
 
 Joins the 5V from RC pulse ESCs to the 5V system power supply
 
-===SJ??===
+===SJ3===
 
 Joins the power from I2C ESCs to either the 5V RC pulse ESCs power, or to 3V3 power
 
-===SJ??===
+===SJ5===
 
-Selects 5V or 3V3 for the auxillary I2C device connector
+Selects 5V or 3V3 for the auxiliary I2C device connector
 
-===SJ??===
+===SJ17===
 
 Selects either the 5V from the ESCs or the 5V from the system power supply for the headers connected to PORTA
 
-===SJ??===
+===SJ15===
 
 Allows you to join the center pin of the PORTA headers to the same power used by the RC signal input headers, or to ground so you can use them with jumper shunt blocks.
 
-===SJ??===
+===SJ18===
 
 Joins the 5V from the USB bus to the 5V system power
 
-===SJ??===
+===SJ4===
 
-Chooses between the 5V system power or the ESC 5V power for the four auxillary servos
+Chooses between the 5V system power or the ESC 5V power for the four auxiliary servos
 
-===SJ??===
+===SJ6===
 
-Selects the voltage supplied to the auxillary serial device, either 5V or 3V3
+Selects the voltage supplied to the auxiliary serial device, either 5V or 3V3
 
-===SJ?? and SJ??===
+===SJ11 and SJ12===
 
 Selects between SER0 and SER1 for the XBee
 
-===SJ?? and SJ??===
+===SJ13 and SJ14===
 
-Selects between SER0 and SER1 for the auxillary serial device
+Selects between SER0 and SER1 for the auxiliary serial device
 
-===SJ?? and SJ??===
+===SJ7 and SJ8===
 
 Selects between SER0 and SER1 for the bluetooth connector
 
-===SJ?? and SJ??===
+===SJ9 and SJ10===
 
 Selects between SER0 and SER1 for the FTDI cable connector
 
@@ -227,7 +227,7 @@ All traces are 0.016" wide or greater. If you need to cut a trace, but then late
 
 Most header footprints have a tiny locking offset similar to how SparkFun does it in their Eagle library, however my footprints are easier to center correctly.
 
-I know AeroQuad depends on all the timers except timer0 (reserved so millis() works) to control auxillary servos on the Arduino Mega, so you might be wondering how I plan on controlling four more servos when the ATmega644PA only has timer0 available to use. Don't worry, I have compare match driven servo control code that utilizes timer0 without disturbing the operation of millis(), and actually my code can target any pin on the ATmega, even the ones on PORTA.
+I know AeroQuad depends on all the timers except timer0 (reserved so millis() works) to control auxiliary servos on the Arduino Mega, so you might be wondering how I plan on controlling four more servos when the ATmega644PA only has timer0 available to use. Don't worry, I have compare match driven servo control code that utilizes timer0 without disturbing the operation of millis(), and actually my code can target any pin on the ATmega, even the ones on PORTA.
 
 ==Improvements Over Various AeroQuad Shields==
 
