@@ -1,5 +1,7 @@
 #summary Scratchpad for ideas.
 
+*Note: this page is outdated*
+
 == Decisions ==
 
 [http://www.walkera.com.hk/walkera-dragonfly-ufo-4-spare-parts-ufo4z16-pcb-receiver-p-2064.html Walkera UFO board] purchased (backordered), should include three ENC-03J gyros and a 3 axis [http://www.freescale.com/webapp/sps/site/prod_summary.jsp?code=MMA7260QT&fsrch=1 MMA7260 accelerometer]. Pictures of board:
