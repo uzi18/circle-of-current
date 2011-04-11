@@ -4,7 +4,7 @@ This is my PCB design for a quadrotor helicopter flight controller, based heavil
 
 =Table of Contents=
 
-<wiki:toc max_depth="1" />
+<wiki:toc max_depth="2" />
 
 =Features=
 
@@ -103,11 +103,11 @@ There are 7x3 headers connected to PORTA's pins PA1 to PA7. The top row of pins 
 
 ==RC Input==
 
-PORTC's pins PC7 to PC2 are connected to 6x3 headers, solder in male headers here. These are dedicated to taking RC pulse signals from your RC receiver. The voltage for the center pin can be connected to 5V or 3V3 using SJ??, and remember that there is a "5V-TAP" and "3V-TAP" if your receiver needs power from a 7th cable.
+PORTC's pins PC7 to PC2 are connected to 6x3 headers, solder in male headers here. These are dedicated to taking RC pulse signals from your RC receiver. The voltage for the center pin can be connected to 5V or 3V3 using SJ12, and remember that there is a "5V-TAP" and "3V-TAP" if your receiver needs power from a 7th cable.
 
 ==Sensors==
 
-Solder R?? and R??, which are 4K7 pull-up resistors for the I2C bus. Be sure that you disable internal pull-up resistors in the software. This allows you to use 3V3 I2C sensors without using a level shifter.
+Solder R1 and R2, which are 4K7 pull-up resistors for the I2C bus. Be sure that you disable internal pull-up resistors in the software. This allows you to use 3V3 I2C sensors without using a level shifter.
 
 You may choose to install either the 6-DOF IMU (gyro and accelerometer combined) breakout board, or a ITG-3200 gyro breakout board. If you do choose the ITG-3200, you may then also choose to install a BMA180 accelerometer breakout board. You must always have a gyro but the accelerometer is optional (it allows you to enable auto-leveling flight). Be sure to configure this correctly in the software.
 
@@ -117,41 +117,43 @@ You may also choose to install a BMP085 barometric sensor breakout board, and a 
 
 ==Outputs to Motors and Servos==
 
-Four sets of 3-pin male headers should be soldered near "ESC" labels, these are connections for standard RC pulse signal ESCs. SJ?? can be used to connect the voltage supplied by the ESCs to the main system supply bus.
+Four sets of 3-pin male headers should be soldered near "ESC" labels, these are connections for standard RC pulse signal ESCs. SJ1 can be used to connect the voltage supplied by the ESCs to the main system supply bus.
 
-Four sets of 4-pin headers can be soldered near "I2C-GROUP", these are meant for connections to any ESCs that use I2C. SJ?? Can be used to connect the 5V supply or 3V3 supply to the ESCs's supply voltage.
+Four sets of 4-pin headers can be soldered near "I2C-GROUP", these are meant for connections to any ESCs that use I2C. SJ3 Can be used to connect the 5V supply or 3V3 supply to the ESCs's supply voltage.
 
-There's another 4-pin header also meant for an auxilliary I2C connection, SJ?? selects the voltage supplied to this connector. This connection is for experimentation with I2C devices. Personally, I think it's useful for connecting a logic analyzer to debug the I2C bus.
+There's another 4-pin header also meant for an auxilliary I2C connection, SJ5 selects the voltage supplied to this connector. This connection is for experimentation with I2C devices. Personally, I think it's useful for connecting a logic analyzer to debug the I2C bus.
 
-There's a set of four 3-pin headers labelled "SERVO" 1 to 4. Solder these if you have any servos to control (maybe for a camera?), you can also use these as general purpose digital input/output pins. SJ?? is used to select the power supply for these servos, either from the system 5V supply, or the 5V supplied by the ESCs (recommended). These pins are connected to PB3 to PB6.
+There's a set of four 3-pin headers labelled "SERVO" 1 to 4. Solder these if you have any servos to control (maybe for a camera?), you can also use these as general purpose digital input/output pins. SJ4 is used to select the power supply for these servos, either from the system 5V supply, or the 5V supplied by the ESCs (recommended). These pins are connected to PB3 to PB6.
 
 ==Native USB==
 
-There is a section designed with V-USB circuitry so the ATmega644PA can communicate with a computer via native low speed USB. This can be used to implement FTDI-less communication, bootloading, and configuration. This is current meant just for experimentation. SJ?? is used to join the 5V power supply with the 5V coming from the computer's USB port, this is not recommended as the 5V from the computer is also connected to PB0 so that it can detect whether or not USB is connected.
+There is a section designed with V-USB circuitry so the ATmega644PA can communicate with a computer via native low speed USB. This can be used to implement FTDI-less communication, bootloading, and configuration. This is current meant just for experimentation.
 
-Do not solder anything to the USB section unless you really want to experiment. It is possible for LED2 and LED3 to cause too much load on the USB bus, if you suspect that they are causing problems, uninstall R?? and R??.
+SJ18 is used to join the 5V power supply with the 5V coming from the computer's USB port, this is not recommended as the 5V from the computer is also connected to PB0 so that it can detect whether or not USB is connected.
 
-C?? is a tantalum 4u7 capacitor, solder it on if you are playing with USB. This capacitor is polarized so install it in the right orientation as indicated. If you install a ceramic capacitor here, then most likely the orientation will not matter. R?? and R?? are 68 ohm terminating resistors for the D+ and D- signals of the USB bus, R?? is a 2K2 pull-up resistor which causes the computer to recognize the bus as low speed USB. D? and D? must be 3.6V zener diodes in MELF package (suggested 1N5227B, use 500 mW versions, will not work with 200 mW versions) which clamp the USB bus voltage.
+Do not solder anything to the USB section unless you really want to experiment. It is possible for LED2 and LED3 to cause too much load on the USB bus, if you suspect that they are causing problems, uninstall R4 and R5.
+
+C10 is a tantalum 4u7 capacitor, solder it on if you are playing with USB. This capacitor is polarized so install it in the right orientation as indicated. If you install a ceramic capacitor here, then most likely the orientation will not matter. R14 and R15 are 68 ohm terminating resistors for the D+ and D- signals of the USB bus, R16 is a 2K2 pull-up resistor which causes the computer to recognize the bus as low speed USB. D3 and D4 must be 3.6V zener diodes in MELF package (suggested 1N5227B, use 500 mW versions, will not work with 200 mW versions) which clamp the USB bus voltage.
 
 ==Serial Ports==
 
 There are a few possible serial port devices. The ATmega644PA has two serial ports, USART0 and USART1, they are probably labelled SER0 and SER1 on the PCB.
 
-Use horizontal mount male headers for the FTDI cable connection. This connection is always powered by 5V, RX and TX are at 5V level. Use SJ?? and SJ?? to decide whether to connect this to SER0 or SER1.
+Use horizontal mount male headers for the FTDI cable connection. This connection is always powered by 5V, RX and TX are at 5V level. Use SJ9 and SJ10 to decide whether to connect this to SER0 or SER1.
 
-There's a connection designed for a Bluetooth Mate (or BlueSMIRF), and since they don't come with default headers, you should decide between either male or female headers yourself. This connection is always powered by 5V, RX and TX are at 5V level. Use SJ?? and SJ?? to decide whether to connect this to SER0 or SER1.
+There's a connection designed for a Bluetooth Mate (or BlueSMIRF), and since they don't come with default headers, you should decide between either male or female headers yourself. This connection is always powered by 5V, RX and TX are at 5V level. Use SJ7 and SJ8 to decide whether to connect this to SER0 or SER1.
 
-There's a connection meant for a general purpose serial device (GPS, datalogger, etc). Use SJ?? and SJ?? to decide whether to connect this to SER0 or SER1. Use SJ?? to decide whether to power this device from 5V or 3V3. It is important to note that the RX and TX signals are always at 3V3 level regardless of the supplied power. You must install the level shifter circuit or bypass it correctly if you plan on using this connector.
+There's a connection meant for a general purpose serial device (GPS, datalogger, etc). Use SJ13 and SJ14 to decide whether to connect this to SER0 or SER1. Use SJ6 to decide whether to power this device from 5V or 3V3. It is important to note that the RX and TX signals are always at 3V3 level regardless of the supplied power. You must install the level shifter circuit or bypass it correctly if you plan on using this connector.
 
-Install 2 mm female headers on the XBee footprint if you plan on using a XBee radio module. This is always powered by 3V3, RX and TX always uses the level shifted serial signals.
+Install 2 mm female headers on the XBee footprint if you plan on using a XBee radio module. This is always powered by 3V3, RX and TX always uses the level shifted serial signals. SJ11 and SJ12 are used to select between using SER0 and SER1 for the XBee module.
 
 ===Level Shifters===
 
 If you plan on interfacing any 3V3 devices with the serial ports, you should implement the level shifting circuitry. XBee is known to not work well with 5V microcontrollers directly.
 
-Each level shifter circuit uses a voltage divider for the TX signal and a TXB0101 (IC? and IC?, SOT-23 package) bidirectional level translator for the RX signal. R?? (4K7 ohm), R?? (10K ohm) and IC? are used for SER0. R?? (4K7 ohm), R?? (10K ohm) and IC? are used for SER1. C?? and C?? (0.1 uF) are there to decouple the 3V3 and 5V supplies for IC? and IC?. Do not omit C?? and C?? if either IC? or IC? is installed (otherwise, omit C?? and C?? if both IC? and IC? are omitted).
+Each level shifter circuit uses a voltage divider for the TX signal and a TXB0101 (IC4 and IC5, SOT-23 package) bidirectional level translator for the RX signal. R9 (4K7 ohm), R8 (10K ohm) and IC4 are used for SER0. R10 (4K7 ohm), R11 (10K ohm) and IC5 are used for SER1. C7 and C8 (0.1 uF) are there to decouple the 3V3 and 5V supplies for IC4 and IC5. Do not omit C7 and C8 if either IC4 or IC5 is installed (otherwise, omit C7 and C8 if both IC4 and IC5 are omitted).
 
-To bypass a level shifter circuit, short out the 4K7 ohm resistor footprint, omit the TXB0101, and join pin 3 and 4 (signal A and B) of the TXB0101 with a wire.
+To bypass a level shifter circuit, short out the corresponding 4K7 ohm resistor footprint, omit the TXB0101, and join pin 3 and 4 (signal A and B) of the TXB0101 with a wire.
 
 =Jumper Configuration Summary=
 
@@ -159,7 +161,7 @@ To bypass a level shifter circuit, short out the 4K7 ohm resistor footprint, omi
 
 Selects the analog reference voltage between 3V3 and 5V
 
-===SJ??===
+===SJ1===
 
 Joins the 5V from RC pulse ESCs to the 5V system power supply
 
@@ -254,3 +256,5 @@ RSSI pin is not used on the XBee. Various shields on the market include a LED on
 INT0, INT1, and INT2 are the only external interrupt pins on the ATmega644PA, but there's no easy way to use them on this PCB. Good thing there are plenty of PCINT pins.
 
 My code for the 4 servos work, but I'm not sure how having more interrupt routines will bother the rest of the time sensitive software.
+
+R4's silkscreen is covering a via
