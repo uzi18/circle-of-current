@@ -1,5 +1,6 @@
-=Features=
+#sidebar TableOfContents
 
+=Features=
 
  * ATmega644PA, 16 MHz, 64KB of flash memory, 4KB of SRAM memory 
  * Two serial ports, both are level shifted, and can be easily routed to different devices 
