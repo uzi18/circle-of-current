@@ -2,24 +2,24 @@
 
 =Features=
 
-* ATmega644PA, 16 MHz, 64KB of flash memory, 4KB of SRAM memory
-* Two serial ports, both are level shifted, and can be easily routed
+ * ATmega644PA, 16 MHz, 64KB of flash memory, 4KB of SRAM memory
+ * Two serial ports, both are level shifted, and can be easily routed
 to different devices
-* Plenty of pins for extra servos, digital and analog inputs, and
+ * Plenty of pins for extra servos, digital and analog inputs, and
 digital outputs
-* Code size large enough for all existing AeroQuad code
-* Supports ESCs which use RC pulse signals or I2C
-* Supports the following SparkFun breakout boards: ITG-3200 gyro, 6
+ * Code size large enough for all existing AeroQuad code
+ * Supports ESCs which use RC pulse signals or I2C
+ * Supports the following SparkFun breakout boards: ITG-3200 gyro, 6
 DOF IMU, BMA180 accelerometer, BMP085 barometic pressure sensor,
 HMC5842 compass, IMU3000 IMU
-* Circuitry for battery monitoring
-* Connectors for FTDI cable, bluetooth, XBee, GPS, AVR programmer,
+ * Circuitry for battery monitoring
+ * Connectors for FTDI cable, bluetooth, XBee, GPS, AVR programmer,
 V-USB, and more
-* 3 LEDs and 1 power indicator LED
-* Reset switch, and another switch that you can use
-* Plenty of extra connectors, plenty of connection options
-* Plenty of configurations options available
-* Slotted corners allows for flexible mounting
+ * 3 LEDs and 1 power indicator LED
+ * Reset switch, and another switch that you can use
+ * Plenty of extra connectors, plenty of connection options
+ * Plenty of configurations options available
+ * Slotted corners allows for flexible mounting
 
 =Assembly Guide=
 
