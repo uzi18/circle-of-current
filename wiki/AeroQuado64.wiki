@@ -1,4 +1,10 @@
-#sidebar TableOfContents
+=AeroQuado64=
+
+This is my PCB design for a quadrotor helicopter flight controller, based heavily on AeroQuad.
+
+=Table of Contents=
+
+<wiki:toc max_depth="1" />
 
 =Features=
 
@@ -16,10 +22,6 @@
  * Plenty of configurations options available 
  * Slotted corners allows for flexible mounting
 
-=Table of Contents=
-
-<wiki:toc max_depth="1" />
-
 =Assembly Guide=
 
 Note that all resistors are in 0805 packaging, although 0603 will also fit perfectly fine. They should be 1/16 watt or greater. Note that all capacitors, unless otherwise specified, are ceramic chip capacitors in 0805 packaging (or 0603 since they will also fit perfectly fine). They should be rated 16V or greater. 
@@ -34,40 +36,39 @@ The ATmega644PA requires a 16 MHz resonator.
 
 The resonator footprint also allows you to use a 16 MHz crystal in HC49 packaging, but if you do this, you must install two 27 pF capacitors to the underside of the board. You should only choose a 16 MHz crystal if you have a good reason not to use a 16 MHz resonator.
 
-You must solder C?? and C??, which are 0.1 uF decoupling capacitors for the ATmega644PA. Also solder C?? which is a 0.1 uF decoupling capacitor for the analog reference.
+You must solder C1 and C2, which are 0.1 uF decoupling capacitors for the ATmega644PA. Also solder C9 which is a 0.1 uF decoupling capacitor for the analog reference.
 
 On the bottom of the board, there is a footprint labelled "AREF-SEL", which allows you to choose the analog reference voltage by soldering over the pads labelled 5V or 3V3. You may also use a 0 ohm resistor here, or an ferrite bead. Note that AVCC is always connected to 5V.
 
 ==Microcontroller Supporting Areas==
 
-The reset switch must be installed, R?? is the pull-up resistor for the reset switch. This resistor is optional because the ATmega644PA has a built-in pull-up resistor on the reset pin. You should install this if you do not trust the built-in resistor.
+The reset switch must be installed, R13 10K ohm is the pull-up resistor for the reset switch. This resistor is optional because the ATmega644PA has a built-in pull-up resistor on the reset pin. You should install this if you do not trust the built-in resistor.
 
-A push button labelled "BOOT" can be installed only if you are using a non-Arduino-standard bootloader. I personally hate the way "time sensitive" bootloaders work. This button is active low and connected to PB?? on the ATmega. Be sure to enable internal pull-up resistors for this button.
+A push button labelled "BOOT" can be installed only if you are using a non-Arduino-standard bootloader. I personally hate the way "time sensitive" bootloaders work. This button is active low and connected to PB6 on the ATmega. Be sure to enable internal pull-up resistors for this button.
 
-The ISP header should be installed if you need to use an AVR programmer (perhaps to load the bootloader for the first time, etc).
+The ISP header (labelled AVRISP) should be installed if you need to use an AVR programmer (perhaps to load the bootloader for the first time, etc).
 
-Note: The ISP header is also the only way to access the SPI signals. To experiment with SPI devices, I suggest you connect it with this header by using a 2X3 IDC cable, and then use a pin from PORTA or PORTB as the CS or SS signal. Remember that the voltage here is 5V and if your device uses 3V3, external level shifters will be needed. Luckily, there's two connectors (3V3-TAP) near the voltage regulators that give you access to 3V3.
+Note: The ISP header is also the only way to access the SPI signals. To experiment with SPI devices, I suggest you connect it with this header by using a 2X3 IDC cable, and then use a pin from PORTA or PORTB as the CS or SS signal. Remember that the voltage here is 5V and if your device uses 3V3, external level shifters will be needed. Luckily, there's two connectors (labelled 3V3-TAP) near the voltage regulators that give you access to 3V3.
 
 ==LED Indicators==
 
-LED1, LED2, LED3 are 3 mm LEDs, choose your own colours. They can be mounted vertically or horizontally (pointing out). Please watch the polarity indicated by the hole shape and silkscreen. R??, R??, R??, are all 1K ohm resistors to limit current to these LEDs. They are 1K ohm instead of a lower value because the signals may be used for some other purpose later, you may substitute a lower resistance if you want brighter LEDs and do not want to experiment with native USB funtionality.
+LED1, LED2, LED3 are 3 mm LEDs, choose your own colours. They can be mounted vertically or horizontally (pointing out). Please watch the polarity indicated by the hole shape and silkscreen. R3, R4, and R5, are all 1K ohm resistors to limit current to these LEDs. They are 1K ohm instead of a lower value because the signals may be used for some other purpose later, you may substitute a lower resistance if you want brighter LEDs and do not want to experiment with native USB funtionality.
 
-LED3 does not currently serve any purpose in the existing software, it is there for you to use for your own custom application. LED1 is conencted to PB0 (Sanguino pin 0), LED2 is connected to PB1 (Sanguino pin 1), and LED3 is connected to PB2 (Sanguino pin 2).
+LED3 does not currently serve any purpose in the existing software, it is there for you to use for your own custom application. LED1 is conencted to PB0 (Sanguino pin 0), LED2 is connected to PB1 (Sanguino pin 1), and LED3 is connected to PB2 (Sanguino pin 2). LED1 and LED2 should perform the same functions as the two LEDs on the AeroQuad V1.8 shield.
 
 ==Power Supply==
 
-Solder a LM1117 3V3 regulator in SOT-233-3 packaging where indicated on the PCB. Also solder the accompanying C??, which is 1 uF.
+Solder a LM1117 3V3 regulator in SOT-233-3 packaging where indicated on the PCB. Also solder the accompanying C3, which is 1 uF.
 
-LED-PWR is a 3 mm LED that indicates that there is power present on the 3V3 supply bus. You may solder this vertically or sideways (pointing out). R?? is the 1K ohm current limiting resistor for this LED.
+LED-PWR is a 3 mm LED that indicates that there is power present on the 3V3 supply bus. You may solder this vertically or sideways (pointing out). R12 is the 1K ohm current limiting resistor for this LED.
 
 Two rows of 3 pin male headers should be installed at "3V3-TAP", these headers give you access to the 3V3 supply bus. Two rows of 3 pin male headers should be installed at "5V-TAP", these headers give you access to the "SYS" 5V supply bus.
 
-If you are powering this circuit from a battery, you must install a LM1117 5V regulator in SOT-233-3 packaging where indicated on the PCB. This may be omitted if you are using the ESCs as the power supply (be sure to set SJ?? correctly), or under other circumstances that you are under.
+If you are powering this circuit from a battery, you must install a LM1117 5V regulator in SOT-233-3 packaging where indicated on the PCB. This may be omitted if you are using the ESCs as the power supply (be sure to set SJ1 correctly), or under other circumstances that you are under.
 
-The 1 uF capacitor C?? should be always soldered regardless of whether or not you are using a 5V regulator.
+The 1 uF capacitor C4 should be always soldered regardless of whether or not you are using a 5V regulator.
 
 The battery power input is used if you need to connect a battery. There are four ways to do this:
-
 
  * Using a barrel jack 
  * Solder wire directly onto PCB (you can enlarge some holes to act as strain relief) 
@@ -76,29 +77,29 @@ The battery power input is used if you need to connect a battery. There are four
 
 A beefy diode should be installed at D? to protect the circuit from a battery connected backwards (so omit this diode if you believe in your own competence, you must bridge the pads of the diode footprint with solder if you omit this diode). This must be a diode that can handle 20V of reverse voltage, and handle 1.5A of forward current. The footprint is SMB or similar.
 
-C?? and C?? are aluminum electrolytic 5.3mm x 5.3mm capacitors that must be installed, solder them in the correct orientation according to polarity.
+C5 and C6 are aluminum electrolytic 5.3mm x 5.3mm capacitors that must be installed, solder them in the correct orientation according to polarity.
 
 ===Battery Monitor===
 
-If you want to use the battery voltage monitor capabilies, install D? (1N4148 in MELF packaging), R?? (7K5 ohm), and R?? (15K ohm). There's a 3 pin header near these components labelled "BATT-MON" that you can use to connect the battery that you wish to monitor. Alternatively, bridging SJ?? will connect the battery supply to the battery monitor circuit instead. The battery monitor and battery supply sections are separated in case you use two separate batteries (one for motors, another for control electronics). Remember to enable the battery monitor software, and note that this is connected to analog channel 0 (PORTA's PA0).
+If you want to use the battery voltage monitor capabilies, install D1 (1N4148 in MELF packaging), R7 (7K5 ohm), and R6 (15K ohm). There's a 3 pin header near these components labelled "BATT-MON" that you can use to connect the battery that you wish to monitor. Alternatively, bridging SJ16 will connect the battery supply to the battery monitor circuit instead. The battery monitor and battery supply sections are separated in case you use two separate batteries (one for motors, another for control electronics). Remember to enable the battery monitor software, and note that this is connected to analog channel 0 (PORTA's PA0).
 
-Remember to measure the voltage drop across D?? and also the values of R?? and R??. Set these values in the software so the sampled data is accurate.
+Remember to measure the voltage drop across D1 and also the values of R6 and R7. Set these values in the software so the sampled data is accurate.
 
-==Port A Auxilliary GPIOs==
+==Port A Auxiliary GPIOs==
 
-There are 7X3 headers connected to PORTA's pins PA1 to PA7. The top row of pins is ground, the voltage for the center row of pins is selectable, and the pins in the bottom row are connected to PORTA's pins. You must select the voltage for the center row according to how you plan to use them. These pins have no specific purpose and are meant for you to experiment with. Here are your options and how you should choose the voltage.
+There are 7x3 headers connected to PORTA's pins PA1 to PA7. The top row of pins is ground, the voltage for the center row of pins is selectable, and the pins in the bottom row are connected to PORTA's pins. You must select the voltage for the center row according to how you plan to use them. These pins have no specific purpose and are meant for you to experiment with. Here are your options and how you should choose the voltage.
 
 
  * Control more servos    
- * Use SJ?? to power the servos via the system supply (might be weak) or the power supplied by the ESCs (recommended). 
+  * Use SJ17 to power the servos via the system supply (might be weak) or the power supplied by the ESCs (recommended). 
  * Read more RC input channels    
- * Use SJ?? to connect the same voltage used by the RC input headers 
+  * Use SJ15 to connect the same voltage used by the RC input headers 
  * General purpose digital input/output    
- * Select either 5V or 3V3 using SJ?? 
+  * Select either 5V or 3V3 using SJ15 and SJ12 together
  * Read in analog voltages    
- * Select either 5V or 3V3 using SJ?? 
+  * Select either 5V or 3V3 using SJ15 and SJ12 together
  * Use with jumper shunt blocks    
- * Select ground using SJ??, also remember to enable the internal pull-up resistors on these pins
+  * Select ground using SJ15, also remember to enable the internal pull-up resistors on these pins
 
 ==RC Input==
 
