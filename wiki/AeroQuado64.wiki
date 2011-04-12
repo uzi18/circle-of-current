@@ -257,4 +257,4 @@ INT0, INT1, and INT2 are the only external interrupt pins on the ATmega644PA, bu
 
 My code for the 4 servos work, but I'm not sure how having more interrupt routines will bother the rest of the time sensitive software.
 
-R4's silkscreen is covering a via
+!R4's silkscreen is covering a via
