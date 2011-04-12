@@ -225,6 +225,8 @@ No copper under the XBee antenna
 
 No copper under the compass sensor
 
+I did my best to label everything on the silk screen layer
+
 All traces are 0.016" wide or greater. If you need to cut a trace, but then later want to re-connect it, the thick trace makes this easy for you.
 
 Most header footprints have a tiny locking offset similar to how !SparkFun does it in their Eagle library, however my footprints are easier to center correctly.
