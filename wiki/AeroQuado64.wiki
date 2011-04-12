@@ -216,7 +216,7 @@ To bypass a level shifter circuit, short out the corresponding 4K7 ohm resistor 
 
 Note that in this list, all components are listed regardless of whether or not you need them.
 
-The ATmega + chip socket, SparkFun breakout boards, XBee, Bluetooth Mate, and FTDI cables are not listed.
+The ATmega + chip socket, !SparkFun breakout boards, XBee, Bluetooth Mate, and FTDI cables are not listed.
 
 ||Part||Other Attributes||Identifiers||Quantity Required||Example Product||
 ||4K7 ohm resistor||0805 or 0603 packaging, 1/16 W minimum||`R`1, `R`2, `R`9, `R`10||4||Digikey: P4.7KACT-ND||
@@ -245,11 +245,61 @@ The ATmega + chip socket, SparkFun breakout boards, XBee, Bluetooth Mate, and FT
 ||USB mini-B female connector||Surface mount||USB||1||!SparkFun: PRT-00587||
 ||2mm female pin headers|| ||Xbee||2||!SparkFun: PRT-08272||
 
+=Pins=
+
+Here is the pin chart for the !AeroQuado64 PCB
+
+||Pin on DIP Package||ATmega644PA Pin Name||Sanguino Pin Number||Purpose on !AeroQuado64||
+||1||PB0||Digital 0 (Debug LED)||LED1, detecting USB cable presence||
+||2||PB1||Digital 1||LED2, USB bus D-||
+||3||PB2, INT2||Digital 2||LED3, USB bus D+||
+||4||PB3||Digital 3 (PWM)||SERVO1 (camera roll)||
+||5||PB4||Digital 4 (PWM)||SERVO2 (camera pitch)||
+||6||PB5, MOSI||Digital 5||SERVO3 (camera yaw), MOSI||
+||7||PB6, MISO||Digital 6||SERVO4 (camera aux), MISO, BOOT button||
+||8||PB7, SCK||Digital 7||SCK||
+||9||RESET|| ||RESET||
+||10||VCC|| ||VCC||
+||11||GND|| ||GND||
+||12||XTAL2|| ||XTAL2||
+||13||XTAL1|| ||XTAL1||
+||14||PD0, RXD0||Digital 8, RX0||SER0 RX||
+||15||PD1, TXD0||Digital 9, TX0||SER0 TX||
+||16||PD2, RXD1||Digital 10, RX1||SER1 RX||
+||17||PD3, TXD1||Digital 11, TX1||SER1 TX||
+||18||PD4, OC1B||Digital 12 (PWM)||ESC-BACK||
+||19||PD5, OC1A||Digital 13 (PWM)||ESC-RIGHT||
+||20||PD6, OC2B||Digital 14 (PWM)||ESC-FRONT||
+||21||PD7, OC2A||Digital 15 (PWM)||ESC-LEFT||
+||22||PC0, SCL||Digital 16||SCL||
+||23||PC1, SDA||Digital 17||SDA||
+||24||PC2, PCINT18||Digital 18||RC-IN-1, Throttle||
+||25||PC3, PCINT19||Digital 19||RC-IN-2, Yaw/Aileron||
+||26||PC4, PCINT20||Digital 20||RC-IN-3, Roll/Elevator||
+||27||PC5, PCINT21||Digital 21||RC-IN-4, Pitch/Rudder||
+||28||PC6, PCINT22||Digital 22||RC-IN-5, Gear||
+||29||PC7, PCINT23||Digital 23||RC-IN-6, Auxiliary||
+||30||AVCC|| ||AVCC||
+||31||GND|| ||GND||
+||32||AREF|| ||AREF||
+||33||PA7, ADC7||Digital 24, Analog 7||GPIO, do anything||
+||34||PA6, ADC6||Digital 25, Analog 6||GPIO, do anything||
+||35||PA5, ADC5||Digital 26, Analog 5||GPIO, do anything||
+||36||PA4, ADC4||Digital 27, Analog 4||GPIO, do anything||
+||37||PA3, ADC3||Digital 28, Analog 3||GPIO, do anything||
+||38||PA2, ADC2||Digital 29, Analog 2||GPIO, do anything||
+||39||PA1, ADC1||Digital 30, Analog 1||GPIO, do anything||
+||40||PA0, ADC0||Digital 31, Analog 0||Battery Monitor||
+
+Of course, a lot of this is configurable in the source code.
+
 =Setup Guide for !AeroQuado64 Source Code=
 
 ==The Sketch==
 
 The sketch itself is a heavily modified version of !AeroQuad Flight Software V2.4 , which requires a special core developed for the !AeroQuado64 PCB.
+
+When a new version of !AeroQuad becomes available, I will synchronize the changes between it and !AeroQaudo64's source code.
 
 ==Special ATmega644PA Core==
 
@@ -284,7 +334,7 @@ Note: settings in `boards.txt` will only take effect when you close and re-open 
 
 You'll need to change the `bootloader.file` and `upload.protocol` in `boards.txt' according to the bootloader you want to use.
 
-Several special bootloaders are developed, copy the folder `AeroQuado64Boot` as '\arduino-0022\hardware\arduino\bootloaders\AeroQuado64Boot\'
+Several special bootloaders are developed, copy the folder `AeroQuado64Boot` as `\arduino-0022\hardware\arduino\bootloaders\AeroQuado64Boot\`
 
 `AeroQuado64Boot_arduino.hex` requires the stk500 protocol, and requires you to use a FTDI cable. Use it as if the AeroQuado64 is an Arduino without auto-reset. This bootloader has a timeout of 3 seconds. It's been modified from the Sanguino bootloader so to use the LEDs on the !AeroQuado64.
 
@@ -292,13 +342,13 @@ Several special bootloaders are developed, copy the folder `AeroQuado64Boot` as 
 
 `AeroQuado64Boot_usbasp.hex` requires the protocol to be set as `usbasp`. Hold down the BOOT button while clicking the RESET button, this bootloader will never time out. Pressing RESET without holding down BOOT will not engage the bootloader. You can only use this if you have installed all of the components required for native USB. You'll also need the [http://www.fischl.de/usbasp/ drivers for USBasp from its website]. This bootloader does not occupy any serial ports, so you don't have to mess with constantly disconnecting, reconnecting, selecting, and configuring serial ports.
 
-=Configuring !AeroQuad V2.4 Source Code=
+=Configuring the !AeroQuado64 Source Code=
 
-You must decide what features you want, and configure the source code correctly before compiling and uploading the firmware to the microcontroller.
+You must decide what features you want, and configure the source code correctly before compiling and uploading the firmware to the microcontroller. The steps are very similar to how you would configure the original !AeroQuad source code.
 
 ==Mounting Orientation==
 
-The !AeroQuado64 PCB supports both X and + configurations, see `AeroQuad.pde` about `#define XConfig` and `#define plusConfig`.
+The !AeroQuado64 PCB supports both X and + configurations, see `AeroQuado64.pde` about `#define XConfig` and `#define plusConfig`.
 
 ==Flight Sensors==
 
@@ -313,7 +363,7 @@ You absolutely must have a digital gyroscope sensor, and three axis of measureme
 
 These two boards actually are both using the ITG-3200 chip itself, so the source code configuration steps are the same.
 
-See `AeroQuad.pde` about `#define FlightAngleARG`, or `#define FlightAngleMARG` if a compass is used.
+See `AeroQuado64.pde` about `#define FlightAngleARG`, or `#define FlightAngleMARG` if a compass is used.
 
 ===Accelerometer===
 
@@ -326,19 +376,19 @@ Accelerometers will allow the software to use static acceleration measurements (
 
 The 6 DOF IMU breakoutboard uses a ADXL345, while the BMA180 breakout board obviously uses a BMA180.
 
-see `AeroQuad.pde` about `#define FlightAngleARG`, or `#define FlightAngleMARG` if a compass is used.
+see `AeroQuado64.pde` about `#define FlightAngleARG`, or `#define FlightAngleMARG` if a compass is used.
 
 ===Barometric Pressure Sensor===
 
 There is a footprint available for the BMP085 barometric pressure sensor. This sensor can measure air pressure so that the software knows what altitude you are flying at. It is then able to adjust throttle to hold at a particular altitude. You need to enable this in the source code.
 
-Please read `AeroQuad.pde' about the `AltitudeHold` definition, which you need to enable.
+Please read `AeroQuado64.pde' about the `AltitudeHold` definition, which you need to enable.
 
 ===Magnetic Compass===
 
 There is a footprint available for the HMC5842 hall effect sensor. This sensor can measure the Earth's magnetic fields to determine the current magnetic heading of the helicopter. It is then able to keep that direction constantly. You need to enable this in the source code.
 
-Please read `AeroQuad.pde' about the `HeadingMagHold` and `FlightAngleMARG` definitions, which you need to enable.
+Please read `AeroQuado64.pde' about the `HeadingMagHold` and `FlightAngleMARG` definitions, which you need to enable.
 
 ===Others===
 
@@ -359,9 +409,25 @@ You also need to get the precise measurements of the components used in your bat
 
 There's a place to put down a XBee module, and a place to put a Bluetooth Mate or BlueSMIRF module. See the hardware assembly guide about how to route the serial port signals to these connectors.
 
+TODO: More instructions here. The XBee setup is similar to how you would have done it for the original !AeroQuad, and the bluetooth setup should be done according to the instruction provided for the module you are using.
+
+==I2C ESCs==
+
+Take a look at `Motors.h` for more information about using ESCs which use I2C. I've added a definition in `AeroQuado64.pde` called `USE_I2C_ESC` so you can use I2C ESCs instead.
+
+==Camera or Auxiliary Servos==
+
+
+
+==Other Stuff==
+
+The original !AeroQuad code has some other code, such as for GPS, data logging, and others. If you want to experiment with these, remember that I have incorporated auxiliary I2C, serial ports, GPIOs of all kinds, and SPI can be accessed through the ISP header.
+
 =Design Notes=
 
 Stop wasting money on Arduinos and its cousins, being stand-alone means you can use your Arduino for other stuff without removing it from your aircraft. Also, if you have money to blow on an Arduino Mega, blow it on something like a Teensy++ or mbed instead.
+
+Most footprints support multiple device packaging, just in case you have something already on hand
 
 No copper near where abrasion is expected (near around the FTDI connector, and the mounting slots)
 
@@ -379,11 +445,11 @@ I know !AeroQuad depends on all the timers except timer0 (reserved so millis() w
 
 ==Improvements Over Various !AeroQuad Shields==
 
-The shields look kind of "Eagle auto-routed" (judging from the trace width, apparent routing grid, and cornering)
+The shields look kind of "Eagle auto-routed" (judging from the trace width, apparent routing grid, and weird cornering of the traces).
 
 The shield had level shifting for the I2C which is totally unnessesary, but no level shifting for any serial port devices. My design has level shifting for both serial ports, and I2C uses external pull-up resistors to 3V3 so it doesn't need level shifting.
 
-The LEDs on the V1.8 shield are supposed to be special LEDs with current limiting resistors built inside, but this makes it dangerous for anybody not using the same special LEDs. Also the LED on pin 13 can cause problems for any SPI devices and ISP programming.
+The LEDs on the !AeroQuad V1.8 shield are supposed to be special LEDs with current limiting resistors built inside, but this makes it dangerous for anybody not using the same special LEDs. Also the LED on pin 13 can cause problems for any SPI devices and ISP programming.
 
 The !AeroQuad shields do not provide a 3V3 supply, it uses the one built into the Arduino. The 3V3 supply from the Arduino boards before UNO are kind of bad, limited, and noisy.
 
