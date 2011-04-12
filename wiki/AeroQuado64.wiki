@@ -151,7 +151,7 @@ Install 2 mm female headers on the XBee footprint if you plan on using a XBee ra
 
 If you plan on interfacing any 3V3 devices with the serial ports, you should implement the level shifting circuitry. XBee is known to not work well with 5V microcontrollers directly.
 
-Each level shifter circuit uses a voltage divider for the TX signal and a TXB0101 (IC4 and IC5, SOT-23 package) bidirectional level translator for the RX signal. `R`9 (4K7 ohm), R8 (10K ohm) and IC4 are used for SER0. `R`10 (4K7 ohm), `R`11 (10K ohm) and IC5 are used for SER1. C7 and C8 (0.1 uF) are there to decouple the 3V3 and 5V supplies for IC4 and IC5. Do not omit C7 and C8 if either IC4 or IC5 is installed (otherwise, omit C7 and C8 if both IC4 and IC5 are omitted).
+Each level shifter circuit uses a voltage divider for the TX signal and a TXB0101 (IC4 and IC5, SOT-23 package) bidirectional level translator for the RX signal. `R`9 (4K7 ohm), `R`8 (10K ohm) and IC4 are used for SER0. `R`10 (4K7 ohm), `R`11 (10K ohm) and IC5 are used for SER1. C7 and C8 (0.1 uF) are there to decouple the 3V3 and 5V supplies for IC4 and IC5. Do not omit C7 and C8 if either IC4 or IC5 is installed (otherwise, omit C7 and C8 if both IC4 and IC5 are omitted).
 
 To bypass a level shifter circuit, short out the corresponding 4K7 ohm resistor footprint, omit the TXB0101, and join pin 3 and 4 (signal A and B) of the TXB0101 with a wire.
 
