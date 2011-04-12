@@ -10,6 +10,8 @@ This page is not yet ready.
 
 <img src="http://frank.circleofcurrent.com/junk/aq64_img/overview2.png" />
 
+TODO: Link to download
+
 =Table of Contents=
 
 <wiki:toc max_depth="2" />
@@ -61,8 +63,6 @@ The reset switch must be installed, `R`13 10K ohm is the pull-up resistor for th
 A push button labelled "BOOT" can be installed only if you are using a non-Arduino-standard bootloader. I personally hate the way "time sensitive" bootloaders work. This button is active low and connected to PB6 on the ATmega. Be sure to enable internal pull-up resistors for this button.
 
 The ISP header (labelled AVRISP) should be installed if you need to use an AVR programmer (perhaps to load the bootloader for the first time, etc).
-
-Note: The ISP header is also the only way to access the SPI signals. To experiment with SPI devices, I suggest you connect it with this header by using a 2X3 IDC cable, and then use a pin from PORTA or PORTB as the CS or SS signal. Remember that the voltage here is 5V and if your device uses 3V3, external level shifters will be needed. Luckily, there's two connectors (labelled 3V3-TAP) near the voltage regulators that give you access to 3V3.
 
 ==LED Indicators==
 
@@ -183,6 +183,7 @@ Install 2 mm female headers on the XBee footprint if you plan on using a XBee ra
 ===Level Shifters===
 
 <img src="http://frank.circleofcurrent.com/junk/aq64_img/levelshifting1.png" />
+<img src="http://frank.circleofcurrent.com/junk/aq64_img/levelshifting2.png" />
 
 If you plan on interfacing any 3V3 devices with the serial ports, you should implement the level shifting circuitry. XBee is known to not work well with 5V microcontrollers directly.
 
@@ -216,7 +217,7 @@ To bypass a level shifter circuit, short out the corresponding 4K7 ohm resistor 
 
 Note that in this list, all components are listed regardless of whether or not you need them.
 
-The ATmega + chip socket, !SparkFun breakout boards, XBee, Bluetooth Mate, and FTDI cables are not listed.
+The ATmega644PA and 40 pin DIP chip socket, !SparkFun breakout boards, XBee, Bluetooth Mate, and FTDI cables are not listed.
 
 ||Part||Other Attributes||Identifiers||Quantity Required||Example Product||
 ||4K7 ohm resistor||0805 or 0603 packaging, 1/16 W minimum||`R`1, `R`2, `R`9, `R`10||4||Digikey: P4.7KACT-ND||
@@ -234,8 +235,8 @@ The ATmega + chip socket, !SparkFun breakout boards, XBee, Bluetooth Mate, and F
 ||Rectifier Diode||SMB packaging, 20V reverse voltage minimum, high forward current rating||D2||1||Digikey: SSB44-E3/52TGICT-ND||
 ||3V6 zener diode (1N5227B)||MELF packaging, 500 mW rating||D3, D4||2||Digikey: ZMM5227BDICT-ND||
 ||16 MHz resonator|| ||Y1 (16 MHz on PCB)||1||!SparkFun: COM-09420||
-||Male headers||0.1 pitch||ESC, I2C, I2C-GROUP, BARO, ACCEL, IMU, GYRO, MAG, BATTERY, BATT-MON, ADC1-7, RC1-6, 5V-TAP, 3V3-TAP, SERIAL, FTDI, maybe BLUETOOTH||Buy long strips and break them off|| ||
-||2x3 male headers||0.1 pitch, no shroud allowed||AVRISP||1||Use the male headers you buy||
+||Male headers||0.1 inch pitch||ESC, I2C, I2C-GROUP, BARO, ACCEL, IMU, GYRO, MAG, BATTERY, BATT-MON, ADC1-7, RC1-6, 5V-TAP, 3V3-TAP, SERIAL, FTDI, maybe BLUETOOTH||Buy long strips and break them off|| ||
+||2x3 male headers||0.1 inch pitch, no shroud allowed||AVRISP||1||Use the male headers you buy||
 ||TXB0101 bidirectional level shifter||SOT-23-6 package||IC4, IC5||2||Digikey: 296-21664-1-ND||
 ||Tactile momentary push button switch SPST||Right angle, 7.50mm x 7.10mm||RESET, BOOT||2||Digikey: P12232SCT-ND||
 ||5V regulator||SOT223, SOT-223-3 package||5V-REG||1||LM1117MPX-5.0||
@@ -303,7 +304,13 @@ When a new version of !AeroQuad becomes available, I will synchronize the change
 
 ==Special ATmega644PA Core==
 
-I'm using a modified Arduino core based on the Sanguino core. I've included TWI code that is more efficient than the "Wire" I2C library (the Wire library is not suited for master-only operation). Also `wiring.c` is modified so that timer0's overflow interrupt vector can be utilized to control servos without distrubing the functionality of the `millis()` function. A servo control library is also incorporated into the core.
+I'm using a modified Arduino core based on the Sanguino core.
+
+I've included TWI code that is more efficient than the "Wire" I2C library (the Wire library is not suited for master-only operation), however this isn't utilized just yet because I want to keep in sync with the origial !AeroQuad code for a while.
+
+`wiring.c` is modified so that timer0's overflow interrupt vector can be utilized to control servos without distrubing the functionality of the `millis()` function. My own timer0 servo control library is also incorporated into the core.
+
+V-USB code is also included but not utilized at the moment
 
 Install the core by copying the folder `AeroQuado64Core` into your Arduino installation such that you create `\arduino-0022\hardware\arduino\cores\AeroQuado64Core\`.
 
@@ -398,12 +405,11 @@ The footprint for the ITG-3200 breakout board actually fits the IMU3000 breakout
 
 If you have installed the components for the battery monitor circuit, then you can enable battery monitoring in the source code.
 
-Enable the `BattMonitor` definition in `AeroQuad.pde`
-{{{#define BattMonitor}}}
+Enable the `BattMonitor` definition in `AeroQuado64.pde` if you want to use this capability.
 
 Please see `BatteryMonitor.h` , where you can program the behaviour of the helicopter when the battery voltage reaches a certain level. For example, you can program it to slowly land, flash warning lights, etc.
 
-You also need to get the precise measurements of the components used in your battery monitoring circuitry, this means the voltage drop across D1, and the values of `R6` and `R7`. Put these values where indicated in `BatteryMonitor.h` .
+You also need to get the precise measurements of the components used in your battery monitoring circuitry, this means the voltage drop across D1, and the values of `R`6 and `R`7. Put these values where indicated in `BatteryMonitor.h` .
 
 ==Wireless==
 
@@ -417,15 +423,25 @@ Take a look at `Motors.h` for more information about using ESCs which use I2C. I
 
 ==Camera or Auxiliary Servos==
 
+I have made some changes to `Camera.h` to add a new camera class called "`AeroQuado64_Camera`" which uses my servo code included in the core. `AeroQuado64.pde` will create an instance of this new class and use it in a similar fashion as how cameras are controlled in the origial !AeroQuad.
 
+If you want the servos to do something else besides controlling a camera, the class is still "camera" but you simply use it for your own application. Use your head.
+
+If you want direct RC control from your RC transmitter to the servo, this should not be done by the AeroQuado64 PCB or software, instead you should be connecting your RC receiver directly to the servo instead.
+
+Feel free to disable the camera code if you want to use those pins for something else.
 
 ==Other Stuff==
 
-The original !AeroQuad code has some other code, such as for GPS, data logging, and others. If you want to experiment with these, remember that I have incorporated auxiliary I2C, serial ports, GPIOs of all kinds, and SPI can be accessed through the ISP header.
+The original !AeroQuad code has some other code, such as for GPS, data logging, and others.
+
+If you want to experiment with these, remember that I have incorporated auxiliary I2C, serial ports, GPIOs of all kinds, and SPI can be accessed through the ISP header.
+
+USART0 is called "`Serial`" and USART1 is called "`Serial1`", remember that!
+
+If you decide to use the PORTA GPIOs with jumper shunt blocks, you can modify the source code such that you compile all the options and use the blocks to select the option at runtime, so you don't have to constantly recompile in the field.
 
 =Design Notes=
-
-Stop wasting money on Arduinos and its cousins, being stand-alone means you can use your Arduino for other stuff without removing it from your aircraft. Also, if you have money to blow on an Arduino Mega, blow it on something like a Teensy++ or mbed instead.
 
 Most footprints support multiple device packaging, just in case you have something already on hand
 
@@ -441,36 +457,64 @@ All traces are 0.016" wide or greater. If you need to cut a trace, but then late
 
 Most header footprints have a tiny locking offset similar to how !SparkFun does it in their Eagle library, however my footprints are easier to center correctly.
 
-I know !AeroQuad depends on all the timers except timer0 (reserved so millis() works) to control auxiliary servos on the Arduino Mega, so you might be wondering how I plan on controlling four more servos when the ATmega644PA only has timer0 available to use. Don't worry, I have compare match driven servo control code that utilizes timer0 without disturbing the operation of millis(), and actually my code can target any pin on the ATmega, even the ones on PORTA.
+I know !AeroQuad depends on all the timers except timer0 (reserved so `millis()` works) to control auxiliary servos on the Arduino Mega, so you might be wondering how I plan on controlling four more servos when the ATmega644PA only has timer0 available to use. Don't worry, I have compare match driven servo control code that utilizes timer0 without disturbing the operation of `millis()`, and actually my code can target any pin on the ATmega, even the ones on PORTA (where there are 7 available GPIOs).
 
 ==Improvements Over Various !AeroQuad Shields==
 
-The shields look kind of "Eagle auto-routed" (judging from the trace width, apparent routing grid, and weird cornering of the traces).
+Stop spending money on Arduinos and its cousins, being stand-alone means you can use your Arduino for other stuff without removing it from your aircraft. If you have money to blow on an Arduino Mega, blow it on something like a Teensy++ or mbed instead. (I might consider redoing this PCB to use the mbed later)
 
-The shield had level shifting for the I2C which is totally unnessesary, but no level shifting for any serial port devices. My design has level shifting for both serial ports, and I2C uses external pull-up resistors to 3V3 so it doesn't need level shifting.
+The !AeroQuad shields look kind of "Eagle auto-routed" (judging from the trace width, apparent routing grid, and weird cornering of the traces), I think I'm being very picky about this sort of stuff.
+
+The shield had level shifting for the I2C which is totally unnessesary, but no level shifting for any serial port devices. My design has optinal level shifting for both serial ports, and I2C uses external pull-up resistors to 3V3 so it doesn't need level shifting.
 
 The LEDs on the !AeroQuad V1.8 shield are supposed to be special LEDs with current limiting resistors built inside, but this makes it dangerous for anybody not using the same special LEDs. Also the LED on pin 13 can cause problems for any SPI devices and ISP programming.
 
 The !AeroQuad shields do not provide a 3V3 supply, it uses the one built into the Arduino. The 3V3 supply from the Arduino boards before UNO are kind of bad, limited, and noisy.
 
+I can understand the reason behind the existance for the !AeroQuad Shield and Mega variant, but I don't understand the development behind the "Mini" variant. Why would 
+
 ==After Thoughts==
+
+I didn't put any designation on the first batch of PCBs, version 1 is dated TODO and can be recognized by the test pattern on the PCB
+
+===Version 1 After Thoughts===
+
+This PCB might be *too* configurable for some people, but if you are smart enough to build a quadrotor helicopter, you better be smart enough to read this page.
 
 AREF probably should just be connected directly to 3V3, since you can select 5V as the reference through software.
 
-More attention should have been paid towards SPI, but nothing uses SPI yet.
+More attention could have been paid towards SPI, but nothing uses SPI yet. The ISP header is the only way to access the SPI signals. To experiment with SPI devices, I suggest you connect it with this header by using a 2X3 IDC cable, and then use a pin from PORTA or PORTB as the CS or SS signal. Remember that the voltage here is 5V and if your device uses 3V3, external level shifters might be needed. Luckily, there's two connectors (labelled 3V3-TAP) near the voltage regulators that give you access to 3V3.
 
-The native USB stuff probably causes a lot of confusion.
+The native USB stuff probably causes a lot of confusion. Just don't bother with it if you don't understand how to use it.
 
-No mounting holes for IMU3000 breakout board.
+No mounting holes for IMU3000 breakout board, oh well, see [http://aeroquad.com/showthread.php?2655 this thread]
 
-Timer1's ICP is not available for use since it is occupied by OC2B.
+Timer1's ICP is not available for use since it is occupied by OC2B. However I do have working and tested code from a `non-AeroQuad` quadcopter that can use timer1 to drive 7 servos (via a decade counter or serial-to-parallel shift register) while reading PPM from ICP. (This code is not included, I'm just mentioning it so you know it's possible)
 
-RSSI pin is not used on the XBee. Various shields on the market include a LED on this pin, but I though you can always just look at the ground station XBee's RSSI instead of the one that is flying.
+RSSI pin is not used on the XBee. Various shields on the market include a LED on this pin, but I think you can always just look at the ground station XBee's RSSI instead of the one that is flying.
 
 INT0, INT1, and INT2 are the only external interrupt pins on the ATmega644PA, but there's no easy way to use them on this PCB. Good thing there are plenty of PCINT pins.
 
-My code for the 4 servos work, but I'm not sure how having more interrupt routines will bother the rest of the time sensitive software.
+My code for the 4 camera/auxiliary servos work, but I'm not sure how having more interrupt routines will bother the rest of the time sensitive software.
 
-`R`4's silkscreen is covering a via
+`R`4's silkscreen is covering a via, this was because the USB stuff was added at the end.
 
-I forgot to label the USB connector footprint with silkscreen text
+I forgot to label the USB connector footprint with silkscreen text, although it is pretty obvious that it is for a USB mini B female connector.
+
+I don't think there's a standard I2C cable, and my connectors for I2C ESCs are different from what's on the !AeroQuad Mega shield, but if you just follow the labelling on the pins, you'll have no problem making a custom 4 pin to 3 pin cable.
+
+===Version 2 Future Plans===
+
+See how useful the native USB is
+
+Extensive testing with XBee to see if level shifting is actually required
+
+Tie AREF to 3V3 by default, however, leave the solder jumper footprint
+
+Maybe add trim-pots
+
+Change the I2C ESC connectors slightly
+
+Maybe move right to using the mbed, but that will probably be called another project
+
+More to come...
