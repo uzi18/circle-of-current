@@ -365,8 +365,8 @@ You absolutely must have a digital gyroscope sensor, and three axis of measureme
 
 !AeroQuado64 has footprints to support:
 
- * ITG-3200 breakout board from SparkFun
- * 6 DOF IMU breakout board from SparkFun
+ * ITG-3200 breakout board from !SparkFun
+ * 6 DOF IMU breakout board from !SparkFun
 
 These two boards actually are both using the ITG-3200 chip itself, so the source code configuration steps are the same.
 
@@ -378,8 +378,8 @@ Accelerometers will allow the software to use static acceleration measurements (
 
 !AeroQuado64 has footprints to support:
 
- * 6 DOF IMU breakout board from SparkFun
- * BMA180 breakout board from SparkFun
+ * 6 DOF IMU breakout board from !SparkFun
+ * BMA180 breakout board from !SparkFun
 
 The 6 DOF IMU breakoutboard uses a ADXL345, while the BMA180 breakout board obviously uses a BMA180.
 
@@ -389,7 +389,7 @@ see `AeroQuado64.pde` about `#define FlightAngleARG`, or `#define FlightAngleMAR
 
 There is a footprint available for the BMP085 barometric pressure sensor. This sensor can measure air pressure so that the software knows what altitude you are flying at. It is then able to adjust throttle to hold at a particular altitude. You need to enable this in the source code.
 
-Please read `AeroQuado64.pde' about the `AltitudeHold` definition, which you need to enable.
+Please read `AeroQuado64.pde` about the `AltitudeHold` definition, which you need to enable.
 
 ===Magnetic Compass===
 
@@ -399,7 +399,7 @@ Please read `AeroQuado64.pde' about the `HeadingMagHold` and `FlightAngleMARG` d
 
 ===Others===
 
-The footprint for the ITG-3200 breakout board actually fits the IMU3000 breakout board from SparkFun, and the pins are compatible. Somebody just needs to write the software for it.
+The footprint for the ITG-3200 breakout board actually fits the IMU3000 breakout board from !SparkFun, and the pins are compatible. Somebody just needs to write the software for it.
 
 ==Battery Monitor==
 
