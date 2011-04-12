@@ -1,6 +1,6 @@
-=AeroQuado64=
+=!AeroQuado64=
 
-This is my PCB design for a quadrotor helicopter flight controller, based heavily on AeroQuad.
+This is my PCB design for a quadrotor helicopter flight controller, based heavily on !AeroQuad.
 
 =Table of Contents=
 
@@ -11,7 +11,7 @@ This is my PCB design for a quadrotor helicopter flight controller, based heavil
  * ATmega644PA, 16 MHz, 64KB of flash memory, 4KB of SRAM memory 
  * Two serial ports, both are level shifted, and can be easily routed to different devices 
  * Plenty of pins for extra servos, digital and analog inputs, and digital outputs 
- * Code size large enough for all existing AeroQuad code 
+ * Code size large enough for all existing !AeroQuad code 
  * Supports ESCs which use RC pulse signals or I2C 
  * Supports the following SparkFun breakout boards: ITG-3200 gyro, 6 DOF IMU, BMA180 accelerometer, BMP085 barometic pressure sensor, HMC5842 compass, IMU3000 IMU 
  * Circuitry for battery monitoring 
@@ -54,7 +54,7 @@ Note: The ISP header is also the only way to access the SPI signals. To experime
 
 LED1, LED2, LED3 are 3 mm LEDs, choose your own colours. They can be mounted vertically or horizontally (pointing out). Please watch the polarity indicated by the hole shape and silkscreen. !R3, !R4, and !R5, are all 1K ohm resistors to limit current to these LEDs. They are 1K ohm instead of a lower value because the signals may be used for some other purpose later, you may substitute a lower resistance if you want brighter LEDs and do not want to experiment with native USB funtionality.
 
-LED3 does not currently serve any purpose in the existing software, it is there for you to use for your own custom application. LED1 is conencted to PB0 (Sanguino pin 0), LED2 is connected to PB1 (Sanguino pin 1), and LED3 is connected to PB2 (Sanguino pin 2). LED1 and LED2 should perform the same functions as the two LEDs on the AeroQuad V1.8 shield.
+LED3 does not currently serve any purpose in the existing software, it is there for you to use for your own custom application. LED1 is conencted to PB0 (Sanguino pin 0), LED2 is connected to PB1 (Sanguino pin 1), and LED3 is connected to PB2 (Sanguino pin 2). LED1 and LED2 should perform the same functions as the two LEDs on the !AeroQuad V1.8 shield.
 
 ==Power Supply==
 
@@ -227,9 +227,9 @@ All traces are 0.016" wide or greater. If you need to cut a trace, but then late
 
 Most header footprints have a tiny locking offset similar to how SparkFun does it in their Eagle library, however my footprints are easier to center correctly.
 
-I know AeroQuad depends on all the timers except timer0 (reserved so millis() works) to control auxiliary servos on the Arduino Mega, so you might be wondering how I plan on controlling four more servos when the ATmega644PA only has timer0 available to use. Don't worry, I have compare match driven servo control code that utilizes timer0 without disturbing the operation of millis(), and actually my code can target any pin on the ATmega, even the ones on PORTA.
+I know !AeroQuad depends on all the timers except timer0 (reserved so millis() works) to control auxiliary servos on the Arduino Mega, so you might be wondering how I plan on controlling four more servos when the ATmega644PA only has timer0 available to use. Don't worry, I have compare match driven servo control code that utilizes timer0 without disturbing the operation of millis(), and actually my code can target any pin on the ATmega, even the ones on PORTA.
 
-==Improvements Over Various AeroQuad Shields==
+==Improvements Over Various !AeroQuad Shields==
 
 The shields look kind of "Eagle auto-routed" (judging from the trace width, apparent routing grid, and cornering)
 
@@ -237,7 +237,7 @@ The shield had level shifting for the I2C which is totally unnessesary, but no l
 
 The LEDs on the V1.8 shield are supposed to be special LEDs with current limiting resistors built inside, but this makes it dangerous for anybody not using the same special LEDs. Also the LED on pin 13 can cause problems for any SPI devices and ISP programming.
 
-The AeroQuad shields do not provide a 3V3 supply, it uses the one built into the Arduino. The 3V3 supply from the Arduino boards before UNO are kind of bad, limited, and noisy.
+The !AeroQuad shields do not provide a 3V3 supply, it uses the one built into the Arduino. The 3V3 supply from the Arduino boards before UNO are kind of bad, limited, and noisy.
 
 ==After Thoughts==
 
