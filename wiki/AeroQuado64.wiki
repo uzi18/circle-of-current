@@ -259,7 +259,7 @@ Joins the 5V from the USB bus to the 5V system power
 
 Note that in this list, all components are listed regardless of whether or not you need them.
 
-SparkFun breakout boards, XBee, Bluetooth Mate, and FTDI cables are not listed.
+The ATmega + chip socket, SparkFun breakout boards, XBee, Bluetooth Mate, and FTDI cables are not listed.
 
 ||Part||Other Attributes||Identifiers||Quantity Required||Example Product||
 ||4K7 ohm resistor||0805 or 0603 packaging, 1/16 W minimum||`R`1, `R`2, `R`9, `R`10||4||Digikey: P4.7KACT-ND||
@@ -289,6 +289,8 @@ SparkFun breakout boards, XBee, Bluetooth Mate, and FTDI cables are not listed.
 ||2mm female pin headers|| ||Xbee||2||!SparkFun: PRT-08272||
 
 =Design Notes=
+
+Stop wasting money on Arduinos and its cousins
 
 No copper near where abrasion is expected (near around the FTDI connector, and the mounting slots)
 
