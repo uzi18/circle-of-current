@@ -167,6 +167,10 @@ Selects the analog reference voltage between 3V3 and 5V
 
 Joins the 5V from RC pulse ESCs to the 5V system power supply
 
+===SJ2===
+
+Selects 5V or 3V3 for the RC receiver signals
+
 ===SJ3===
 
 Joins the power from I2C ESCs to either the 5V RC pulse ESCs power, or to 3V3 power
