@@ -6,7 +6,7 @@ This page is a rough guide for the first people to receive a PCB. More details w
 
 <img src="http://frank.circleofcurrent.com/junk/aq64_img/overview1.png" />
 
-image:overview2
+<img src="http://frank.circleofcurrent.com/junk/aq64_img/overview2.png" />
 
 
 =Table of Contents=
@@ -37,8 +37,8 @@ This assembly guide also contains some notes about the various areas on the circ
 
 ==Microcontroller==
 
-image:microcontroller1
-image:microcontroller2
+<img src="http://frank.circleofcurrent.com/junk/aq64_img/microcontroller1.png" />
+<img src="http://frank.circleofcurrent.com/junk/aq64_img/microcontroller2.png" />
 
 The ATmega644PA obviously must be installed, solder in a 40 pin DIP socket so you are able to replace the IC if you need to.
 
@@ -52,8 +52,8 @@ On the bottom of the board, there is a footprint labelled "AREF-SEL", which allo
 
 ==Microcontroller Supporting Areas==
 
-image:mcusupport1
-image:mcusupport2
+<img src="http://frank.circleofcurrent.com/junk/aq64_img/mcusupport1.png" />
+<img src="http://frank.circleofcurrent.com/junk/aq64_img/mcusupport2.png" />
 
 The reset switch must be installed, `R`13 10K ohm is the pull-up resistor for the reset switch. This resistor is optional because the ATmega644PA has a built-in pull-up resistor on the reset pin. You should install this if you do not trust the built-in resistor.
 
@@ -65,7 +65,7 @@ Note: The ISP header is also the only way to access the SPI signals. To experime
 
 ==LED Indicators==
 
-image:leds1
+<img src="http://frank.circleofcurrent.com/junk/aq64_img/leds1.png" />
 
 LED1, LED2, LED3 are 3 mm LEDs, choose your own colours. They can be mounted vertically or horizontally (pointing out). Please watch the polarity indicated by the hole shape and silkscreen. `R`3, `R`4, and `R`5, are all 1K ohm resistors to limit current to these LEDs. They are 1K ohm instead of a lower value because the signals may be used for some other purpose later, you may substitute a lower resistance if you want brighter LEDs and do not want to experiment with native USB funtionality.
 
@@ -73,7 +73,7 @@ LED3 does not currently serve any purpose in the existing software, it is there 
 
 ==Power Supply==
 
-image:pwrsupply1
+<img src="http://frank.circleofcurrent.com/junk/aq64_img/pwrsupply1.png" />
 
 Solder a LM1117 3V3 regulator in SOT-233-3 packaging where indicated on the PCB. Also solder the accompanying C3, which is 1 uF.
 
@@ -87,7 +87,7 @@ The 1 uF capacitor C4 should be always soldered regardless of whether or not you
 
 The battery power input is used if you need to connect a battery. There are four ways to do this:
 
-image:batteryoptions1
+<img src="http://frank.circleofcurrent.com/junk/aq64_img/batteryoptions1.png" />
 
  * Using a barrel jack 
  * Solder wire directly onto PCB (you can enlarge some holes to act as strain relief) 
@@ -100,7 +100,7 @@ C5 and C6 are aluminum electrolytic 5.3mm x 5.3mm capacitors that must be instal
 
 ===Battery Monitor===
 
-image:battmon1
+<img src="http://frank.circleofcurrent.com/junk/aq64_img/battmon1.png" />
 
 If you want to use the battery voltage monitor capabilies, install D1 (1N4148 in MELF packaging), `R`7 (7K5 ohm), and `R`6 (15K ohm). There's a 3 pin header near these components labelled "BATT-MON" that you can use to connect the battery that you wish to monitor. Alternatively, bridging SJ16 will connect the battery supply to the battery monitor circuit instead. The battery monitor and battery supply sections are separated in case you use two separate batteries (one for motors, another for control electronics). Remember to enable the battery monitor software, and note that this is connected to analog channel 0 (PORTA's PA0).
 
@@ -108,7 +108,7 @@ Remember to measure the voltage drop across D1 and also the values of `R`6 and `
 
 ==Port A Auxiliary GPIOs==
 
-image:portapins1
+<img src="http://frank.circleofcurrent.com/junk/aq64_img/portapins1.png" />
 
 There are 7x3 headers connected to PORTA's pins PA1 to PA7. The top row of pins is ground, the voltage for the center row of pins is selectable, and the pins in the bottom row are connected to PORTA's pins. You must select the voltage for the center row according to how you plan to use them. These pins have no specific purpose and are meant for you to experiment with. Here are your options and how you should choose the voltage.
 
@@ -125,13 +125,13 @@ There are 7x3 headers connected to PORTA's pins PA1 to PA7. The top row of pins 
 
 ==RC Input==
 
-image:rcinputpins1
+<img src="http://frank.circleofcurrent.com/junk/aq64_img/rcinputpins1.png" />
 
 PORTC's pins PC7 to PC2 are connected to 6x3 headers, solder in male headers here. These are dedicated to taking RC pulse signals from your RC receiver. The voltage for the center pin can be connected to 5V or 3V3 using SJ2, and remember that there is a "5V-TAP" and "3V-TAP" if your receiver needs power from a 7th cable.
 
 ==Sensors==
 
-image:sensors1
+<img src="http://frank.circleofcurrent.com/junk/aq64_img/sensors1.png" />
 
 Solder `R`1 and `R`2, which are 4K7 pull-up resistors for the I2C bus. Be sure that you disable internal pull-up resistors in the software. This allows you to use 3V3 I2C sensors without using a level shifter.
 
@@ -143,7 +143,7 @@ You may also choose to install a BMP085 barometric sensor breakout board, and a 
 
 ==Outputs to Motors and Servos==
 
-image:variousoutputs1
+<img src="http://frank.circleofcurrent.com/junk/aq64_img/variousoutputs1.png" />
 
 Four sets of 3-pin male headers should be soldered near "ESC" labels, these are connections for standard RC pulse signal ESCs. SJ1 can be used to connect the voltage supplied by the ESCs to the main system supply bus.
 
@@ -155,9 +155,9 @@ There's a set of four 3-pin headers labelled "SERVO" 1 to 4. Solder these if you
 
 ==Native USB==
 
-image:usbsection1
+<img src="http://frank.circleofcurrent.com/junk/aq64_img/usbsection1.png" />
 
-There is a section designed with V-USB circuitry so the ATmega644PA can communicate with a computer via native low speed USB. This can be used to implement FTDI-less communication, bootloading, and configuration. This is current meant just for experimentation.
+There is a section designed with [http://obdev.at/products/vusb/index.html V-USB circuitry] so the ATmega644PA can communicate with a computer via native low speed USB. This can be used to implement FTDI-less communication, bootloading, and configuration. This is current meant just for experimentation.
 
 SJ18 is used to join the 5V power supply with the 5V coming from the computer's USB port, this is not recommended as the 5V from the computer is also connected to PB0 so that it can detect whether or not USB is connected.
 
@@ -167,7 +167,7 @@ C10 is a tantalum 4u7 capacitor, solder it on if you are playing with USB. This 
 
 ==Serial Ports==
 
-image:sersection1
+<img src="http://frank.circleofcurrent.com/junk/aq64_img/sersection1.png" />
 
 There are a few possible serial port devices. The ATmega644PA has two serial ports, USART0 and USART1, they are probably labelled SER0 and SER1 on the PCB.
 
@@ -181,7 +181,7 @@ Install 2 mm female headers on the XBee footprint if you plan on using a XBee ra
 
 ===Level Shifters===
 
-image:levelshifting1
+<img src="http://frank.circleofcurrent.com/junk/aq64_img/levelshifting1.png" />
 
 If you plan on interfacing any 3V3 devices with the serial ports, you should implement the level shifting circuitry. XBee is known to not work well with 5V microcontrollers directly.
 
@@ -189,9 +189,11 @@ Each level shifter circuit uses a voltage divider for the TX signal and a TXB010
 
 To bypass a level shifter circuit, short out the corresponding 4K7 ohm resistor footprint, omit the TXB0101, and join pin 3 and 4 (signal A and B) of the TXB0101 with a wire.
 
+<img src="http://frank.circleofcurrent.com/junk/aq64_img/levelshifting_bypass.png" />
+
 =Jumper Configuration Summary=
 
-image:solderjumpers1
+<img src="http://frank.circleofcurrent.com/junk/aq64_img/solderjumpers1.png" />
 
 ===AREF-SEL===
 
