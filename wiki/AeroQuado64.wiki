@@ -427,7 +427,7 @@ I have made some changes to `Camera.h` to add a new camera class called "`AeroQu
 
 If you want the servos to do something else besides controlling a camera, the class is still "camera" but you simply use it for your own application. Use your head.
 
-If you want direct RC control from your RC transmitter to the servo, this should not be done by the AeroQuado64 PCB or software, instead you should be connecting your RC receiver directly to the servo instead.
+If you want direct RC control from your RC transmitter to the servo, this should not be done by the !AeroQuado64 PCB or software, instead you should be connecting your RC receiver directly to the servo instead.
 
 Feel free to disable the camera code if you want to use those pins for something else.
 
