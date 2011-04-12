@@ -42,7 +42,7 @@ On the bottom of the board, there is a footprint labelled "AREF-SEL", which allo
 
 ==Microcontroller Supporting Areas==
 
-The reset switch must be installed, !R13 10K ohm is the pull-up resistor for the reset switch. This resistor is optional because the ATmega644PA has a built-in pull-up resistor on the reset pin. You should install this if you do not trust the built-in resistor.
+The reset switch must be installed, `R`13 10K ohm is the pull-up resistor for the reset switch. This resistor is optional because the ATmega644PA has a built-in pull-up resistor on the reset pin. You should install this if you do not trust the built-in resistor.
 
 A push button labelled "BOOT" can be installed only if you are using a non-Arduino-standard bootloader. I personally hate the way "time sensitive" bootloaders work. This button is active low and connected to PB6 on the ATmega. Be sure to enable internal pull-up resistors for this button.
 
@@ -52,7 +52,7 @@ Note: The ISP header is also the only way to access the SPI signals. To experime
 
 ==LED Indicators==
 
-LED1, LED2, LED3 are 3 mm LEDs, choose your own colours. They can be mounted vertically or horizontally (pointing out). Please watch the polarity indicated by the hole shape and silkscreen. !R3, !R4, and !R5, are all 1K ohm resistors to limit current to these LEDs. They are 1K ohm instead of a lower value because the signals may be used for some other purpose later, you may substitute a lower resistance if you want brighter LEDs and do not want to experiment with native USB funtionality.
+LED1, LED2, LED3 are 3 mm LEDs, choose your own colours. They can be mounted vertically or horizontally (pointing out). Please watch the polarity indicated by the hole shape and silkscreen. `R`3, `R`4, and `R`5, are all 1K ohm resistors to limit current to these LEDs. They are 1K ohm instead of a lower value because the signals may be used for some other purpose later, you may substitute a lower resistance if you want brighter LEDs and do not want to experiment with native USB funtionality.
 
 LED3 does not currently serve any purpose in the existing software, it is there for you to use for your own custom application. LED1 is conencted to PB0 (Sanguino pin 0), LED2 is connected to PB1 (Sanguino pin 1), and LED3 is connected to PB2 (Sanguino pin 2). LED1 and LED2 should perform the same functions as the two LEDs on the !AeroQuad V1.8 shield.
 
@@ -60,7 +60,7 @@ LED3 does not currently serve any purpose in the existing software, it is there 
 
 Solder a LM1117 3V3 regulator in SOT-233-3 packaging where indicated on the PCB. Also solder the accompanying C3, which is 1 uF.
 
-LED-PWR is a 3 mm LED that indicates that there is power present on the 3V3 supply bus. You may solder this vertically or sideways (pointing out). !R12 is the 1K ohm current limiting resistor for this LED.
+LED-PWR is a 3 mm LED that indicates that there is power present on the 3V3 supply bus. You may solder this vertically or sideways (pointing out). `R`12 is the 1K ohm current limiting resistor for this LED.
 
 Two rows of 3 pin male headers should be installed at "3V3-TAP", these headers give you access to the 3V3 supply bus. Two rows of 3 pin male headers should be installed at "5V-TAP", these headers give you access to the "SYS" 5V supply bus.
 
@@ -107,7 +107,7 @@ PORTC's pins PC7 to PC2 are connected to 6x3 headers, solder in male headers her
 
 ==Sensors==
 
-Solder !R1 and !R2, which are 4K7 pull-up resistors for the I2C bus. Be sure that you disable internal pull-up resistors in the software. This allows you to use 3V3 I2C sensors without using a level shifter.
+Solder `R`1 and `R`2, which are 4K7 pull-up resistors for the I2C bus. Be sure that you disable internal pull-up resistors in the software. This allows you to use 3V3 I2C sensors without using a level shifter.
 
 You may choose to install either the 6-DOF IMU (gyro and accelerometer combined) breakout board, or a ITG-3200 gyro breakout board. If you do choose the ITG-3200, you may then also choose to install a BMA180 accelerometer breakout board. You must always have a gyro but the accelerometer is optional (it allows you to enable auto-leveling flight). Be sure to configure this correctly in the software.
 
@@ -131,9 +131,9 @@ There is a section designed with V-USB circuitry so the ATmega644PA can communic
 
 SJ18 is used to join the 5V power supply with the 5V coming from the computer's USB port, this is not recommended as the 5V from the computer is also connected to PB0 so that it can detect whether or not USB is connected.
 
-Do not solder anything to the USB section unless you really want to experiment. It is possible for LED2 and LED3 to cause too much load on the USB bus, if you suspect that they are causing problems, uninstall !R4 and !R5.
+Do not solder anything to the USB section unless you really want to experiment. It is possible for LED2 and LED3 to cause too much load on the USB bus, if you suspect that they are causing problems, uninstall `R`4 and `R`5.
 
-C10 is a tantalum 4u7 capacitor, solder it on if you are playing with USB. This capacitor is polarized so install it in the right orientation as indicated. If you install a ceramic capacitor here, then most likely the orientation will not matter. !R14 and !R15 are 68 ohm terminating resistors for the D+ and D- signals of the USB bus, !R16 is a 2K2 pull-up resistor which causes the computer to recognize the bus as low speed USB. D3 and D4 must be 3.6V zener diodes in MELF package (suggested 1N5227B, use 500 mW versions, will not work with 200 mW versions) which clamp the USB bus voltage.
+C10 is a tantalum 4u7 capacitor, solder it on if you are playing with USB. This capacitor is polarized so install it in the right orientation as indicated. If you install a ceramic capacitor here, then most likely the orientation will not matter. `R`14 and `R`15 are 68 ohm terminating resistors for the D+ and D- signals of the USB bus, `R`16 is a 2K2 pull-up resistor which causes the computer to recognize the bus as low speed USB. D3 and D4 must be 3.6V zener diodes in MELF package (suggested 1N5227B, use 500 mW versions, will not work with 200 mW versions) which clamp the USB bus voltage.
 
 ==Serial Ports==
 
@@ -151,7 +151,7 @@ Install 2 mm female headers on the XBee footprint if you plan on using a XBee ra
 
 If you plan on interfacing any 3V3 devices with the serial ports, you should implement the level shifting circuitry. XBee is known to not work well with 5V microcontrollers directly.
 
-Each level shifter circuit uses a voltage divider for the TX signal and a TXB0101 (IC4 and IC5, SOT-23 package) bidirectional level translator for the RX signal. !R9 (4K7 ohm), R8 (10K ohm) and IC4 are used for SER0. !R10 (4K7 ohm), !R11 (10K ohm) and IC5 are used for SER1. C7 and C8 (0.1 uF) are there to decouple the 3V3 and 5V supplies for IC4 and IC5. Do not omit C7 and C8 if either IC4 or IC5 is installed (otherwise, omit C7 and C8 if both IC4 and IC5 are omitted).
+Each level shifter circuit uses a voltage divider for the TX signal and a TXB0101 (IC4 and IC5, SOT-23 package) bidirectional level translator for the RX signal. `R`9 (4K7 ohm), R8 (10K ohm) and IC4 are used for SER0. `R`10 (4K7 ohm), `R`11 (10K ohm) and IC5 are used for SER1. C7 and C8 (0.1 uF) are there to decouple the 3V3 and 5V supplies for IC4 and IC5. Do not omit C7 and C8 if either IC4 or IC5 is installed (otherwise, omit C7 and C8 if both IC4 and IC5 are omitted).
 
 To bypass a level shifter circuit, short out the corresponding 4K7 ohm resistor footprint, omit the TXB0101, and join pin 3 and 4 (signal A and B) of the TXB0101 with a wire.
 
@@ -257,4 +257,4 @@ INT0, INT1, and INT2 are the only external interrupt pins on the ATmega644PA, bu
 
 My code for the 4 servos work, but I'm not sure how having more interrupt routines will bother the rest of the time sensitive software.
 
-!R4's silkscreen is covering a via
+`R`4's silkscreen is covering a via
