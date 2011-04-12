@@ -240,17 +240,17 @@ SparkFun breakout boards, XBee, Bluetooth Mate, and FTDI cables are not listed.
 ||1N4148 diode||MELF packaging||D1||1||Digikey: LL4148DICT-ND||
 ||Rectifier Diode||"SMB packaging, 20V reverse voltage minimum, high forward current rating"||D2||1||Digikey: SSB44-E3/52TGICT-ND||
 ||3V6 zener diode (1N5227B)||"MELF packaging, 500 mW rating"||"D3, D4"||2||Digikey: ZMM5227BDICT-ND||
-||16 MHz resonator||||Y1 (16 MHz on PCB)||1||SparkFun: COM-09420||
+||16 MHz resonator||||Y1 (16 MHz on PCB)||1||!SparkFun: COM-09420||
 ||Male headers||"0.1"" pitch"||"ESC, I2C, I2C-GROUP, BARO, ACCEL, IMU, GYRO, MAG, BATTERY, BATT-MON, ADC1-7, RC1-6, 5V-TAP, 3V3-TAP, SERIAL, FTDI, maybe BLUETOOTH"||Buy long strips and break them off||||
 ||2x3 male headers||"0.1"" pitch, no shroud allowed"||AVRISP||1||Use the male headers you buy||
 ||TXB0101 bidirectional level shifter||SOT-23-6 package||"IC4, IC5"||2||Digikey: 296-21664-1-ND||
 ||Tactile momentary push button switch SPST||"Right angle, 7.50mm x 7.10mm"||"RESET, BOOT"||2||Digikey: P12232SCT-ND||
 ||5V regulator||"SOT223, SOT-223-3 package"||5V-REG||1||LM1117MPX-5.0||
 ||3V3 regulator||SOT223 package||3V3-REG||1||LM1117MPX-3.3||
-||LED||"3 mm, any colour"||LED1-4||4||SparkFun: COM-00533||
-||Barrel jack||||Battery||1||SparkFun: PRT-00119||
-||USB mini-B female connector||Surface mount||USB||1||SparkFun: PRT-00587||
-||2mm female pin headers||||Xbee||2||SparkFun: PRT-08272||
+||LED||"3 mm, any colour"||LED1-4||4||!SparkFun: COM-00533||
+||Barrel jack||||Battery||1||!SparkFun: PRT-00119||
+||USB mini-B female connector||Surface mount||USB||1||!SparkFun: PRT-00587||
+||2mm female pin headers||||Xbee||2||!SparkFun: PRT-08272||
 
 =Schematic and PCB=
 
