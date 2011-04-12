@@ -2,6 +2,8 @@
 
 This is my PCB design for a quadrotor helicopter flight controller, based heavily on !AeroQuad.
 
+This page is a rough guide for the first people to receive a PCB. More details will be added as development continues.
+
 =Table of Contents=
 
 <wiki:toc max_depth="2" />
