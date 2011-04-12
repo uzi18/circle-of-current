@@ -13,7 +13,7 @@ This is my PCB design for a quadrotor helicopter flight controller, based heavil
  * Plenty of pins for extra servos, digital and analog inputs, and digital outputs 
  * Code size large enough for all existing !AeroQuad code 
  * Supports ESCs which use RC pulse signals or I2C 
- * Supports the following SparkFun breakout boards: ITG-3200 gyro, 6 DOF IMU, BMA180 accelerometer, BMP085 barometic pressure sensor, HMC5842 compass, IMU3000 IMU 
+ * Supports the following !SparkFun breakout boards: ITG-3200 gyro, 6 DOF IMU, BMA180 accelerometer, BMP085 barometic pressure sensor, HMC5842 compass, IMU3000 IMU 
  * Circuitry for battery monitoring 
  * Connectors for FTDI cable, bluetooth, XBee, GPS, AVR programmer, V-USB, and more 
  * 3 LEDs and 1 power indicator LED 
@@ -225,7 +225,7 @@ No copper under the compass sensor
 
 All traces are 0.016" wide or greater. If you need to cut a trace, but then later want to re-connect it, the thick trace makes this easy for you.
 
-Most header footprints have a tiny locking offset similar to how SparkFun does it in their Eagle library, however my footprints are easier to center correctly.
+Most header footprints have a tiny locking offset similar to how !SparkFun does it in their Eagle library, however my footprints are easier to center correctly.
 
 I know !AeroQuad depends on all the timers except timer0 (reserved so millis() works) to control auxiliary servos on the Arduino Mega, so you might be wondering how I plan on controlling four more servos when the ATmega644PA only has timer0 available to use. Don't worry, I have compare match driven servo control code that utilizes timer0 without disturbing the operation of millis(), and actually my code can target any pin on the ATmega, even the ones on PORTA.
 
