@@ -4,7 +4,7 @@ This is my PCB design for a quadrotor helicopter flight controller, based heavil
 
 This page is a rough guide for the first people to receive a PCB. More details will be added as development continues.
 
-image:overview1
+<img src="http://frank.circleofcurrent.com/junk/aq64_img/overview1.png" />
 
 image:overview2
 
