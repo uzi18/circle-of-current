@@ -4,10 +4,11 @@ This is my PCB design for a quadrotor helicopter flight controller, based heavil
 
 This page is a rough guide for the first people to receive a PCB. More details will be added as development continues.
 
+This page is not yet ready.
+
 <img src="http://frank.circleofcurrent.com/junk/aq64_img/overview1.png" />
 
 <img src="http://frank.circleofcurrent.com/junk/aq64_img/overview2.png" />
-
 
 =Table of Contents=
 
@@ -18,7 +19,7 @@ This page is a rough guide for the first people to receive a PCB. More details w
  * ATmega644PA, 16 MHz, 64KB of flash memory, 4KB of SRAM memory 
  * Two serial ports, both are level shifted, and can be easily routed to different devices 
  * Plenty of pins for extra servos, digital and analog inputs, and digital outputs 
- * Code size large enough for all existing !AeroQuad code 
+ * Code size large enough for all existing !AeroQuad code, even the stuff that only fits on the Arduino Mega and AeroQuad Mega Shield
  * Supports ESCs which use RC pulse signals or I2C 
  * Supports the following !SparkFun breakout boards: ITG-3200 gyro, 6 DOF IMU, BMA180 accelerometer, BMP085 barometic pressure sensor, HMC5842 compass, IMU3000 IMU 
  * Circuitry for battery monitoring 
@@ -29,7 +30,7 @@ This page is a rough guide for the first people to receive a PCB. More details w
  * Plenty of configurations options available 
  * Slotted corners allows for flexible mounting
 
-=Assembly Guide=
+=Assembly Guide and Circuit Walkthrough=
 
 Note that all resistors are in 0805 packaging, although 0603 will also fit perfectly fine. They should be 1/16 watt or greater. Note that all capacitors, unless otherwise specified, are ceramic chip capacitors in 0805 packaging (or 0603 since they will also fit perfectly fine). They should be rated 16V or greater. 
 
@@ -195,65 +196,21 @@ To bypass a level shifter circuit, short out the corresponding 4K7 ohm resistor 
 
 <img src="http://frank.circleofcurrent.com/junk/aq64_img/solderjumpers1.png" />
 
-===AREF-SEL===
-
-Selects the analog reference voltage between 3V3 and 5V
-
-===SJ1===
-
-Joins the 5V from RC pulse ESCs to the 5V system power supply
-
-===SJ2===
-
-Selects 5V or 3V3 for the RC receiver signals
-
-===SJ3===
-
-Joins the power from I2C ESCs to either the 5V RC pulse ESCs power, or to 3V3 power
-
-===SJ4===
-
-Selects 5V from the system supply or 5V from the ESCs for the auxiliary servos
-
-===SJ5===
-
-Selects 5V or 3V3 for the auxiliary I2C device connector
-
-===SJ6===
-
-Selects the voltage supplied to the auxiliary serial device, either 5V or 3V3
-
-===SJ7 and SJ8===
-
-Selects between SER0 and SER1 for the bluetooth connector
-
-===SJ9 and SJ10===
-
-Selects between SER0 and SER1 for the FTDI cable connector
-
-===SJ11 and SJ12===
-
-Selects between SER0 and SER1 for the XBee
-
-===SJ13 and SJ14===
-
-Selects between SER0 and SER1 for the auxiliary serial device
-
-===SJ15===
-
-Allows you to join the center pin of the PORTA headers to the same power used by the RC signal input headers, or to ground so you can use them with jumper shunt blocks.
-
-===SJ16===
-
-Selects between supplying 5V or 3V3 to the auxiliary serial device
-
-===SJ17===
-
-Selects either the 5V from the ESCs or the 5V from the system power supply for the headers connected to PORTA
-
-===SJ18===
-
-Joins the 5V from the USB bus to the 5V system power
+||AREF-SEL||Selects the analog reference voltage between 3V3 and 5V||
+||SJ1||Joins the 5V from RC pulse ESCs to the 5V system power supply||
+||SJ2||Selects 5V or 3V3 for the RC receiver signals||
+||SJ3||Joins the power from I2C ESCs to either the 5V RC pulse ESCs power, or to 3V3 power||
+||SJ4||Selects 5V from the system supply or 5V from the ESCs for the auxiliary servos||
+||SJ5||Selects 5V or 3V3 for the auxiliary I2C device connector||
+||SJ6||Selects the voltage supplied to the auxiliary serial device, either 5V or 3V3||
+||SJ7 and SJ8||Selects between SER0 and SER1 for the bluetooth connector||
+||SJ9 and SJ10||Selects between SER0 and SER1 for the FTDI cable connector||
+||SJ11 and SJ12||Selects between SER0 and SER1 for the XBee||
+||SJ13 and SJ14||Selects between SER0 and SER1 for the auxiliary serial device||
+||SJ15||Allows you to join the center pin of the PORTA headers to the same power used by the RC signal input headers, or to ground so you can use them with jumper shunt blocks.||
+||SJ16||Selects between supplying 5V or 3V3 to the auxiliary serial device||
+||SJ17||Selects either the 5V from the ESCs or the 5V from the system power supply for the headers connected to PORTA||
+||SJ18||Joins the 5V from the USB bus to the 5V system power||
 
 =Part List=
 
@@ -288,9 +245,123 @@ The ATmega + chip socket, SparkFun breakout boards, XBee, Bluetooth Mate, and FT
 ||USB mini-B female connector||Surface mount||USB||1||!SparkFun: PRT-00587||
 ||2mm female pin headers|| ||Xbee||2||!SparkFun: PRT-08272||
 
+=Setup Guide for !AeroQuado64 Source Code=
+
+==The Sketch==
+
+The sketch itself is a heavily modified version of !AeroQuad Flight Software V2.4 , which requires a special core developed for the !AeroQuado64 PCB.
+
+==Special ATmega644PA Core==
+
+I'm using a modified Arduino core based on the Sanguino core. I've included TWI code that is more efficient than the "Wire" I2C library (the Wire library is not suited for master-only operation). Also `wiring.c` is modified so that timer0's overflow interrupt vector can be utilized to control servos without distrubing the functionality of the `millis()` function. A servo control library is also incorporated into the core.
+
+Install the core by copying the folder `AeroQuado64Core` into your Arduino installation such that you create `\arduino-0022\hardware\arduino\cores\AeroQuado64Core\`.
+
+You will also need to modify `boards.txt` to include the entry
+
+{{{
+
+AeroQuado64.name=AeroQuado64
+AeroQuado64.upload.protocol=stk500
+AeroQuado64.upload.maximum_size=57344
+AeroQuado64.upload.speed=115200
+AeroQuado64.bootloader.low_fuses=0xFF
+AeroQuado64.bootloader.high_fuses=0x99
+AeroQuado64.bootloader.extended_fuses=0xFF
+AeroQuado64.bootloader.path=AeroQuado64Boot
+AeroQuado64.bootloader.file=AeroQuado64Boot_arduino.hex
+AeroQuado64.bootloader.unlock_bits=0x3F
+AeroQuado64.bootloader.lock_bits=0x0F
+AeroQuado64.build.mcu=atmega644p
+AeroQuado64.build.f_cpu=16000000L
+AeroQuado64.build.core=AeroQuado64Core
+
+}}}
+
+Note: settings in `boards.txt` will only take effect when you close and re-open Arduino IDE
+
+===Bootloaders===
+
+You'll need to change the `bootloader.file` and `upload.protocol` in `boards.txt' according to the bootloader you want to use.
+
+Several special bootloaders are developed, copy the folder `AeroQuado64Boot` as '\arduino-0022\hardware\arduino\bootloaders\AeroQuado64Boot\'
+
+`AeroQuado64Boot_arduino.hex` requires the stk500 protocol, and requires you to use a FTDI cable. Use it as if the AeroQuado64 is an Arduino without auto-reset. This bootloader has a timeout of 3 seconds. It's been modified from the Sanguino bootloader so to use the LEDs on the !AeroQuado64.
+
+`AeroQuado64Boot_stk500_w_btn.hex` requires the stk500 protocol, and requires you to use a FTDI cable. Hold down the BOOT button while clicking the RESET button, this bootloader will never time out. Pressing RESET without holding down BOOT will not engage the bootloader. Not having to wait and not having a timeout feels much better than the default Arduino bootloader.
+
+`AeroQuado64Boot_usbasp.hex` requires the protocol to be set as `usbasp`. Hold down the BOOT button while clicking the RESET button, this bootloader will never time out. Pressing RESET without holding down BOOT will not engage the bootloader. You can only use this if you have installed all of the components required for native USB. You'll also need the [http://www.fischl.de/usbasp/ drivers for USBasp from its website]. This bootloader does not occupy any serial ports, so you don't have to mess with constantly disconnecting, reconnecting, selecting, and configuring serial ports.
+
+=Configuring !AeroQuad V2.4 Source Code=
+
+You must decide what features you want, and configure the source code correctly before compiling and uploading the firmware to the microcontroller.
+
+==Mounting Orientation==
+
+The !AeroQuado64 PCB supports both X and + configurations, see `AeroQuad.pde` about `#define XConfig` and `#define plusConfig`.
+
+==Flight Sensors==
+
+===Gyro===
+
+You absolutely must have a digital gyroscope sensor, and three axis of measurements are needed. They allow the flight control software to stabilize the quadrotor helicopter by adjusting motor speeds to counteract any unwanted rotation.
+
+!AeroQuado64 has footprints to support:
+
+ * ITG-3200 breakout board from SparkFun
+ * 6 DOF IMU breakout board from SparkFun
+
+These two boards actually are both using the ITG-3200 chip itself, so the source code configuration steps are the same.
+
+See `AeroQuad.pde` about `#define FlightAngleARG`, or `#define FlightAngleMARG` if a compass is used.
+
+===Accelerometer===
+
+Accelerometers will allow the software to use static acceleration measurements (aka gravity) to help determine the current flight angle. This will allow you to enable "stable" mode or "attitude" mode,
+
+!AeroQuado64 has footprints to support:
+
+ * 6 DOF IMU breakout board from SparkFun
+ * BMA180 breakout board from SparkFun
+
+The 6 DOF IMU breakoutboard uses a ADXL345, while the BMA180 breakout board obviously uses a BMA180.
+
+see `AeroQuad.pde` about `#define FlightAngleARG`, or `#define FlightAngleMARG` if a compass is used.
+
+===Barometric Pressure Sensor===
+
+There is a footprint available for the BMP085 barometric pressure sensor. This sensor can measure air pressure so that the software knows what altitude you are flying at. It is then able to adjust throttle to hold at a particular altitude. You need to enable this in the source code.
+
+Please read `AeroQuad.pde' about the `AltitudeHold` definition, which you need to enable.
+
+===Magnetic Compass===
+
+There is a footprint available for the HMC5842 hall effect sensor. This sensor can measure the Earth's magnetic fields to determine the current magnetic heading of the helicopter. It is then able to keep that direction constantly. You need to enable this in the source code.
+
+Please read `AeroQuad.pde' about the `HeadingMagHold` and `FlightAngleMARG` definitions, which you need to enable.
+
+===Others===
+
+The footprint for the ITG-3200 breakout board actually fits the IMU3000 breakout board from SparkFun, and the pins are compatible. Somebody just needs to write the software for it.
+
+==Battery Monitor==
+
+If you have installed the components for the battery monitor circuit, then you can enable battery monitoring in the source code.
+
+Enable the `BattMonitor` definition in `AeroQuad.pde`
+{{{#define BattMonitor}}}
+
+Please see `BatteryMonitor.h` , where you can program the behaviour of the helicopter when the battery voltage reaches a certain level. For example, you can program it to slowly land, flash warning lights, etc.
+
+You also need to get the precise measurements of the components used in your battery monitoring circuitry, this means the voltage drop across D1, and the values of `R6` and `R7`. Put these values where indicated in `BatteryMonitor.h` .
+
+==Wireless==
+
+There's a place to put down a XBee module, and a place to put a Bluetooth Mate or BlueSMIRF module. See the hardware assembly guide about how to route the serial port signals to these connectors.
+
 =Design Notes=
 
-Stop wasting money on Arduinos and its cousins
+Stop wasting money on Arduinos and its cousins, being stand-alone means you can use your Arduino for other stuff without removing it from your aircraft. Also, if you have money to blow on an Arduino Mega, blow it on something like a Teensy++ or mbed instead.
 
 No copper near where abrasion is expected (near around the FTDI connector, and the mounting slots)
 
