@@ -175,29 +175,25 @@ Selects 5V or 3V3 for the RC receiver signals
 
 Joins the power from I2C ESCs to either the 5V RC pulse ESCs power, or to 3V3 power
 
+===SJ4===
+
+Selects 5V from the system supply or 5V from the ESCs for the auxiliary servos
+
 ===SJ5===
 
 Selects 5V or 3V3 for the auxiliary I2C device connector
 
-===SJ17===
-
-Selects either the 5V from the ESCs or the 5V from the system power supply for the headers connected to PORTA
-
-===SJ15===
-
-Allows you to join the center pin of the PORTA headers to the same power used by the RC signal input headers, or to ground so you can use them with jumper shunt blocks.
-
-===SJ18===
-
-Joins the 5V from the USB bus to the 5V system power
-
-===SJ4===
-
-Chooses between the 5V system power or the ESC 5V power for the four auxiliary servos
-
 ===SJ6===
 
 Selects the voltage supplied to the auxiliary serial device, either 5V or 3V3
+
+===SJ7 and SJ8===
+
+Selects between SER0 and SER1 for the bluetooth connector
+
+===SJ9 and SJ10===
+
+Selects between SER0 and SER1 for the FTDI cable connector
 
 ===SJ11 and SJ12===
 
@@ -207,13 +203,21 @@ Selects between SER0 and SER1 for the XBee
 
 Selects between SER0 and SER1 for the auxiliary serial device
 
-===SJ7 and SJ8===
+===SJ15===
 
-Selects between SER0 and SER1 for the bluetooth connector
+Allows you to join the center pin of the PORTA headers to the same power used by the RC signal input headers, or to ground so you can use them with jumper shunt blocks.
 
-===SJ9 and SJ10===
+===SJ16===
 
-Selects between SER0 and SER1 for the FTDI cable connector
+Selects between supplying 5V or 3V3 to the auxiliary serial device
+
+===SJ17===
+
+Selects either the 5V from the ESCs or the 5V from the system power supply for the headers connected to PORTA
+
+===SJ18===
+
+Joins the 5V from the USB bus to the 5V system power
 
 =Part List=
 
