@@ -191,6 +191,8 @@ To bypass a level shifter circuit, short out the corresponding 4K7 ohm resistor 
 
 =Jumper Configuration Summary=
 
+image:solderjumpers1
+
 ===AREF-SEL===
 
 Selects the analog reference voltage between 3V3 and 5V
