@@ -81,9 +81,9 @@ C5 and C6 are aluminum electrolytic 5.3mm x 5.3mm capacitors that must be instal
 
 ===Battery Monitor===
 
-If you want to use the battery voltage monitor capabilies, install D1 (1N4148 in MELF packaging), R7 (7K5 ohm), and R6 (15K ohm). There's a 3 pin header near these components labelled "BATT-MON" that you can use to connect the battery that you wish to monitor. Alternatively, bridging SJ16 will connect the battery supply to the battery monitor circuit instead. The battery monitor and battery supply sections are separated in case you use two separate batteries (one for motors, another for control electronics). Remember to enable the battery monitor software, and note that this is connected to analog channel 0 (PORTA's PA0).
+If you want to use the battery voltage monitor capabilies, install D1 (1N4148 in MELF packaging), `R`7 (7K5 ohm), and `R`6 (15K ohm). There's a 3 pin header near these components labelled "BATT-MON" that you can use to connect the battery that you wish to monitor. Alternatively, bridging SJ16 will connect the battery supply to the battery monitor circuit instead. The battery monitor and battery supply sections are separated in case you use two separate batteries (one for motors, another for control electronics). Remember to enable the battery monitor software, and note that this is connected to analog channel 0 (PORTA's PA0).
 
-Remember to measure the voltage drop across D1 and also the values of R6 and R7. Set these values in the software so the sampled data is accurate.
+Remember to measure the voltage drop across D1 and also the values of `R`6 and `R`7. Set these values in the software so the sampled data is accurate.
 
 ==Port A Auxiliary GPIOs==
 
