@@ -496,8 +496,6 @@ The LEDs on the !AeroQuad V1.8 shield are supposed to be special LEDs with curre
 
 The !AeroQuad shields do not provide a 3V3 supply, it uses the one built into the Arduino. The 3V3 supply from the Arduino boards before UNO are kind of bad, limited, and noisy.
 
-I can understand the reason behind the existance for the !AeroQuad Shield and Mega variant, but I don't understand the development behind the "Mini" variant. Why would 
-
 ==After Thoughts==
 
 I didn't put any designation on the first batch of PCBs, version 1 is dated TODO and can be recognized by the test pattern on the PCB
