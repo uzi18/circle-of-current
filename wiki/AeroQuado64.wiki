@@ -10,7 +10,28 @@ This page is not yet ready.
 
 <img src="http://frank.circleofcurrent.com/junk/aq64_img/overview2.png" />
 
-TODO: Link to download
+==Downloads==
+
+These packages includes:
+
+ * Arduino
+  * sketch source code
+  * core source code
+ * Bootloader
+  * ATmegaBOOT based
+   * source code
+   * .hex binaries
+  * USBaspLoader based
+   * source code
+   * .hex binaries
+ * CadSoft EAGLE
+  * schematic
+  * board
+  * library
+  * design rules
+  * CAM job
+
+[http://code.google.com/p/circle-of-current/downloads/detail?name=AeroQuado64-20110412.zip Download version 20110412], compiles ok, nothing is tested, the PCBs were ordered yesterday...
 
 =Table of Contents=
 
