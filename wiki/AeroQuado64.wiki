@@ -254,8 +254,8 @@ Here is the pin chart for the !AeroQuado64 PCB
 ||1||PB0||Digital 0 (Debug LED)||LED1, detecting USB cable presence||
 ||2||PB1||Digital 1||LED2, USB bus D-||
 ||3||PB2, INT2||Digital 2||LED3, USB bus D+||
-||4||PB3||Digital 3 (PWM)||SERVO1 (camera roll)||
-||5||PB4||Digital 4 (PWM)||SERVO2 (camera pitch)||
+||4||PB3||Digital 3 (PWM)||SERVO1 (camera pitch)||
+||5||PB4||Digital 4 (PWM)||SERVO2 (camera roll)||
 ||6||PB5, MOSI||Digital 5||SERVO3 (camera yaw), MOSI||
 ||7||PB6, MISO||Digital 6||SERVO4 (camera aux), MISO, BOOT button||
 ||8||PB7, SCK||Digital 7||SCK||
