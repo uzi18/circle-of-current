@@ -347,7 +347,7 @@ Several special bootloaders are developed, copy the folder `AeroQuado64Boot` as 
 
 `AeroQuado64Boot_stk500_w_btn.hex` requires the stk500 protocol, and requires you to use a FTDI cable. Hold down the BOOT button while clicking the RESET button, this bootloader will never time out. Pressing RESET without holding down BOOT will not engage the bootloader. Not having to wait and not having a timeout feels much better than the default Arduino bootloader.
 
-`AeroQuado64Boot_usbasp.hex` requires the protocol to be set as `usbasp`. Hold down the BOOT button while clicking the RESET button, this bootloader will never time out. Pressing RESET without holding down BOOT will not engage the bootloader. You can only use this if you have installed all of the components required for native USB. You'll also need the [http://www.fischl.de/usbasp/ drivers for USBasp from its website]. This bootloader does not occupy any serial ports, so you don't have to mess with constantly disconnecting, reconnecting, selecting, and configuring serial ports.
+`AeroQuado64Boot_usbasp.hex` requires the protocol to be set as `usbasp`. Add the line `AeroQuado64.upload.disable_flushing=true` Hold down the BOOT button while clicking the RESET button, this bootloader will never time out. Pressing RESET without holding down BOOT will not engage the bootloader. You can only use this if you have installed all of the components required for native USB. You'll also need the [http://www.fischl.de/usbasp/ drivers for USBasp from its website]. This bootloader does not occupy any serial ports, so you don't have to mess with constantly disconnecting, reconnecting, selecting, and configuring serial ports.
 
 =Configuring the !AeroQuado64 Source Code=
 
