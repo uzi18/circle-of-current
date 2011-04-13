@@ -53,6 +53,8 @@ These packages includes:
  * Plenty of configurations options available 
  * Slotted corners allows for flexible mounting
 
+ * PCB is 3.9 inch X 3.9 inch
+
 =Assembly Guide and Circuit Walkthrough=
 
 Note that all resistors are in 0805 packaging, although 0603 will also fit perfectly fine. They should be 1/16 watt or greater. Note that all capacitors, unless otherwise specified, are ceramic chip capacitors in 0805 packaging (or 0603 since they will also fit perfectly fine). They should be rated 16V or greater. 
