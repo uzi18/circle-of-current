@@ -42,7 +42,7 @@ These packages includes:
  * ATmega644PA, 16 MHz, 64KB of flash memory, 4KB of SRAM memory 
  * Two serial ports, both are level shifted, and can be easily routed to different devices 
  * Plenty of pins for extra servos, digital and analog inputs, and digital outputs 
- * Code size large enough for all existing !AeroQuad code, even the stuff that only fits on the Arduino Mega and AeroQuad Mega Shield
+ * Code size large enough for all existing !AeroQuad code, even the stuff that only fits on the Arduino Mega and !AeroQuad Mega Shield
  * Supports ESCs which use RC pulse signals or I2C 
  * Supports the following !SparkFun breakout boards: ITG-3200 gyro, 6 DOF IMU, BMA180 accelerometer, BMP085 barometic pressure sensor, HMC5842 compass, IMU3000 IMU 
  * Circuitry for battery monitoring 
@@ -177,11 +177,11 @@ You may also choose to install a BMP085 barometric sensor breakout board, and a 
 
 Four sets of 3-pin male headers should be soldered near "ESC" labels, these are connections for standard RC pulse signal ESCs. SJ1 can be used to connect the voltage supplied by the ESCs to the main system supply bus.
 
-Four sets of 4-pin headers can be soldered near "I2C-GROUP", these are meant for connections to any ESCs that use I2C. SJ3 Can be used to connect the 5V supply or 3V3 supply to the ESCs's supply voltage.
+Four sets of 4-pin headers can be soldered near "I2C-GROUP", these are meant for connections to any ESCs that use I2C. SJ3 Can be used to connect the 5V supply or 3V3 supply to the ESCs's supply voltage. Alternatively, if you wish to use only 3 wires to connect to I2C ESCs, then short the V+ pins of the I2C-GROUP headers with the ground pins, and DO NOT use SJ3 at all.
 
 There's another 4-pin header also meant for an auxilliary I2C connection, SJ5 selects the voltage supplied to this connector. This connection is for experimentation with I2C devices. Personally, I think it's useful for connecting a logic analyzer to debug the I2C bus.
 
-There's a set of four 3-pin headers labelled "SERVO" 1 to 4. Solder these if you have any servos to control (maybe for a camera?), you can also use these as general purpose digital input/output pins. SJ4 is used to select the power supply for these servos, either from the system 5V supply, or the 5V supplied by the ESCs (recommended). These pins are connected to PB3 to PB6.
+There's a set of four 3-pin headers labelled "SERVO" 1 to 4. Solder these if you have any servos to control (maybe for a camera? !AreoQuad supports camera control), you can also use these as general purpose digital input/output pins. SJ4 is used to select the power supply for these servos, either from the system 5V supply, or the 5V supplied by the ESCs (recommended). These pins are connected to PB3 to PB6.
 
 ==Native USB==
 
@@ -229,7 +229,7 @@ To bypass a level shifter circuit, short out the corresponding 4K7 ohm resistor 
 ||AREF-SEL||Selects the analog reference voltage between 3V3 and 5V||
 ||SJ1||Joins the 5V from RC pulse ESCs to the 5V system power supply||
 ||SJ2||Selects 5V or 3V3 for the RC receiver signals||
-||SJ3||Joins the power from I2C ESCs to either the 5V RC pulse ESCs power, or to 3V3 power||
+||SJ3||Joins the power from I2C ESCs to either the 5V RC pulse ESCs power, or to 3V3 power. Alternatively, if you wish to use only 3 wires to connect to I2C ESCs, then short the V+ pins of the I2C-GROUP headers with the ground pins, and DO NOT use SJ3 at all.||
 ||SJ4||Selects 5V from the system supply or 5V from the ESCs for the auxiliary servos||
 ||SJ5||Selects 5V or 3V3 for the auxiliary I2C device connector||
 ||SJ6||Selects the voltage supplied to the auxiliary serial device, either 5V or 3V3||
@@ -318,11 +318,11 @@ When a new version of !AeroQuad becomes available, I will synchronize the change
 
 I'm using a modified Arduino core based on the Sanguino core.
 
-I've included TWI code that is more efficient than the "Wire" I2C library (the Wire library is not suited for master-only operation), however this isn't utilized just yet because I want to keep in sync with the origial !AeroQuad code for a while.
+I've included TWI code that is more efficient than the "Wire" I2C library (the Wire library is not suited for master-only operation). The old code still uses the Wire library but the new code gets used if `AeroQuado64` is defined.
 
-`wiring.c` is modified so that timer0's overflow interrupt vector can be utilized to control servos without distrubing the functionality of the `millis()` function. My own timer0 servo control library is also incorporated into the core.
+`wiring.c` is modified so that timer0's overflow interrupt vector can be utilized to control servos without distrubing the functionality of the `millis()` function. My own timer0 servo control library called `SoftServo` is also incorporated into the core.
 
-V-USB code is also included but not utilized at the moment
+V-USB code is not utilized at the moment, but it is used for a bootloader variant.
 
 Install the core by copying the folder `AeroQuado64Core` into your Arduino installation such that you create `\arduino-0022\hardware\arduino\cores\AeroQuado64Core\`.
 
@@ -371,7 +371,7 @@ The !AeroQuado64 PCB supports both X and + configurations, see `AeroQuado64.pde`
 
 ==Flight Sensors==
 
-Important: The Wire library must be modified, the modified library is included in the download. The patch disables the AVR's internal pull-up resistors so that the I2C bus can operate at 3V3 using the `R`1 and `R`2. Not performing this patch can cause permanent damage to your expensive sensors.
+Note: the original AeroQuad code has been changed to disable the AVR's internal pull-up resistors, this is so that the I2C bus can operate at 3V3 using the `R`1 and `R`2 as external pull-up resistors. The Wire library never accounted for the possibility of using an ATmega644PA so it enables internal pull-up resistors on the wrong pins, this is reverted manually in the new code.
 
 ===Gyro===
 
@@ -437,7 +437,7 @@ Take a look at `Motors.h` for more information about using ESCs which use I2C. I
 
 ==Camera or Auxiliary Servos==
 
-I have made some changes to `Camera.h` to add a new camera class called "`AeroQuado64_Camera`" which uses my servo code included in the core. `AeroQuado64.pde` will create an instance of this new class and use it in a similar fashion as how cameras are controlled in the origial !AeroQuad.
+I have made some changes to `Camera.h` to add a new camera class called "`AeroQuado64_Camera`" which uses my servo code (called !SoftServo) included in the core. `AeroQuado64.pde` will create an instance of this new class and use it in a similar fashion as how cameras are controlled in the origial !AeroQuad.
 
 If you want the servos to do something else besides controlling a camera, the class is still "camera" but you simply use it for your own application. Use your head.
 
@@ -471,7 +471,7 @@ All traces are 0.016" wide or greater. If you need to cut a trace, but then late
 
 Most header footprints have a tiny locking offset similar to how !SparkFun does it in their Eagle library, however my footprints are easier to center correctly.
 
-I know !AeroQuad depends on all the timers except timer0 (reserved so `millis()` works) to control auxiliary servos on the Arduino Mega, so you might be wondering how I plan on controlling four more servos when the ATmega644PA only has timer0 available to use. Don't worry, I have compare match driven servo control code that utilizes timer0 without disturbing the operation of `millis()`, and actually my code can target any pin on the ATmega, even the ones on PORTA (where there are 7 available GPIOs).
+I know !AeroQuad depends on all the timers except timer0 (reserved so `millis()` works) to control auxiliary servos on the Arduino Mega, so you might be wondering how I plan on controlling four more servos when the ATmega644PA only has timer0 available to use. Don't worry, I have compare match driven servo control code (called !SoftServo) that utilizes timer0 without disturbing the operation of `millis()`, and actually my code can target any pin on the ATmega, even the ones on PORTA (where there are 7 available GPIOs).
 
 ==Improvements Over Various !AeroQuad Shields==
 
