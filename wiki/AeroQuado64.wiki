@@ -321,9 +321,9 @@ You will also need to modify `boards.txt` to include the entry
 AeroQuado64.name=AeroQuado64
 AeroQuado64.upload.protocol=stk500
 AeroQuado64.upload.maximum_size=57344
-AeroQuado64.upload.speed=115200
+AeroQuado64.upload.speed=76800
 AeroQuado64.bootloader.low_fuses=0xFF
-AeroQuado64.bootloader.high_fuses=0x99
+AeroQuado64.bootloader.high_fuses=0x98
 AeroQuado64.bootloader.extended_fuses=0xFF
 AeroQuado64.bootloader.path=AeroQuado64Boot
 AeroQuado64.bootloader.file=AeroQuado64Boot_arduino.hex
@@ -343,7 +343,7 @@ You'll need to change the `bootloader.file` and `upload.protocol` in `boards.txt
 
 Several special bootloaders are developed, copy the folder `AeroQuado64Boot` as `\arduino-0022\hardware\arduino\bootloaders\AeroQuado64Boot\`
 
-`AeroQuado64Boot_arduino.hex` requires the stk500 protocol, and requires you to use a FTDI cable. Use it as if the AeroQuado64 is an Arduino without auto-reset. This bootloader has a timeout of 3 seconds. It's been modified from the Sanguino bootloader so to use the LEDs on the !AeroQuado64.
+`AeroQuado64Boot_arduino.hex` requires the stk500 protocol, and requires you to use a FTDI cable. Use it as if the AeroQuado64 is an Arduino without auto-reset. This bootloader has a timeout like the regular Arduino bootloader. It's been modified from the Sanguino bootloader.
 
 `AeroQuado64Boot_stk500_w_btn.hex` requires the stk500 protocol, and requires you to use a FTDI cable. Hold down the BOOT button while clicking the RESET button, this bootloader will never time out. Pressing RESET without holding down BOOT will not engage the bootloader. Not having to wait and not having a timeout feels much better than the default Arduino bootloader.
 
