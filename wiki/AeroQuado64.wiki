@@ -147,11 +147,17 @@ There are 7x3 headers connected to PORTA's pins PA1 to PA7. The top row of pins 
  * Use with jumper shunt blocks    
   * Select ground using SJ15, also remember to enable the internal pull-up resistors on these pins
 
+Important: If you select ground for SJ15, then do not select anything using SJ17, doing so will short-circuit the power supply connected to SJ17 with ground, which can cause damage to the various power supply components.
+
+Important: If you select V-RC with SJ15 (to use the same voltage that the RC inputs are using) and you have selected 3V3 using SJ3, then you must not use SJ17 to select anything. Doing so will cause the 5V supply to be joined with the 3V3 supply, which can cause damage to 3V3 devices.
+
 ==RC Input==
 
 <img src="http://frank.circleofcurrent.com/junk/aq64_img/rcinputpins1.png" />
 
 PORTC's pins PC7 to PC2 are connected to 6x3 headers, solder in male headers here. These are dedicated to taking RC pulse signals from your RC receiver. The voltage for the center pin can be connected to 5V or 3V3 using SJ2, and remember that there is a "5V-TAP" and "3V-TAP" if your receiver needs power from a 7th cable.
+
+Important: If you select V-RC with SJ15 (to use the same voltage that the RC inputs are using) and you have selected 3V3 using SJ3, then you must not use SJ17 to select anything. Doing so will cause the 5V supply to be joined with the 3V3 supply, which can cause damage to 3V3 devices.
 
 ==Sensors==
 
@@ -235,6 +241,10 @@ To bypass a level shifter circuit, short out the corresponding 4K7 ohm resistor 
 ||SJ16||Selects between supplying 5V or 3V3 to the auxiliary serial device||
 ||SJ17||Selects either the 5V from the ESCs or the 5V from the system power supply for the headers connected to PORTA||
 ||SJ18||Joins the 5V from the USB bus to the 5V system power||
+
+Important: If you select ground for SJ15, then do not select anything using SJ17, doing so will short-circuit the power supply connected to SJ17 with ground, which can cause damage to the various power supply components.
+
+Important: If you select V-RC with SJ15 (to use the same voltage that the RC inputs are using) and you have selected 3V3 using SJ3, then you must not use SJ17 to select anything. Doing so will cause the 5V supply to be joined with the 3V3 supply, which can cause damage to 3V3 devices.
 
 =Part List=
 
