@@ -359,6 +359,8 @@ The !AeroQuado64 PCB supports both X and + configurations, see `AeroQuado64.pde`
 
 ==Flight Sensors==
 
+Important: The Wire library must be modified, the modified library is included in the download. The patch disables the AVR's internal pull-up resistors so that the I2C bus can operate at 3V3 using the `R`1 and `R`2. Not performing this patch can cause permanent damage to your expensive sensors.
+
 ===Gyro===
 
 You absolutely must have a digital gyroscope sensor, and three axis of measurements are needed. They allow the flight control software to stabilize the quadrotor helicopter by adjusting motor speeds to counteract any unwanted rotation.
