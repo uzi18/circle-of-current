@@ -24,7 +24,7 @@ These packages includes:
   * USBaspLoader based
    * source code
    * .hex binaries
- * CadSoft EAGLE
+ * !CadSoft EAGLE
   * schematic
   * board
   * library
