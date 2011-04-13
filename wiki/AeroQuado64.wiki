@@ -85,7 +85,7 @@ The reset switch must be installed, `R`13 10K ohm is the pull-up resistor for th
 
 A push button labelled "BOOT" can be installed only if you are using a non-Arduino-standard bootloader. I personally hate the way "time sensitive" bootloaders work. This button is active low and connected to PB6 on the ATmega. Be sure to enable internal pull-up resistors for this button.
 
-The ISP header (labelled AVRISP) should be installed if you need to use an AVR programmer (perhaps to load the bootloader for the first time, etc).
+The ISP header (labelled AVRISP) should be installed if you need to use an AVR programmer (perhaps to load the bootloader for the first time, etc). The long line at the side indicates the side that the "red wire" (also pin 1) of the cable should be, and the short line at the bottom indicates where the notch of the connector should be.
 
 ==LED Indicators==
 
@@ -283,47 +283,26 @@ The ATmega644PA and 40 pin DIP chip socket, !SparkFun breakout boards, XBee, Blu
 
 Here is the pin chart for the !AeroQuado64 PCB
 
-||Pin on DIP Package||ATmega644PA Pin Name||Sanguino Pin Number||Purpose on !AeroQuado64||
-||1||PB0||Digital 0 (Debug LED)||LED1, detecting USB cable presence||
-||2||PB1||Digital 1||LED2, USB bus D-||
-||3||PB2, INT2||Digital 2||LED3, USB bus D+||
-||4||PB3||Digital 3 (PWM)||SERVO1 (camera pitch)||
-||5||PB4||Digital 4 (PWM)||SERVO2 (camera roll)||
-||6||PB5, MOSI||Digital 5||SERVO3 (camera yaw), MOSI||
-||7||PB6, MISO||Digital 6||SERVO4 (camera aux), MISO, BOOT button||
-||8||PB7, SCK||Digital 7||SCK||
-||9||RESET|| ||RESET||
-||10||VCC|| ||VCC||
-||11||GND|| ||GND||
-||12||XTAL2|| ||XTAL2||
-||13||XTAL1|| ||XTAL1||
-||14||PD0, RXD0||Digital 8, RX0||SER0 RX||
-||15||PD1, TXD0||Digital 9, TX0||SER0 TX||
-||16||PD2, RXD1||Digital 10, RX1||SER1 RX||
-||17||PD3, TXD1||Digital 11, TX1||SER1 TX||
-||18||PD4, OC1B||Digital 12 (PWM)||ESC-BACK||
-||19||PD5, OC1A||Digital 13 (PWM)||ESC-RIGHT||
-||20||PD6, OC2B||Digital 14 (PWM)||ESC-FRONT||
-||21||PD7, OC2A||Digital 15 (PWM)||ESC-LEFT||
-||22||PC0, SCL||Digital 16||SCL||
-||23||PC1, SDA||Digital 17||SDA||
-||24||PC2, PCINT18||Digital 18||RC-IN-1, Throttle||
-||25||PC3, PCINT19||Digital 19||RC-IN-2, Yaw/Aileron||
-||26||PC4, PCINT20||Digital 20||RC-IN-3, Roll/Elevator||
-||27||PC5, PCINT21||Digital 21||RC-IN-4, Pitch/Rudder||
-||28||PC6, PCINT22||Digital 22||RC-IN-5, Gear||
-||29||PC7, PCINT23||Digital 23||RC-IN-6, Auxiliary||
-||30||AVCC|| ||AVCC||
-||31||GND|| ||GND||
-||32||AREF|| ||AREF||
-||33||PA7, ADC7||Digital 24, Analog 7||GPIO, do anything||
-||34||PA6, ADC6||Digital 25, Analog 6||GPIO, do anything||
-||35||PA5, ADC5||Digital 26, Analog 5||GPIO, do anything||
-||36||PA4, ADC4||Digital 27, Analog 4||GPIO, do anything||
-||37||PA3, ADC3||Digital 28, Analog 3||GPIO, do anything||
-||38||PA2, ADC2||Digital 29, Analog 2||GPIO, do anything||
-||39||PA1, ADC1||Digital 30, Analog 1||GPIO, do anything||
-||40||PA0, ADC0||Digital 31, Analog 0||Battery Monitor||
+||LED1, detecting USB cable presence||Digital 0 (Debug LED)||PB0||1|| ||40||PA0, ADC0||Digital 31, Analog 0||Battery Monitor||
+||LED2, USB bus D-||Digital 1||PB1||2|| ||39||PA1, ADC1||Digital 30, Analog 1||GPIO, do anything||
+||LED3, USB bus D+||Digital 2||PB2, INT2||3|| ||38||PA2, ADC2||Digital 29, Analog 2||GPIO, do anything||
+||SERVO1 (camera pitch)||Digital 3 (PWM)||PB3||4|| ||37||PA3, ADC3||Digital 28, Analog 3||GPIO, do anything||
+||SERVO2 (camera roll)||Digital 4 (PWM)||PB4||5|| ||36||PA4, ADC4||Digital 27, Analog 4||GPIO, do anything||
+||SERVO3 (camera yaw), MOSI||Digital 5||PB5, MOSI||6|| ||35||PA5, ADC5||Digital 26, Analog 5||GPIO, do anything||
+||SERVO4 (camera aux), MISO, BOOT button||Digital 6||PB6, MISO||7|| ||34||PA6, ADC6||Digital 25, Analog 6||GPIO, do anything||
+||SCK||Digital 7||PB7, SCK||8|| ||33||PA7, ADC7||Digital 24, Analog 7||GPIO, do anything||
+||RESET|| ||RESET||9|| ||32||AREF|| ||AREF||
+||VCC|| ||VCC||10|| ||31||GND|| ||GND||
+||GND|| ||GND||11|| ||30||AVCC|| ||AVCC||
+||XTAL2|| ||XTAL2||12|| ||29||PC7, PCINT23||Digital 23||RC-IN-6, Auxiliary||
+||XTAL1|| ||XTAL1||13|| ||28||PC6, PCINT22||Digital 22||RC-IN-5, Gear||
+||SER0 RX||Digital 8, RX0||PD0, RXD0||14|| ||27||PC5, PCINT21||Digital 21||RC-IN-4, Pitch/Rudder||
+||SER0 TX||Digital 9, TX0||PD1, TXD0||15|| ||26||PC4, PCINT20||Digital 20||RC-IN-3, Roll/Elevator||
+||SER1 RX||Digital 10, RX1||PD2, RXD1||16|| ||25||PC3, PCINT19||Digital 19||RC-IN-2, Yaw/Aileron||
+||SER1 TX||Digital 11, TX1||PD3, TXD1||17|| ||24||PC2, PCINT18||Digital 18||RC-IN-1, Throttle||
+||ESC-BACK||Digital 12 (PWM)||PD4, OC1B||18|| ||23||PC1, SDA||Digital 17||SDA||
+||ESC-RIGHT||Digital 13 (PWM)||PD5, OC1A||19|| ||22||PC0, SCL||Digital 16||SCL||
+||ESC-FRONT||Digital 14 (PWM)||PD6, OC2B||20|| ||21||PD7, OC2A||Digital 15 (PWM)||ESC-LEFT||
 
 Of course, a lot of this is configurable in the source code.
 
