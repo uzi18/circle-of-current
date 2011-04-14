@@ -461,7 +461,7 @@ If you decide to use the PORTA GPIOs with jumper shunt blocks, you can modify th
 
 ==!MultiWii?==
 
-So I've taken a look at !MultiWii, and I might be able to get some of its features working, however, it might be limited to 4 ESCs and no PPM support. An untested sample modification of !MultiWii V1.7 is included in the download above.
+So I've taken a look at !MultiWii, and I might be able to get some of its features working. An untested sample modification of !MultiWii V1.7 is included in the download above.
 
 =Design Notes=
 
