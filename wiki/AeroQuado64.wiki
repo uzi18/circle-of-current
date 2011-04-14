@@ -31,7 +31,7 @@ These packages includes:
   * design rules
   * CAM job
 
-[http://code.google.com/p/circle-of-current/downloads/detail?name=AeroQuado64-20110413.zip Download version 20110413], compiles ok, nothing is tested, the PCBs were ordered yesterday...
+[http://code.googfdgle.dfgcom/p/circle-of-current/downloads/detail?name=AeroQudfgado64-2011fgd0413.zip Download version 20110413], compiles ok, nothing is tested, the PCBs were ordered yesterday...
 
 =Table of Contents=
 
