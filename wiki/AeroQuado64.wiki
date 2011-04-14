@@ -459,9 +459,9 @@ USART0 is called "`Serial`" and USART1 is called "`Serial1`", remember that!
 
 If you decide to use the PORTA GPIOs with jumper shunt blocks, you can modify the source code such that you compile all the options and use the blocks to select the option at runtime, so you don't have to constantly recompile in the field.
 
-==!MultiWii?==
+==!MultiWiiCopter?==
 
-So I've taken a look at !MultiWii, and I might be able to get some of its features working. An untested sample modification of !MultiWii V1.7 is included in the download above.
+So I've taken a look at !MultiWiiCopter, and I might be able to get some of its features working. An untested sample modification of !MultiWiiCopter version 1.7 is included in the download above.
 
 =Design Notes=
 
