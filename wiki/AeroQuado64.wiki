@@ -459,6 +459,10 @@ USART0 is called "`Serial`" and USART1 is called "`Serial1`", remember that!
 
 If you decide to use the PORTA GPIOs with jumper shunt blocks, you can modify the source code such that you compile all the options and use the blocks to select the option at runtime, so you don't have to constantly recompile in the field.
 
+==!MultiWii?==
+
+So I've taken a look at !MultiWii, and I might be able to get some of its features working, however, it might be limited to 4 ESCs and no PPM support. An untested sample modification of !MultiWii V1.7 is included in the download above.
+
 =Design Notes=
 
 Most footprints support multiple device packaging, just in case you have something already on hand
