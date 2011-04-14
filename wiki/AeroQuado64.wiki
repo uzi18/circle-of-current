@@ -306,6 +306,10 @@ Here is the pin chart for the ATmega644PA on the !AeroQuado64 PCB
 
 Of course, a lot of this is configurable in the source code.
 
+=The Common 3-Pin Cable=
+
+<img src="http://frank.circleofcurrent.com/junk/aq64_img/3pinservoref1.png" />
+
 =Setup Guide for !AeroQuado64 Source Code=
 
 ==The Sketch==
