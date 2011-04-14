@@ -308,7 +308,11 @@ Of course, a lot of this is configurable in the source code.
 
 =The Common 3-Pin Cable=
 
+Hey you! Are you about to plug something in? Take a look at this:
+
 <img src="http://frank.circleofcurrent.com/junk/aq64_img/3pinservoref1.png" />
+
+DO NOT EVER SCREW THIS UP!
 
 =Setup Guide for !AeroQuado64 Source Code=
 
